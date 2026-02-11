@@ -1,0 +1,266 @@
+Graz Restaurant Chatbot 🍽️🇦🇹
+
+A chatbot that answers questions about restaurants in Graz, Austria, using a curated local dataset as its only source of truth.
+
+This project is designed to be deterministic, hallucination-safe, and easy to extend, following pragmatic engineering principles.
+
+🎯 Project Goal
+
+Build a chatbot that can answer questions like:
+
+“Best Italian restaurant in Graz”
+
+“Vegan food near Jakominiplatz”
+
+“Romantic dinner place”
+
+“Restaurants open after 10 pm”
+
+“Cheap student-friendly places”
+
+All answers must be based only on known restaurants stored in the database.
+
+📍 Scope
+
+City: Graz, Austria (strict)
+
+Domain: Restaurants only
+
+Languages: German & English
+
+Target: MVP first, production-ready structure
+
+If a user asks outside Graz or outside restaurants, the system must politely decline.
+
+🧠 Core Principle (Very Important)
+
+The database is the knowledge base.
+
+This project does not rely on live APIs, scraping, or external knowledge at runtime.
+
+No Google Maps calls during chat
+
+No Tripadvisor calls during chat
+
+No hallucinated restaurants
+
+If data is missing → say so
+
+All restaurant data is collected ahead of time and stored locally.
+
+📊 Data Strategy (Curated Local Dataset)
+
+Restaurant data is manually curated and summarized from public sources.
+
+Allowed sources (during dataset creation only):
+
+Google Maps (factual info only)
+
+Tripadvisor (tags & trends only, no reviews)
+
+Official restaurant websites
+
+Local Graz food blogs
+
+Rules:
+
+❌ No reviews stored
+
+❌ No copyrighted text copied
+
+✅ All descriptions are original summaries
+
+✅ Track last verification date
+
+🗄️ Data Model
+
+The core entity is Restaurant.
+
+Minimum required fields:
+
+{
+  "id": "uuid",
+  "name": "string",
+  "district": "string",
+  "address": "string",
+  "latitude": "float",
+  "longitude": "float",
+  "cuisine": ["string"],
+  "price_range": "€ | €€ | €€€ | €€€€",
+  "opening_hours": "string or structured JSON",
+  "vegan_options": "boolean",
+  "vegetarian_options": "boolean",
+  "gluten_free_options": "boolean",
+  "outdoor_seating": "boolean",
+  "takeaway": "boolean",
+  "delivery": "boolean",
+  "good_for": ["romantic", "groups", "students", "family", "business"],
+  "ambience": ["casual", "traditional", "modern", "fine dining"],
+  "rating": "float (0–5)",
+  "rating_count": "integer",
+  "summary": "short original description",
+  "data_sources": ["google_maps", "restaurant_website", "local_blog"],
+  "last_verified": "date"
+}
+
+
+The database must be seeded with sample data so the system runs out of the box.
+
+🏗️ Architecture Overview
+Backend
+
+Python
+
+FastAPI
+
+Pydantic
+
+SQLAlchemy
+
+PostgreSQL (SQLite acceptable for MVP)
+
+AI Layer
+
+Large Language Model (LLM)
+
+Used only for natural language generation
+
+Temperature ≤ 0.4
+
+Receives only filtered restaurant data
+
+Knowledge Handling
+
+No vector database in v1
+
+No LangChain
+
+No embeddings
+
+SQL filtering + ranking only
+
+🔄 Query Flow
+
+User sends a message
+
+Detect language (DE / EN)
+
+Extract intent & constraints:
+
+cuisine
+
+district / location
+
+price range
+
+dietary needs
+
+time constraints (“open now”, “late night”)
+
+occasion (“romantic”, “group”)
+
+Query database using SQL filters
+
+Rank results
+
+Pass results to LLM
+
+Generate user-friendly response
+
+📈 Ranking Logic
+
+Ranking must happen before the LLM is called.
+
+Weighted scoring example:
+
+Rating
+
+Rating count
+
+Constraint match quality
+
+Optional popularity bias
+
+Ranking logic must be deterministic and explainable.
+
+🗣️ Response Rules
+
+Responses must:
+
+Recommend 3–5 restaurants max
+
+Never invent restaurants
+
+Match user language
+
+Be friendly and local
+
+Ask a follow-up question only when helpful
+
+Example response structure:
+
+One short intro sentence
+
+Bullet list of restaurants
+
+One-line reason per restaurant
+
+Optional clarification question
+
+⚠️ Edge Cases
+
+No results → explain why + suggest alternatives
+
+Vague query → ask one clarifying question
+
+Outside Graz → politely decline
+
+Missing data → explicitly say it’s unknown
+
+🚫 What This Project Explicitly Avoids
+
+❌ Vector databases (for MVP)
+
+❌ Live API calls at runtime
+
+❌ Web scraping during chat
+
+❌ Hallucinated knowledge
+
+❌ Overengineering
+
+📦 MVP Deliverables
+
+Database schema + seed data
+
+/chat API endpoint
+
+Query parsing logic
+
+Retrieval & ranking module
+
+LLM prompt logic
+
+Minimal UI or API-only setup
+
+🧪 Quality Bar
+
+Deterministic behavior
+
+Clear separation of concerns
+
+Clean, readable code
+
+Easy to extend to other cities later
+
+🔮 Future Extensions (Out of Scope for MVP)
+
+Vector search for vague queries
+
+Multiple cities
+
+“Restaurants similar to X”
+
+Owner submissions
+
+Admin dashboard
