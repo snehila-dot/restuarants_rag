@@ -164,18 +164,33 @@ def _find_menu_url(soup: BeautifulSoup, base_url: str) -> str | None:
 
 
 def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
-    """Return the absolute URL of the first PDF/image menu link found."""
+    """Return the absolute URL of the first PDF/image menu link found.
+
+    Detects file links by extension OR by known CMS download patterns
+    (e.g. WordPress ``?wpdmdl=``, ``?download=``, ``/download/``).
+    """
+    # Query-string patterns that indicate a file download
+    _download_patterns = ("wpdmdl=", "download=", "/download/", "action=download")
+
     for a_tag in soup.find_all("a", href=True):
         href = str(a_tag["href"])
         text = a_tag.get_text(strip=True).lower()
         combined = f"{href.lower()} {text}"
         if any(kw in combined for kw in _MENU_KEYWORDS):
-            clean_href = href.lower().split("?")[0]
+            href_lower = href.lower()
+            clean_href = href_lower.split("?")[0]
+
+            # Match by file extension
             if any(
                 clean_href.endswith(ext)
                 for ext in (".pdf", ".jpg", ".jpeg", ".png", ".webp")
             ):
                 return urljoin(base_url, href)
+
+            # Match by CMS download pattern in URL
+            if any(pat in href_lower for pat in _download_patterns):
+                return urljoin(base_url, href)
+
     return None
 
 

@@ -283,12 +283,13 @@ def _parse_json_response(content: str) -> list[dict[str, str]]:
 async def _download_file(
     client: httpx.AsyncClient,
     url: str,
-) -> bytes | None:
-    """Download a file and return raw bytes, or None on failure."""
+) -> tuple[bytes, str] | None:
+    """Download a file and return (raw bytes, content_type), or None on failure."""
     try:
         resp = await client.get(url)
         resp.raise_for_status()
-        return resp.content
+        content_type = resp.headers.get("content-type", "").lower()
+        return resp.content, content_type
     except (httpx.HTTPStatusError, httpx.RequestError) as exc:
         logger.warning("Failed to download %s: %s", url, exc)
         return None
@@ -340,22 +341,37 @@ async def extract_menu_from_file_url(
         logger.warning("No OpenAI API key — cannot use vision extraction")
         return []
 
-    file_bytes = await _download_file(http_client, url)
-    if file_bytes is None:
+    result = await _download_file(http_client, url)
+    if result is None:
         return []
+
+    file_bytes, content_type = result
 
     # Cap file size at 20 MB
     if len(file_bytes) > 20 * 1024 * 1024:
         logger.warning("File too large (>20MB), skipping: %s", url)
         return []
 
-    if _is_pdf_url(url):
+    # Detect file type: prefer Content-Type header, fall back to URL extension
+    is_pdf = (
+        "application/pdf" in content_type
+        or file_bytes[:5] == b"%PDF-"
+        or _is_pdf_url(url)
+    )
+    is_image = (
+        content_type.startswith("image/")
+        or _is_image_url(url)
+    )
+
+    if is_pdf:
+        logger.debug("Detected PDF content for %s", url)
         return _extract_menu_from_pdf(file_bytes, key, model)
-    elif _is_image_url(url):
-        mime = _mime_from_url(url)
+    elif is_image:
+        mime = content_type if content_type.startswith("image/") else _mime_from_url(url)
+        logger.debug("Detected image content (%s) for %s", mime, url)
         return _extract_menu_from_image(file_bytes, key, model, mime_type=mime)
     else:
-        logger.debug("Unsupported file type: %s", url)
+        logger.debug("Unsupported content type '%s' for %s", content_type, url)
         return []
 
 

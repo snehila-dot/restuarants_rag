@@ -3,10 +3,11 @@
 Usage::
 
     python -m scraper                                    # OSM data only
-    python -m scraper --enrich                           # Also scrape restaurant websites
-    python -m scraper --enrich --enrich-js               # + Playwright for JS-rendered menus
+    python -m scraper --discover-websites                # + find missing websites via DuckDuckGo
+    python -m scraper --enrich                           # + scrape restaurant websites
     python -m scraper --enrich --enrich-vision           # + GPT-4o vision for PDF/image menus
-    python -m scraper --enrich --enrich-js --enrich-vision  # All extraction methods
+    python -m scraper --enrich --enrich-js               # + Playwright for JS-rendered menus
+    python -m scraper --discover-websites --enrich --enrich-vision  # Full pipeline
     python -m scraper --output-dir data/
 """
 
@@ -23,6 +24,7 @@ load_dotenv()
 from scraper.output import write_clean, write_raw
 from scraper.overpass import scrape as scrape_overpass
 from scraper.parsers import raw_to_restaurant
+from scraper.website_discovery import discover_missing_websites
 from scraper.websites import enrich_restaurants
 
 logging.basicConfig(
@@ -52,6 +54,7 @@ async def run(
     enrich: bool = False,
     enrich_js: bool = False,
     enrich_vision: bool = False,
+    discover_websites: bool = False,
     output_dir: str = "data",
     limit: int = 0,
 ) -> None:
@@ -61,6 +64,7 @@ async def run(
     2. Save raw data.
     3. Parse into restaurant schema dicts.
     4. Deduplicate by name.
+    4b. (Optional) Discover missing websites via DuckDuckGo.
     5. (Optional) Enrich from individual restaurant websites.
     6. Save clean data.
     7. Log summary statistics.
@@ -94,6 +98,23 @@ async def run(
             "Use --output-dir to avoid overwriting production data."
         )
         restaurants = restaurants[:limit]
+
+    # --- Step 4b: Discover missing websites (optional) -------------------------
+    if discover_websites:
+        missing = sum(1 for r in restaurants if not r.get("website"))
+        logger.info(
+            "Step 4b: Discovering missing websites via DuckDuckGo (%d to find) …",
+            missing,
+        )
+        restaurants = await discover_missing_websites(restaurants)
+    else:
+        missing = sum(1 for r in restaurants if not r.get("website"))
+        if missing:
+            logger.info(
+                "Step 4b: Skipping website discovery (%d without website, "
+                "use --discover-websites to find them)",
+                missing,
+            )
 
     # --- Step 5: Enrich (optional) --------------------------------------------
     if enrich:
@@ -194,6 +215,14 @@ def main() -> None:
         description="Scrape Graz restaurant data from OpenStreetMap."
     )
     parser.add_argument(
+        "--discover-websites",
+        action="store_true",
+        help=(
+            "Search DuckDuckGo for missing restaurant websites before"
+            " enrichment (requires 'pip install duckduckgo-search')."
+        ),
+    )
+    parser.add_argument(
         "--enrich",
         action="store_true",
         help=("Also scrape individual restaurant websites for summaries" " (slower)."),
@@ -237,6 +266,7 @@ def main() -> None:
             enrich=args.enrich,
             enrich_js=args.enrich_js,
             enrich_vision=args.enrich_vision,
+            discover_websites=args.discover_websites,
             output_dir=args.output_dir,
             limit=args.limit,
         )
