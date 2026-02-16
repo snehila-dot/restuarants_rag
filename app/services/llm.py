@@ -106,7 +106,10 @@ def format_restaurant_data(restaurants: list[Restaurant]) -> str:
 
 
 async def generate_response(
-    user_message: str, restaurants: list[Restaurant], language: str = "en"
+    user_message: str,
+    restaurants: list[Restaurant],
+    language: str = "en",
+    location_hint: str = "",
 ) -> str:
     """
     Generate a natural language response using the LLM.
@@ -115,6 +118,7 @@ async def generate_response(
         user_message: The user's original question
         restaurants: List of relevant restaurants
         language: Response language ('en' or 'de')
+        location_hint: Optional location context (e.g. " near jakominiplatz")
 
     Returns:
         Generated response text
@@ -122,11 +126,18 @@ async def generate_response(
     system_prompt = SYSTEM_PROMPT_DE if language == "de" else SYSTEM_PROMPT_EN
     restaurant_data = format_restaurant_data(restaurants)
 
+    location_ctx = ""
+    if location_hint:
+        location_ctx = (
+            f"\nNote: These restaurants are located{location_hint}. "
+            "Mention their proximity to this area in your response."
+        )
+
     user_prompt = f"""User question: {user_message}
 
 Available restaurant data:
 {restaurant_data}
-
+{location_ctx}
 Please answer the user's question using ONLY the information provided above. Be concise and helpful."""
 
     try:

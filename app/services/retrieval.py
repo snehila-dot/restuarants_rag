@@ -1,5 +1,7 @@
 """Retrieval service for querying and ranking restaurants from the database."""
 
+import math
+
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -9,11 +11,22 @@ from app.models.menu_item import MenuItem
 from app.models.restaurant import Restaurant
 from app.services.query_parser import QueryFilters
 
+# Approximate metres-per-degree at Graz latitude (~47°N)
+_M_PER_DEG_LAT = 111_000.0
+_M_PER_DEG_LNG = 111_000.0 * math.cos(math.radians(47.07))
+
 
 class NoRestaurantsFoundError(Exception):
     """Raised when no restaurants match the given filters."""
 
     pass
+
+
+def _haversine_m(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Fast approximate distance in metres between two points near Graz."""
+    dlat = (lat2 - lat1) * _M_PER_DEG_LAT
+    dlng = (lng2 - lng1) * _M_PER_DEG_LNG
+    return math.sqrt(dlat * dlat + dlng * dlng)
 
 
 async def search_restaurants(
@@ -66,8 +79,29 @@ async def search_restaurants(
             if all(feature in r.features for feature in filters.features)
         ]
 
-    # Rank restaurants by rating and review count
-    restaurants.sort(key=lambda r: (r.rating or 0.0, r.review_count), reverse=True)
+    # Geo-distance filtering — keep only restaurants within radius
+    if filters.has_location:
+        assert filters.location_lat is not None  # for type checker
+        assert filters.location_lng is not None
+        radius = filters.location_radius_m
+        scored: list[tuple[float, Restaurant]] = []
+        for r in restaurants:
+            if r.latitude is None or r.longitude is None:
+                continue
+            dist = _haversine_m(
+                filters.location_lat,
+                filters.location_lng,
+                r.latitude,
+                r.longitude,
+            )
+            if dist <= radius:
+                scored.append((dist, r))
+        # Sort by distance (closest first)
+        scored.sort(key=lambda t: t[0])
+        restaurants = [r for _, r in scored]
+    else:
+        # No location → rank by rating
+        restaurants.sort(key=lambda r: (r.rating or 0.0, r.review_count), reverse=True)
 
     # Limit results
     restaurants = restaurants[: settings.max_results]

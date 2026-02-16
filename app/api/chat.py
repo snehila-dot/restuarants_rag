@@ -43,18 +43,32 @@ async def chat(
         try:
             restaurants = await retrieval.search_restaurants(session, filters)
         except retrieval.NoRestaurantsFoundError:
-            # If no matches with filters, return top-rated restaurants
-            restaurants = await retrieval.get_all_restaurants(session, limit=3)
+            if filters.has_location:
+                # Widen radius and retry once before giving up
+                filters.location_radius_m = 1500
+                try:
+                    restaurants = await retrieval.search_restaurants(session, filters)
+                except retrieval.NoRestaurantsFoundError:
+                    restaurants = []
+            else:
+                # No location filter — fall back to top-rated
+                restaurants = await retrieval.get_all_restaurants(session, limit=3)
 
             if not restaurants:
                 raise HTTPException(
                     status_code=404,
-                    detail="No restaurants found. Please seed the database first.",
+                    detail="No restaurants found matching your criteria.",
                 )
 
         # Generate LLM response
+        location_hint = (
+            f" near {filters.location_name}" if filters.location_name else ""
+        )
         response_message = await llm.generate_response(
-            user_message=request.message, restaurants=restaurants, language=language
+            user_message=request.message,
+            restaurants=restaurants,
+            language=language,
+            location_hint=location_hint,
         )
 
         # Convert to response schemas
