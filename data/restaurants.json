@@ -1,0 +1,1265 @@
+{
+  "restaurants": [
+    {
+      "name": "Puntigamer Brauhaus",
+      "address": "Triester Straße 361, 8055 Graz",
+      "phone": "+43316 297100",
+      "website": null,
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "10:00-23:00",
+        "tuesday": "10:00-23:00",
+        "wednesday": "10:00-23:00",
+        "thursday": "10:00-23:00",
+        "friday": "10:00-23:00",
+        "saturday": "10:00-23:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0298732,
+      "longitude": 15.432385,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Propeller",
+      "address": "Zinzendorfgasse 17, 8010 Graz",
+      "phone": "+43 316 22 50 53",
+      "website": "https://www.propeller.co.at/",
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "wifi"
+      ],
+      "opening_hours": {
+        "monday": "11:00-01:00",
+        "tuesday": "11:00-01:00",
+        "wednesday": "11:00-01:00",
+        "thursday": "11:00-01:00",
+        "friday": "11:00-01:00",
+        "saturday": "11:00-01:00",
+        "sunday": "11:00-01:00"
+      },
+      "summary": "Diese Domain steht zum Verkauf!",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0756757,
+      "longitude": 15.4482614,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "HEINZ burgers",
+      "address": "Liebenauer Hauptstraße 2, 8041 Graz",
+      "phone": "+43 316 47 40 77",
+      "website": "https://www.heinz.st/liebenau.html",
+      "cuisine": [
+        "American"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "11:00-23:00",
+        "tuesday": "11:00-23:00",
+        "wednesday": "11:00-23:00",
+        "thursday": "11:00-23:00",
+        "friday": "11:00-23:00",
+        "saturday": "11:00-23:00",
+        "sunday": "11:00-23:00"
+      },
+      "summary": "Live-Übertragungen, direkt beim Stadion. Wir lieben Burger und Sport. Für dich, deine Buddies und die ganze Familie.",
+      "menu_items": [],
+      "menu_url": "https://www.heinz.st/sportsbar#Sportsbar-Wochenmenu",
+      "latitude": 47.0468523,
+      "longitude": 15.4557529,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Römerstube",
+      "address": "Liebenauer Hauptstraße 103, 8041 Graz",
+      "phone": "+43 316 472 066",
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0382671,
+      "longitude": 15.4619929,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Cuba",
+      "address": "Sankt-Peter-Hauptstraße 25, 8042 Graz",
+      "phone": "+43 316 474731",
+      "website": "https://cuba-stpeter.at/",
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "08:00-23:00",
+        "tuesday": "08:00-23:00",
+        "wednesday": "08:00-23:00",
+        "thursday": "08:00-23:00",
+        "friday": "Sa 09:00-24:00",
+        "sunday": "09:00-22:00"
+      },
+      "summary": "Die Cafe Bar Cuba in Graz-St. Peter bietet ein modernes Ambiente, leckere Frühstücksvariationen, Snacks und eine große Auswahl an Cocktails.",
+      "menu_items": [],
+      "menu_url": "https://cuba-stpeter.at/menu",
+      "latitude": 47.0594344,
+      "longitude": 15.4696412,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "San Pietro",
+      "address": "Sankt-Peter-Hauptstraße 141, 8042 Graz",
+      "phone": "+43 316 48 15 81",
+      "website": "http://www.sanpietro.at",
+      "cuisine": [
+        "Italian"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "11:30-22:30",
+        "tuesday": "11:30-22:30",
+        "wednesday": "11:30-22:30",
+        "thursday": "11:30-22:30",
+        "friday": "11:30-22:30",
+        "saturday": "17:00-22:30"
+      },
+      "summary": "Willkommen in Steiermarks 1. Focacceria!",
+      "menu_items": [],
+      "menu_url": "http://www.sanpietro.at/menu",
+      "latitude": 47.0502833,
+      "longitude": 15.4800526,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Philipp",
+      "address": "Krenngasse 38, 8010 Graz",
+      "phone": "+43 316 81 00 33-00",
+      "website": "https://www.konditorei-philipp.at",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "08:00-18:00",
+        "tuesday": "08:00-18:00",
+        "wednesday": "08:00-18:00",
+        "thursday": "08:00-18:00",
+        "friday": "08:00-18:00",
+        "saturday": "08:00-18:00",
+        "sunday": "08:00-18:00"
+      },
+      "summary": "Torten, Kuchen, Pralinen, Pasteten, Schokolade, Eis und vieles mehr: Köstlichkeiten vom Grazer Schillerplatz - jetzt neu mit Online-Shop!",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0678349,
+      "longitude": 15.4605827,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Gösser Bräu",
+      "address": "Neutorgasse 48, 8010 Graz",
+      "phone": "+43 316 82 99 09",
+      "website": "http://www.goesserbraeugraz.at",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "thursday": "11:00-24:00",
+        "friday": "11:00-24:00",
+        "saturday": "11:00-24:00",
+        "sunday": "11:00-23:00",
+        "monday": "11:00-23:00",
+        "tuesday": "11:00-23:00",
+        "wednesday": "11:00-23:00"
+      },
+      "summary": "Ob drinnen oder draußen, Winter oder Sommer, bei uns findet man immer ein Platz‘l um zusammen zu sein.",
+      "menu_items": [],
+      "menu_url": "https://www.goesserbraeugraz.at/?wpdmdl=2478",
+      "latitude": 47.0669485,
+      "longitude": 15.43779,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Nil",
+      "address": "Graz",
+      "phone": "+43 316 671041",
+      "website": "http://nil.mur.at/",
+      "cuisine": [
+        "African"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "15:00+",
+        "tuesday": "15:00+",
+        "wednesday": "15:00+",
+        "thursday": "15:00+",
+        "friday": "15:00+",
+        "saturday": "15:00+",
+        "sunday": "15:00+"
+      },
+      "summary": "kunst- und kommunikationsraum, afrikanisches restaurant mit freiem internetzugang",
+      "menu_items": [],
+      "menu_url": "http://nil.mur.at/catering.html",
+      "latitude": 47.0659601,
+      "longitude": 15.4266559,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Aiola upstairs",
+      "address": "Schloßberg 2, 8010 Graz",
+      "phone": "+43 316 818797",
+      "website": "http://www.aiola.at",
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "09:00-24:00",
+        "tuesday": "09:00-24:00",
+        "wednesday": "09:00-24:00",
+        "thursday": "09:00-24:00",
+        "friday": "09:00-24:00",
+        "saturday": "09:00-24:00",
+        "sunday": "09:00-24:00"
+      },
+      "summary": "Es war 1998 und irgendwo in Graz, als der Bauch von Judith und Gerald Schwarz damit anfing, von einem Wunsch- Ort\n      zu erzählen. Von einem Ort mit ganz vielen tollen Menschen, aufregenden Speisen und Getränken und mit\n      überreichlich Spaß. Es war nur Phantasie, aber es fühlte sich unglaublic",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0740742,
+      "longitude": 15.4375989,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Sunny's",
+      "address": "Beethovenstraße 29, 8010 Graz",
+      "phone": "+43 664 2143853",
+      "website": "https://www.facebook.com/sunnyswohnzimmer/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "sunday": "10:00-23:00",
+        "monday": "10:00-23:00",
+        "tuesday": "10:00-23:00",
+        "wednesday": "10:00-23:00",
+        "thursday": "10:00-23:00",
+        "friday": "10:00-23:00",
+        "saturday": "18:00-23:00"
+      },
+      "summary": "Sunny's, Graz. Gefällt 862 Mal · 47 waren hier. Eine Wohlfühloase mit Wohnzimmerflair",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0726465,
+      "longitude": 15.4523885,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "McDonald's",
+      "address": "Jakominiplatz 18, 8010 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Burger"
+      ],
+      "price_range": "€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegetarian_options",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "06:00-24:00",
+        "tuesday": "06:00-24:00",
+        "wednesday": "06:00-24:00",
+        "thursday": "06:00-24:00",
+        "friday": "06:00-24:00",
+        "saturday": "07:00-01:00, Su,PH 07:00-24:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.066591,
+      "longitude": 15.441518,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Cafe Centraal",
+      "address": "Mariahilferstraße 10, 8020 Graz",
+      "phone": "+43 664 88 46 87 00",
+      "website": "http://www.centraal.at/",
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": null,
+      "summary": "Wir sind ein gemütliches Lokal im Altwiener Kaffeehausstil mit nachhaltiger Ausrichtung.Niedrige Preise sind uns genauso wichtig wie hausgemachte Speisen, Sirupe und Liköre aus frischen regionalen Zutaten (Bauernmarkt am Lendplatz, immer öfter in Bio-Qualität), vegane, glutenfreie und laktosefreie S",
+      "menu_items": [
+        {
+          "name": "Wiener Frühstück (A, C, G)\t\t\t     Gebäckkörbchen, Butter,  hausgemachte \r\nMarmelade, weiches Freiland-Ei",
+          "price": "€  5,30",
+          "category": "Other"
+        },
+        {
+          "name": "Veganes Hummus Frühstück (A, H)\t   \t     Gebäckkörbchen, Hummus, Nüsse, \r\nGemüse",
+          "price": "€  9,70",
+          "category": "Other"
+        },
+        {
+          "name": "Bio Porridge vegan (A, H)                              mit Apfel, Nüssen, Ahornsirup und Zimt",
+          "price": "€  4,90",
+          "category": "Other"
+        },
+        {
+          "name": "Croissant  (A)                                                mit Butter (G) und hausgemachter \r\n   Marmelade",
+          "price": "€  3,20",
+          "category": "Other"
+        },
+        {
+          "name": "Heiße Schoko*  (F)",
+          "price": "€ 4,30",
+          "category": "Drink"
+        },
+        {
+          "name": "Trummer Hopfenspiel 0,3l glutenfrei",
+          "price": "€  4,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Schwarze Ribisel Nektar    3,40 Bio-Orangensaft   3,40",
+          "price": "0,25\t\t €",
+          "category": "Drink"
+        },
+        {
+          "name": "Voll-Holler\t  2cl Gin, Apfel-Hollerbeersaft, Hollerblütensirup, \r\nLimette, Soda",
+          "price": "€  5,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Vollerer-Holler (4cl Gin)",
+          "price": "€ 7,50",
+          "category": "Drink"
+        },
+        {
+          "name": "White Russian Milch, Kahlua, 2cl Nemiroff Vodka",
+          "price": "€  5,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Whiterer Russian (4cl Nemiroff Vodka)",
+          "price": "€  7,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Hausgemachte Liköre 2cl Weichserl\t    4 Kanter  Honig | Walnuss (H) | Limoncello  | Nespolino",
+          "price": "€  3,90",
+          "category": "Other"
+        },
+        {
+          "name": "Whiskey Grants  |  Tullamore Dew | Kilbeggan  | Jameson",
+          "price": "€  4,50",
+          "category": "Other"
+        },
+        {
+          "name": "Magenbitter Averna | Jägermeister | Fernet\t| Pelinkovav   Kurzurlaub: Fläschchen Pelinkvac 10cl, Zitrone",
+          "price": "€  3,90",
+          "category": "Other"
+        },
+        {
+          "name": "Nemiroff Vodka  |  Sierra Tequila",
+          "price": "€  3,90",
+          "category": "Other"
+        },
+        {
+          "name": "Rauschenberger (Kranachberg, Südsteiermark) Welschriesling   \t Weißburgunder \t   Gelber Muskateller \t Zweigelt",
+          "price": "€ 3,30",
+          "category": "Drink"
+        },
+        {
+          "name": "Polz (Südsteiermark) Zweigelt \t\t   Weißburgunder",
+          "price": "€ 4,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Herztröpferl (Burgenland)\t\t\t   Rioja (Spanien)\t\t\t\t   Schilcher (Weststeiermark)",
+          "price": "€ 4,30",
+          "category": "Drink"
+        },
+        {
+          "name": "Torres Miguel Natureo Muscat\t\t   Torres Miguel Natureo rot\t   Schloss Raggendorf Chardonnay",
+          "price": "€ 4,90",
+          "category": "Drink"
+        }
+      ],
+      "menu_url": "http://www.centraal.at/speisenundgetraenke.html",
+      "latitude": 47.0717298,
+      "longitude": 15.4337489,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "tribeka",
+      "address": "Grieskai 2, 8020 Graz",
+      "phone": "+43 316 72 34 69",
+      "website": "http://tribeka.at",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options",
+        "wifi",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "07:00-20:00",
+        "tuesday": "07:00-20:00",
+        "wednesday": "07:00-20:00",
+        "thursday": "07:00-20:00",
+        "friday": "07:00-20:00",
+        "saturday": "08:00-20:00",
+        "sunday": "08:00-20:00"
+      },
+      "summary": "Mo – Fr07:00 – 19:00Sa, So & Feiertags08:00 – 19:00",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.070642,
+      "longitude": 15.4344504,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Kunsthauscafé",
+      "address": "Südtiroler Platz 2, 8020 Graz",
+      "phone": "+43 316 71 49 57",
+      "website": "https://kunsthauscafe.co.at/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "09:00-24:00",
+        "tuesday": "09:00-24:00",
+        "wednesday": "09:00-24:00",
+        "thursday": "09:00-24:00",
+        "friday": "09:00-02:00",
+        "saturday": "09:00-02:00",
+        "sunday": "09:00-20:00"
+      },
+      "summary": "Mit Chic, Charme und einer Portion „Haute cuisine“ im Großstadtflair. Breakfast, Brunch und Burger und auch die vegane Sonne zum besten Kaffee der Stadt.",
+      "menu_items": [],
+      "menu_url": "https://kunsthauscafe.co.at/menu/mittagsmenue",
+      "latitude": 47.0710287,
+      "longitude": 15.4339001,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Schwalbennest",
+      "address": "Franziskanerplatz 1, 8010 Graz",
+      "phone": "+43 316 818892",
+      "website": "http://schwalben.at",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegan_options"
+      ],
+      "opening_hours": {
+        "tuesday": "09:30-18:00",
+        "wednesday": "09:30-18:00",
+        "thursday": "09:30-18:00",
+        "friday": "09:30-18:00",
+        "saturday": "Su 12:00-18:00",
+        "monday": "closed"
+      },
+      "summary": "Sonntag 15. Februar 2026  von 12 bis 17h geöffnet !",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0708361,
+      "longitude": 15.4358876,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Glockenspielkeller",
+      "address": "Mehlplatz 3, 8010 Graz",
+      "phone": "+43 316 677 761",
+      "website": "https://www.glockenspielkeller.at/",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating"
+      ],
+      "opening_hours": {
+        "tuesday": "11:00-23:00",
+        "wednesday": "11:00-23:00",
+        "thursday": "11:00-23:00",
+        "friday": "11:00-23:00",
+        "saturday": "11:00-23:00",
+        "sunday": "11:00-23:00"
+      },
+      "summary": "Willkommen im Glockenspielkeller, die steirische Küche im Herzen der Stadt! Unsere saisonale Speisekarte spiegelt die reiche kulinarische Vielfalt der Steiermark wider und lädt Sie ein, Köstlichkeiten in stilvollem Ambiente zu genießen. Begleitet von erlesenen Weinen und liebevoll zubereiteten Geric",
+      "menu_items": [
+        {
+          "name": "Degustationsmenü ab 16h Tasting menu 3 Gänge inkl. Gedeck  mit Weinbegleitung  4 Gänge inkl. Gedeck  mit Weinbegleitung",
+          "price": "€ 59,00",
+          "category": "Drink"
+        },
+        {
+          "name": "3 Gänge inkl. Gedeck  mit Weinbegleitung  4 Gänge inkl. Gedeck  mit Weinbegleitung",
+          "price": "€ 59,00",
+          "category": "Drink"
+        },
+        {
+          "name": "3 Gänge inkl. Gedeck",
+          "price": "€ 59,00",
+          "category": "Drink"
+        },
+        {
+          "name": "mit Weinbegleitung",
+          "price": "€ 16,50",
+          "category": "Drink"
+        },
+        {
+          "name": "4 Gänge inkl. Gedeck",
+          "price": "€ 69,00",
+          "category": "Drink"
+        },
+        {
+          "name": "Roast Beef Carpaccio Honig Dill Sauce l Senfgurke l frittierte Kapern l Radieschen l Fleur de sel l Ciabatta",
+          "price": "€ 19,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Beef Tartar Senf-Kaviar-Mayonaise l Meersalzbutter l Kapern l Perlzwiebeln l Kürbispesto l Toastbrot Klein  Groß",
+          "price": "€ 17,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Klein  Groß",
+          "price": "€ 17,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Klein",
+          "price": "€ 17,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Groß",
+          "price": "€ 23,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Schafkäse Brûlée Feldsalat l Cranberry l Orangendressing l karamellisierte Datteln l Speckkrokant l Walnüsse l Ciabatta",
+          "price": "€ 18,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Tafelspitzsuppe + Frittaten  + Kaspressknödel  Kürbiscremesuppe Kernöl-Espuma l Brot-Käse-Kruste  Vegetarisch",
+          "price": "€ 5,80",
+          "category": "Drink"
+        },
+        {
+          "name": "Tafelspitzsuppe + Frittaten  + Kaspressknödel",
+          "price": "€ 5,80",
+          "category": "Drink"
+        },
+        {
+          "name": "+ Frittaten  + Kaspressknödel",
+          "price": "€ 5,80",
+          "category": "Drink"
+        },
+        {
+          "name": "+ Frittaten",
+          "price": "€ 5,80",
+          "category": "Drink"
+        },
+        {
+          "name": "+ Kaspressknödel",
+          "price": "€ 6,80",
+          "category": "Drink"
+        },
+        {
+          "name": "Kürbiscremesuppe Kernöl-Espuma l Brot-Käse-Kruste  Vegetarisch",
+          "price": "€ 7,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Salate Salads Grüner Salat Kernöl-Dressing  Gemischter Salat Kernöl-Dressing  Vogerlsalat Kartoffeln l Speck l Ei",
+          "price": "€ 5,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Grüner Salat Kernöl-Dressing  Gemischter Salat Kernöl-Dressing  Vogerlsalat Kartoffeln l Speck l Ei",
+          "price": "€ 5,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Grüner Salat Kernöl-Dressing",
+          "price": "€ 5,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Gemischter Salat Kernöl-Dressing",
+          "price": "€ 7,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Vogerlsalat Kartoffeln l Speck l Ei",
+          "price": "€ 8,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Zwiebelrostbraten Bratkartoffeln l Senfgurke l Röstzwiebeln",
+          "price": "€ 27,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Tafelspitz Röstkartoffeln l Apfelkren l Schnittlauch-Eiersauce l Kren und Gemüse",
+          "price": "€ 26,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Original Wiener Schnitzel vom Kalb, mit Preiselbeeren, Beilage extra",
+          "price": "€ 22,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Schnitzel \"Wiener Art\" vom Schwein vom Schweinerücken,\nmit Preiselbeeren, Beilage extra",
+          "price": "€ 14,90",
+          "category": "Drink"
+        },
+        {
+          "name": "von  bis",
+          "price": "€ 4,90",
+          "category": "Drink"
+        },
+        {
+          "name": "von",
+          "price": "€ 4,90",
+          "category": "Drink"
+        },
+        {
+          "name": "bis",
+          "price": "€ 7,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Surf & Turf Beiried l Garnele l Trüffel Gnocchi l Trüffel Chips",
+          "price": "€ 45,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Wildschwein Medaillons Speckbohnen l Pfeffer-Cassis-Sauce l Pilz-Kartoffel-Strudel",
+          "price": "€ 28,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Barbarie Entenbrust Rotkraut l Mandelbällchen l Vogelbeeren l Orangensauce",
+          "price": "€ 33,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Edelfisch Red Snapper l Zander l Garnele l \nKürbisrisotto l Ruccola",
+          "price": "€ 32,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Red Snapper Belugalinsen l Speck l Wurzelgemüse l \nBalsamico Gremolata",
+          "price": "€ 26,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Edelfisch für Zwei Red Snapper l Zander l Garnele l \nKürbisrisotto l Ruccola l \ninkl. einer weiteren Beilage nach Wahl",
+          "price": "€ 62,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Trüffel Gnocchi Confit-Tomaten l Ruccola l Parmesan  Vegetarisch",
+          "price": "€ 19,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Kürbis Mozarella Knödel Salbei-Nuss-Butter l Kürbiskerne l Schafkäse l\n Vogerlsalat  Vegetarisch",
+          "price": "€ 21,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Topfennougat Knödel Zwetschkenröster l Butter-Orangen-Brösel l Vanilleeis",
+          "price": "€ 13,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Apfelstrudel Schlagobers l Spekulatius l Vanillesauce",
+          "price": "€ 9,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Tonkabohne-Mousse im Himbeermantel Waldbeeren-Spiegel l Nusskrokant l Himbeeren",
+          "price": "€ 15,90",
+          "category": "Drink"
+        },
+        {
+          "name": "Dessertvariation für Zwei von Allem etwas Feines!",
+          "price": "€ 25,80",
+          "category": "Drink"
+        },
+        {
+          "name": "Zitronen Sorbet wahlweise mit Prosecco",
+          "price": "€ 6,90",
+          "category": "Drink"
+        }
+      ],
+      "menu_url": "https://www.glockenspielkeller.at/speisenundgetränke",
+      "latitude": 47.0711946,
+      "longitude": 15.4407955,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Frankowitsch",
+      "address": "Stempfergasse 2-4, 8010 Graz",
+      "phone": "+43 316 82 22 12",
+      "website": "https://www.frankowitsch.at/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "09:00-18:00 open \"Delikatessen\"",
+        "tuesday": "09:00-18:00 open \"Delikatessen\"",
+        "wednesday": "09:00-18:00 open \"Delikatessen\"",
+        "thursday": "09:00-18:00 open \"Delikatessen\"",
+        "friday": "09:00-18:00 open \"Delikatessen\"",
+        "saturday": "09:00-17:00 open \"Delikatessen\"",
+        "sunday": "closed"
+      },
+      "summary": "Frankowitsch - die Brötchenbar im Herzen von Graz. Jetzt Brötchen, Torten & Prosecco nachhause oder ins Büro liefern lassen!",
+      "menu_items": [
+        {
+          "name": "Gratis Lieferung ab  Bestellwert im Raum Graz (bis 8 km)",
+          "price": "190 €",
+          "category": "Other"
+        },
+        {
+          "name": "inkl. MwSt",
+          "price": "0,00 €",
+          "category": "Other"
+        }
+      ],
+      "menu_url": null,
+      "latitude": 47.0706865,
+      "longitude": 15.4413099,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Cafe Mitte",
+      "address": "Freiheitsplatz 2, 8010 Graz",
+      "phone": "+43 664 5128528",
+      "website": null,
+      "cuisine": [
+        "Thai"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegan_options",
+        "vegetarian_options",
+        "delivery"
+      ],
+      "opening_hours": {
+        "monday": "closed",
+        "tuesday": "11:00-00:00, Fr 11:00-01:00, Sa 09:00-01:00, Su 09:00-00:00",
+        "wednesday": "11:00-00:00, Fr 11:00-01:00, Sa 09:00-01:00, Su 09:00-00:00",
+        "thursday": "11:00-00:00, Fr 11:00-01:00, Sa 09:00-01:00, Su 09:00-00:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0730205,
+      "longitude": 15.440709,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "For You",
+      "address": "Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0634958,
+      "longitude": 15.4246652,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Gasthaus Doppler",
+      "address": "Ungergasse 29, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "08:00-22:00",
+        "tuesday": "08:00-22:00",
+        "wednesday": "08:00-22:00",
+        "thursday": "08:00-22:00",
+        "friday": "08:00-22:00",
+        "saturday": "08:00-22:00",
+        "sunday": "08:00-20:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0669589,
+      "longitude": 15.4237922,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Cafe Monaco",
+      "address": "Ungergasse 15, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "06:00-23:00",
+        "tuesday": "06:00-23:00",
+        "wednesday": "06:00-23:00",
+        "thursday": "06:00-23:00",
+        "friday": "06:00-23:00",
+        "saturday": "08:00-23:00",
+        "sunday": "08:00-23:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0670288,
+      "longitude": 15.425519,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Prince Charles",
+      "address": "Elisabethinergasse 28, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "09:00-24:00, Sa 16:00-02:00, Su 16:00-24:00",
+        "tuesday": "09:00-24:00, Sa 16:00-02:00, Su 16:00-24:00",
+        "wednesday": "09:00-24:00, Sa 16:00-02:00, Su 16:00-24:00",
+        "thursday": "09:00-24:00, Sa 16:00-02:00, Su 16:00-24:00",
+        "friday": "09:00-24:00, Sa 16:00-02:00, Su 16:00-24:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0673459,
+      "longitude": 15.4269241,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Murinsel Café",
+      "address": "Lendkai 19, 8010 Graz",
+      "phone": "+43 316 822660",
+      "website": "http://www.murinselgraz.at/de/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "tuesday": "10:00-20:00",
+        "wednesday": "10:00-20:00",
+        "thursday": "10:00-20:00",
+        "friday": "10:00-20:00",
+        "saturday": "10:00-20:00",
+        "sunday": "10:00-20:00"
+      },
+      "summary": "Urlaubsfeeling mitten in Graz! Sie hören das Wasser rauschen, blicken aufs Murufer und die Sehenswürdigkeiten der Altstadt. Ein Ausflug auf die Insel lohnt sich früh, mittags und abends.Mehr",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0732823,
+      "longitude": 15.4346186,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Michelangelo Shivay",
+      "address": "Harter Straße 3a, 8053 Graz",
+      "phone": null,
+      "website": "https://www.restaurantpizzeriamichelangelo.at/",
+      "cuisine": [
+        "Pizza",
+        "Italian",
+        "Regional",
+        "Seafood"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0549845,
+      "longitude": 15.4161338,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Kapadokya Kebab",
+      "address": "Jakominiplatz 15, 8010 Graz",
+      "phone": "+43 316 836969",
+      "website": "https://kapadokya-jakominiplatz.eatbu.com/?lang=de",
+      "cuisine": [
+        "Kebab"
+      ],
+      "price_range": "€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegetarian_options",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "08:30-04:00, Su 08:30-22:00",
+        "tuesday": "08:30-04:00, Su 08:30-22:00",
+        "wednesday": "08:30-04:00, Su 08:30-22:00",
+        "thursday": "08:30-04:00, Su 08:30-22:00",
+        "friday": "08:30-04:00, Su 08:30-22:00",
+        "saturday": "08:30-04:00, Su 08:30-22:00"
+      },
+      "summary": "Sie können zum Mitnehmen bestellen | Graz - Wenn Sie mit Ihren Liebsten einen gemütlichen Abend mit hausgemachtem türkischem Essen verbringen wollen, ist unser Restaurant einen Blick für Sie wert. Willkommen im „Kapadokya Kebap Pizza Jakominiplatz“. Wir freuen uns, Sie mit unseren köstlichen Gericht",
+      "menu_items": [],
+      "menu_url": "https://kapadokya-jakominiplatz.eatbu.com/?lang=de",
+      "latitude": 47.0671133,
+      "longitude": 15.443242,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Flann O'Brien",
+      "address": "Paradeisgasse 1, 8010 Graz",
+      "phone": "+43 316 82 96 20",
+      "website": "http://www.flannobrien.at/",
+      "cuisine": [
+        "Irish"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible"
+      ],
+      "opening_hours": null,
+      "summary": "You can also check out the location and ambiance via our virtual tool at \"Book A Table\" or via Google Street view.",
+      "menu_items": [],
+      "menu_url": "http://www.flannobrien.at/#tm-mobile",
+      "latitude": 47.071467,
+      "longitude": 15.4360906,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Torino",
+      "address": "Münzgrabenstraße 47, 8010 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Pizza",
+        "Kebab",
+        "Burger"
+      ],
+      "price_range": "€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "09:00-20:00",
+        "tuesday": "09:00-20:00",
+        "wednesday": "09:00-20:00",
+        "thursday": "09:00-20:00",
+        "friday": "09:00-20:00",
+        "saturday": "09:00-20:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0632858,
+      "longitude": 15.45112,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Kirchenwirt / Restaurant Tinos",
+      "address": "Petersbergenstraße 11, 8042 Graz",
+      "phone": "+43 316 422 344",
+      "website": "https://www.restauranttinos.at/",
+      "cuisine": [
+        "Regional",
+        "Greek"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegetarian_options",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "10:00-22:00",
+        "tuesday": "10:00-22:00",
+        "wednesday": "10:00-22:00",
+        "thursday": "10:00-22:00",
+        "friday": "10:00-22:00",
+        "saturday": "10:00-22:00",
+        "sunday": "10:00-22:00"
+      },
+      "summary": "Sie suchen nach kulinarischen Genüssen? Geniessen Sie griechische traditionelle Gerichte in passender freundlicher Umgebung mit einem Hauch steirischer Küche.",
+      "menu_items": [],
+      "menu_url": "https://www.restauranttinos.at/speisekarte/",
+      "latitude": 47.0563436,
+      "longitude": 15.4749644,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Café Logo",
+      "address": "Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "11:00-22:00",
+        "tuesday": "11:00-22:00",
+        "wednesday": "11:00-22:00",
+        "thursday": "11:00-22:00",
+        "friday": "11:00-22:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0575627,
+      "longitude": 15.4759048,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    }
+  ],
+  "scraped_at": "2026-02-16T10:27:31.006833+00:00",
+  "source": "openstreetmap",
+  "count": 30
+}

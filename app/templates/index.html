@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Ask me about restaurants in Graz!</h2>
+            <p>Try: "vegan restaurants", "cheap Italian food", "restaurants with outdoor seating"</p>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+            <div class="message assistant-message">
+                <div class="message-content">
+                    <p>Hello! I can help you find restaurants in Graz, Austria. What are you looking for today?</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <form id="chat-form">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    placeholder="Ask me about restaurants in Graz..."
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit" id="send-button">Send</button>
+            </form>
+            <div id="loading" class="loading" style="display: none;">
+                <span>Thinking...</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/chat.js') }}"></script>
+{% endblock %}

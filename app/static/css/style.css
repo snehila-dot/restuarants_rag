@@ -1,0 +1,378 @@
+/* CSS Custom Properties for theming */
+:root {
+  --color-body-text: #333;
+  --color-body-bg: #f5f5f5;
+  --color-navbar-bg: #2c3e50;
+  --color-navbar-text: #ffffff;
+  --color-chat-container-bg: #ffffff;
+  --color-chat-shadow: rgba(0, 0, 0, 0.1);
+  --color-chat-header-start: #667eea;
+  --color-chat-header-end: #764ba2;
+  --color-chat-messages-bg: #fafafa;
+  --color-user-bubble-bg: #667eea;
+  --color-user-bubble-text: #ffffff;
+  --color-assistant-bubble-bg: #ffffff;
+  --color-assistant-bubble-border: #e0e0e0;
+  --color-assistant-bubble-text: #333;
+  --color-restaurant-card-bg: #f9f9f9;
+  --color-restaurant-card-border: #667eea;
+  --color-restaurant-card-heading: #2c3e50;
+  --color-cuisine-text: #667eea;
+  --color-rating-text: #f39c12;
+  --color-input-bg: #ffffff;
+  --color-input-border: #e0e0e0;
+  --color-input-focus-border: #667eea;
+  --color-input-text: #333;
+  --color-button-bg: #667eea;
+  --color-button-hover-bg: #5568d3;
+  --color-button-disabled-bg: #cccccc;
+  --color-loading-text: #667eea;
+  --color-footer-bg: #2c3e50;
+  --color-footer-text: #ffffff;
+  --color-link: #667eea;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--color-body-text);
+    background-color: var(--color-body-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+    color: var(--color-link);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--color-navbar-bg);
+    color: var(--color-navbar-text);
+    padding: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.tagline {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--color-chat-container-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px var(--color-chat-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-header {
+    background: linear-gradient(
+        135deg,
+        var(--color-chat-header-start) 0%,
+        var(--color-chat-header-end) 100%
+    );
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.chat-header h2 {
+    margin-bottom: 0.5rem;
+}
+
+.chat-header p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Messages */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background-color: var(--color-chat-messages-bg);
+    transition: background-color 0.3s ease;
+}
+
+.message {
+    margin-bottom: 1.5rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-content {
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    max-width: 85%;
+}
+
+.user-message .message-content {
+    background-color: var(--color-user-bubble-bg);
+    color: var(--color-user-bubble-text);
+    margin-left: auto;
+}
+
+.assistant-message .message-content {
+    background-color: var(--color-assistant-bubble-bg);
+    border: 1px solid var(--color-assistant-bubble-border);
+    color: var(--color-assistant-bubble-text);
+    margin-right: auto;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.message-content p {
+    margin-bottom: 0.5rem;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Restaurant Cards */
+.restaurant-card {
+    background: var(--color-restaurant-card-bg);
+    border-left: 3px solid var(--color-restaurant-card-border);
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.restaurant-card h4 {
+    color: var(--color-restaurant-card-heading);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.restaurant-card p {
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+}
+
+.restaurant-card .cuisine {
+    color: var(--color-cuisine-text);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.restaurant-card .rating {
+    color: var(--color-rating-text);
+    transition: color 0.3s ease;
+}
+
+/* Chat Input */
+.chat-input-container {
+    border-top: 1px solid var(--color-input-border);
+    padding: 1rem;
+    background: var(--color-chat-container-bg);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#chat-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#user-input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 2px solid var(--color-input-border);
+    border-radius: 24px;
+    font-size: 1rem;
+    outline: none;
+    background-color: var(--color-input-bg);
+    color: var(--color-input-text);
+    transition: border-color 0.2s, background-color 0.3s ease, color 0.3s ease;
+}
+
+#user-input:focus {
+    border-color: var(--color-input-focus-border);
+}
+
+#send-button {
+    padding: 0.8rem 2rem;
+    background-color: var(--color-button-bg);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#send-button:hover {
+    background-color: var(--color-button-hover-bg);
+}
+
+#send-button:disabled {
+    background-color: var(--color-button-disabled-bg);
+    cursor: not-allowed;
+}
+
+.loading {
+    text-align: center;
+    padding: 0.5rem;
+    color: var(--color-loading-text);
+    font-style: italic;
+    transition: color 0.3s ease;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--color-footer-bg);
+    color: var(--color-footer-text);
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+}
+
+.footer-note {
+    opacity: 0.8;
+    font-size: 0.85rem;
+}
+
+/* Navbar inner layout for toggle button */
+.navbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: 1rem;
+    color: var(--color-navbar-text);
+    transition: transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+.theme-icon {
+    display: none;
+}
+
+/* Show moon icon in light mode */
+.theme-icon--light {
+    display: inline;
+}
+
+/* Show sun icon in dark mode, hide moon */
+[data-theme="dark"] .theme-icon--light {
+    display: none;
+}
+
+[data-theme="dark"] .theme-icon--dark {
+    display: inline;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+    --color-body-text: #e0e0e0;
+    --color-body-bg: #1a1a2e;
+    --color-navbar-bg: #16213e;
+    --color-navbar-text: #e0e0e0;
+    --color-chat-container-bg: #1e1e3a;
+    --color-chat-shadow: rgba(0, 0, 0, 0.3);
+    --color-chat-messages-bg: #16213e;
+    --color-user-bubble-bg: #667eea;
+    --color-user-bubble-text: #ffffff;
+    --color-assistant-bubble-bg: #2a2a4a;
+    --color-assistant-bubble-border: #3a3a5c;
+    --color-assistant-bubble-text: #e0e0e0;
+    --color-restaurant-card-bg: #2a2a4a;
+    --color-restaurant-card-border: #667eea;
+    --color-restaurant-card-heading: #e8e8e8;
+    --color-cuisine-text: #8fa4f0;
+    --color-rating-text: #f5b041;
+    --color-input-bg: #2a2a4a;
+    --color-input-border: #3a3a5c;
+    --color-input-focus-border: #667eea;
+    --color-input-text: #e0e0e0;
+    --color-button-bg: #667eea;
+    --color-button-hover-bg: #5568d3;
+    --color-button-disabled-bg: #4a4a6a;
+    --color-loading-text: #8fa4f0;
+    --color-footer-bg: #16213e;
+    --color-footer-text: #b0b0b0;
+    --color-link: #8fa4f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chat-container {
+        height: calc(100vh - 200px);
+    }
+
+    .message-content {
+        max-width: 95%;
+    }
+
+    #send-button {
+        padding: 0.8rem 1.5rem;
+    }
+
+    .navbar-inner {
+        flex-wrap: wrap;
+    }
+
+    .theme-toggle {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}

@@ -1,0 +1,324 @@
+{
+  "restaurants": [
+    {
+      "name": "Puntigamer Brauhaus",
+      "address": "Triester Straße 361, 8055 Graz",
+      "phone": "+43316 297100",
+      "website": null,
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "10:00-23:00",
+        "tuesday": "10:00-23:00",
+        "wednesday": "10:00-23:00",
+        "thursday": "10:00-23:00",
+        "friday": "10:00-23:00",
+        "saturday": "10:00-23:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0298732,
+      "longitude": 15.432385,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Propeller",
+      "address": "Zinzendorfgasse 17, 8010 Graz",
+      "phone": "+43 316 22 50 53",
+      "website": "https://www.propeller.co.at/",
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "wifi"
+      ],
+      "opening_hours": {
+        "monday": "11:00-01:00",
+        "tuesday": "11:00-01:00",
+        "wednesday": "11:00-01:00",
+        "thursday": "11:00-01:00",
+        "friday": "11:00-01:00",
+        "saturday": "11:00-01:00",
+        "sunday": "11:00-01:00"
+      },
+      "summary": "Diese Domain steht zum Verkauf!",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0756757,
+      "longitude": 15.4482614,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "HEINZ burgers",
+      "address": "Liebenauer Hauptstraße 2, 8041 Graz",
+      "phone": "+43 316 47 40 77",
+      "website": "https://www.heinz.st/liebenau.html",
+      "cuisine": [
+        "American"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "11:00-23:00",
+        "tuesday": "11:00-23:00",
+        "wednesday": "11:00-23:00",
+        "thursday": "11:00-23:00",
+        "friday": "11:00-23:00",
+        "saturday": "11:00-23:00",
+        "sunday": "11:00-23:00"
+      },
+      "summary": "Live-Übertragungen, direkt beim Stadion. Wir lieben Burger und Sport. Für dich, deine Buddies und die ganze Familie.",
+      "menu_items": [],
+      "menu_url": "https://www.heinz.st/sportsbar#Sportsbar-Wochenmenu",
+      "latitude": 47.0468523,
+      "longitude": 15.4557529,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Römerstube",
+      "address": "Liebenauer Hauptstraße 103, 8041 Graz",
+      "phone": "+43 316 472 066",
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0382671,
+      "longitude": 15.4619929,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Cuba",
+      "address": "Sankt-Peter-Hauptstraße 25, 8042 Graz",
+      "phone": "+43 316 474731",
+      "website": "https://cuba-stpeter.at/",
+      "cuisine": [
+        "Bar"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "08:00-23:00",
+        "tuesday": "08:00-23:00",
+        "wednesday": "08:00-23:00",
+        "thursday": "08:00-23:00",
+        "friday": "Sa 09:00-24:00",
+        "sunday": "09:00-22:00"
+      },
+      "summary": "Die Cafe Bar Cuba in Graz-St. Peter bietet ein modernes Ambiente, leckere Frühstücksvariationen, Snacks und eine große Auswahl an Cocktails.",
+      "menu_items": [],
+      "menu_url": "https://cuba-stpeter.at/menu",
+      "latitude": 47.0594344,
+      "longitude": 15.4696412,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "San Pietro",
+      "address": "Sankt-Peter-Hauptstraße 141, 8042 Graz",
+      "phone": "+43 316 48 15 81",
+      "website": "http://www.sanpietro.at",
+      "cuisine": [
+        "Italian"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "11:30-22:30",
+        "tuesday": "11:30-22:30",
+        "wednesday": "11:30-22:30",
+        "thursday": "11:30-22:30",
+        "friday": "11:30-22:30",
+        "saturday": "17:00-22:30"
+      },
+      "summary": "Willkommen in Steiermarks 1. Focacceria!",
+      "menu_items": [],
+      "menu_url": "http://www.sanpietro.at/menu",
+      "latitude": 47.0502833,
+      "longitude": 15.4800526,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Philipp",
+      "address": "Krenngasse 38, 8010 Graz",
+      "phone": "+43 316 81 00 33-00",
+      "website": "https://www.konditorei-philipp.at",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "08:00-18:00",
+        "tuesday": "08:00-18:00",
+        "wednesday": "08:00-18:00",
+        "thursday": "08:00-18:00",
+        "friday": "08:00-18:00",
+        "saturday": "08:00-18:00",
+        "sunday": "08:00-18:00"
+      },
+      "summary": "Torten, Kuchen, Pralinen, Pasteten, Schokolade, Eis und vieles mehr: Köstlichkeiten vom Grazer Schillerplatz - jetzt neu mit Online-Shop!",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0678349,
+      "longitude": 15.4605827,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Gösser Bräu",
+      "address": "Neutorgasse 48, 8010 Graz",
+      "phone": "+43 316 82 99 09",
+      "website": "http://www.goesserbraeugraz.at",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "thursday": "11:00-24:00",
+        "friday": "11:00-24:00",
+        "saturday": "11:00-24:00",
+        "sunday": "11:00-23:00",
+        "monday": "11:00-23:00",
+        "tuesday": "11:00-23:00",
+        "wednesday": "11:00-23:00"
+      },
+      "summary": "Ob drinnen oder draußen, Winter oder Sommer, bei uns findet man immer ein Platz‘l um zusammen zu sein.",
+      "menu_items": [],
+      "menu_url": "https://www.goesserbraeugraz.at/?wpdmdl=2478",
+      "latitude": 47.0669485,
+      "longitude": 15.43779,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Nil",
+      "address": "Graz",
+      "phone": "+43 316 671041",
+      "website": "http://nil.mur.at/",
+      "cuisine": [
+        "African"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "15:00+",
+        "tuesday": "15:00+",
+        "wednesday": "15:00+",
+        "thursday": "15:00+",
+        "friday": "15:00+",
+        "saturday": "15:00+",
+        "sunday": "15:00+"
+      },
+      "summary": "kunst- und kommunikationsraum, afrikanisches restaurant mit freiem internetzugang",
+      "menu_items": [],
+      "menu_url": "http://nil.mur.at/catering.html",
+      "latitude": 47.0659601,
+      "longitude": 15.4266559,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Aiola upstairs",
+      "address": "Schloßberg 2, 8010 Graz",
+      "phone": "+43 316 818797",
+      "website": "http://www.aiola.at",
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "09:00-24:00",
+        "tuesday": "09:00-24:00",
+        "wednesday": "09:00-24:00",
+        "thursday": "09:00-24:00",
+        "friday": "09:00-24:00",
+        "saturday": "09:00-24:00",
+        "sunday": "09:00-24:00"
+      },
+      "summary": "Es war 1998 und irgendwo in Graz, als der Bauch von Judith und Gerald Schwarz damit anfing, von einem Wunsch- Ort\n      zu erzählen. Von einem Ort mit ganz vielen tollen Menschen, aufregenden Speisen und Getränken und mit\n      überreichlich Spaß. Es war nur Phantasie, aber es fühlte sich unglaublic",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0740742,
+      "longitude": 15.4375989,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    }
+  ],
+  "scraped_at": "2026-02-16T09:49:11.811095+00:00",
+  "source": "openstreetmap",
+  "count": 10
+}
