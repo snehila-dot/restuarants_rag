@@ -88,7 +88,273 @@
         "sunday": "11:00-23:00"
       },
       "summary": "Live-Übertragungen, direkt beim Stadion. Wir lieben Burger und Sport. Für dich, deine Buddies und die ganze Familie.",
-      "menu_items": [],
+      "menu_items": [
+        {
+          "name": "KNOBLAUCHCREMESUPPE AFGL",
+          "price": "€ 4.90",
+          "category": "Soup"
+        },
+        {
+          "name": "MAISKOLBEN G",
+          "price": "€ 4.90",
+          "category": "Starter"
+        },
+        {
+          "name": "ONION RINGS AG",
+          "price": "€ 6.90",
+          "category": "Starter"
+        },
+        {
+          "name": "CHEESE STICKS ACGM",
+          "price": "€ 7.20",
+          "category": "Starter"
+        },
+        {
+          "name": "CHEESE FRIES G",
+          "price": "€ 6.20",
+          "category": "Starter"
+        },
+        {
+          "name": "BACON CHEESE FRIES G",
+          "price": "€ 7.20",
+          "category": "Starter"
+        },
+        {
+          "name": "CHEESE BURGER ACGMNO",
+          "price": "€ 22.60",
+          "category": "Burger"
+        },
+        {
+          "name": "CLASSIC SMASH BURGER ACGMNO",
+          "price": "€ 19.10",
+          "category": "Burger"
+        },
+        {
+          "name": "BACON CHEESE BURGER ACGMNO",
+          "price": "€ 23.20",
+          "category": "Burger"
+        },
+        {
+          "name": "STEIRER SMASH BURGER ACGMNO",
+          "price": "€ 23.20",
+          "category": "Burger"
+        },
+        {
+          "name": "FARMER BURGER ACGMNO",
+          "price": "€ 19.10",
+          "category": "Burger"
+        },
+        {
+          "name": "DIRTY UMAMI SMASH BURGER ACGMNO",
+          "price": "€ 23.50",
+          "category": "Burger"
+        },
+        {
+          "name": "STEIRER BURGER ACGMNO",
+          "price": "€ 19.10",
+          "category": "Burger"
+        },
+        {
+          "name": "BBQ BURGER ACDEFGLMNOR",
+          "price": "€ 23.50",
+          "category": "Burger"
+        },
+        {
+          "name": "CHILI CHEESE BURGER ACGMNO",
+          "price": "€ 23.50",
+          "category": "Burger"
+        },
+        {
+          "name": "NO LIMIT BURGER ACGMNO",
+          "price": "€ 23.50",
+          "category": "Burger"
+        },
+        {
+          "name": "DIRTY UMAMI BURGER ACGMNO",
+          "price": "€ 23.50",
+          "category": "Burger"
+        },
+        {
+          "name": "FAKIN´CHICKEN BURGER ACGMNO",
+          "price": "€ 16.80",
+          "category": "Burger"
+        },
+        {
+          "name": "SPICY CHICKEN BURGER ACGMNO",
+          "price": "€ 22.40",
+          "category": "Burger"
+        },
+        {
+          "name": "CRUNCHY VEGGIE BURGER ACGLMNO",
+          "price": "€ 16.40",
+          "category": "Burger"
+        },
+        {
+          "name": "CRISPY CHICKEN BURGER ACGMNO",
+          "price": "€ 22.40",
+          "category": "Burger"
+        },
+        {
+          "name": "PULLED PORK CHEESE G",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "BBQ SAUCE ACDEFGLMPR",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "HONEY MUSTARD CM",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "SMOKEY CHILI BBQ M",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "CHILI CHEESE G",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "SAUERRAHM GL",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "COCKTAILCG",
+          "price": "€ 1.50",
+          "category": "Other"
+        },
+        {
+          "name": "SMOKING PIG BURGER ACDEFGLMNOR",
+          "price": "€ 16.80",
+          "category": "Burger"
+        },
+        {
+          "name": "CHEESE PORK BURGER ACGMNO",
+          "price": "€ 16.80",
+          "category": "Burger"
+        },
+        {
+          "name": "CHICKEN QUESADILLA ACGMO",
+          "price": "€ 16.00",
+          "category": "Other"
+        },
+        {
+          "name": "HEINZIS PLATTE FÜR 2 ACDEGHLMOR",
+          "price": "€ 43.00",
+          "category": "Other"
+        },
+        {
+          "name": "HOMEMADE SPARE RIBS ACDFGLMOR",
+          "price": "€ 21.00",
+          "category": "Other"
+        },
+        {
+          "name": "CRISPY CHICKEN QUESADILLA ACGMNO",
+          "price": "€ 16.20",
+          "category": "Other"
+        },
+        {
+          "name": "VEGGIE QUESADILLA ACGMO",
+          "price": "€ 15.50",
+          "category": "Other"
+        },
+        {
+          "name": "HOMEMADE BONELESS WINGS ACDEFGLMPR",
+          "price": "€ 17.20",
+          "category": "Other"
+        },
+        {
+          "name": "BUFFALO CHICKEN WINGS ACDEFGHLMNR",
+          "price": "€ 17.20",
+          "category": "Other"
+        },
+        {
+          "name": "GRILLED CHICKEN CAESAR SALAD ACGM",
+          "price": "€ 16.00",
+          "category": "Salad"
+        },
+        {
+          "name": "GRILLED CHICKEN GARDEN SALAD CGM",
+          "price": "€ 15.70",
+          "category": "Salad"
+        },
+        {
+          "name": "CRISPY CHICKEN SALAD ACGM",
+          "price": "€ 16.70",
+          "category": "Salad"
+        },
+        {
+          "name": "SIDE GARDEN SALAD CGM",
+          "price": "€ 5.20",
+          "category": "Salad"
+        },
+        {
+          "name": "SIDE CAESAR SALAD ACGM",
+          "price": "€ 5.20",
+          "category": "Salad"
+        },
+        {
+          "name": "COLE SLAW SALAD CGMO",
+          "price": "€ 3.90",
+          "category": "Salad"
+        },
+        {
+          "name": "KNOBLAUCHBROT AG",
+          "price": "€ 3.20",
+          "category": "Other"
+        },
+        {
+          "name": "GEBÄCK A",
+          "price": "€ 1.90",
+          "category": "Other"
+        },
+        {
+          "name": "KERNÖL",
+          "price": "€ 1.00",
+          "category": "Other"
+        },
+        {
+          "name": "MOUSSE AU CHOCOLAT TORTE CFGO",
+          "price": "€ 8.30",
+          "category": "Dessert"
+        },
+        {
+          "name": "CHEESECAKE AGEFH",
+          "price": "€ 6.80",
+          "category": "Dessert"
+        },
+        {
+          "name": "MORE IN THE HEMD ACGH",
+          "price": "€ 6.10",
+          "category": "Dessert"
+        },
+        {
+          "name": "EIS MORE IN THE HEMD ACGH",
+          "price": "€ 7.10",
+          "category": "Dessert"
+        },
+        {
+          "name": "EISPALATSCHINKEN ACG",
+          "price": "€ 6.80",
+          "category": "Dessert"
+        },
+        {
+          "name": "MINI EISPALATSCHINKEN ACG",
+          "price": "€ 4.80",
+          "category": "Dessert"
+        },
+        {
+          "name": "ESPRESSO",
+          "price": "€ 3.10",
+          "category": "Drink"
+        }
+      ],
       "menu_url": "https://www.heinz.st/sportsbar#Sportsbar-Wochenmenu",
       "latitude": 47.0468523,
       "longitude": 15.4557529,
@@ -1257,9 +1523,1838 @@
       "data_sources": [
         "openstreetmap"
       ]
+    },
+    {
+      "name": "Jössas",
+      "address": "Stremayrgasse 15, 8010 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Burger"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "10:00-24:00, Sa 16:00+",
+        "tuesday": "10:00-24:00, Sa 16:00+",
+        "wednesday": "10:00-24:00, Sa 16:00+",
+        "thursday": "10:00-24:00, Sa 16:00+",
+        "friday": "10:00-24:00, Sa 16:00+"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0656578,
+      "longitude": 15.4520216,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Corti",
+      "address": "Münzgrabenstraße 17, 8010 Graz",
+      "phone": "+43 316 81 70 80",
+      "website": "http://www.ristorantecorti.at",
+      "cuisine": [
+        "Italian"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating"
+      ],
+      "opening_hours": {
+        "monday": "12:00-15:00, 17:30-24:00",
+        "tuesday": "12:00-15:00, 17:30-24:00",
+        "wednesday": "12:00-15:00, 17:30-24:00",
+        "thursday": "12:00-15:00, 17:30-24:00",
+        "friday": "12:00-15:00, 17:30-24:00",
+        "saturday": "12:00-15:00, 17:30-24:00"
+      },
+      "summary": "Nach einer krankheitsbedingten Pause sind wir ab sofort wieder im Einsatz und freuen uns auf Ihren Besuch!",
+      "menu_items": [
+        {
+          "name": "Tonnato affumicato",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Sardine in Saor",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Vitello Tonnato",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Octopussalat",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Culatello aus Zibello",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Alici marinate",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Bresaola Cavallo",
+          "price": "",
+          "category": "Starter"
+        },
+        {
+          "name": "Pappa pomodoro",
+          "price": "",
+          "category": "Soup"
+        },
+        {
+          "name": "Zuppa di castagne",
+          "price": "",
+          "category": "Soup"
+        },
+        {
+          "name": "Crostini di Polenta imbotti al Forno",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Polenta Gorgonzola",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Polenta Calamari",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Risotto nero alle seppie",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Spaghetti alla vongole",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Trofie",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Penne Salmone",
+          "price": "",
+          "category": "Pasta"
+        },
+        {
+          "name": "Filet Mignon Gorgonzola",
+          "price": "",
+          "category": "Main"
+        },
+        {
+          "name": "Coniglio Umbriaca",
+          "price": "",
+          "category": "Main"
+        },
+        {
+          "name": "Picantina Balsamico",
+          "price": "",
+          "category": "Main"
+        },
+        {
+          "name": "Il pescato del giorni a peso",
+          "price": "",
+          "category": "Main"
+        },
+        {
+          "name": "Panna cotta",
+          "price": "",
+          "category": "Dessert"
+        },
+        {
+          "name": "Tiramisu „Zieh mich hoch“",
+          "price": "",
+          "category": "Dessert"
+        },
+        {
+          "name": "Hausgemachte Tarte",
+          "price": "",
+          "category": "Dessert"
+        }
+      ],
+      "menu_url": "https://ristorantecorti.at/erotikmenue/",
+      "latitude": 47.0648688,
+      "longitude": 15.4483565,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Sorger",
+      "address": "Eggenberger Allee 36, 8020 Graz",
+      "phone": "+43 316 58 61 25 30",
+      "website": "https://sorgerbrot.at/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "06:00-19:00",
+        "tuesday": "06:00-19:00",
+        "wednesday": "06:00-19:00",
+        "thursday": "06:00-19:00",
+        "friday": "06:00-19:00",
+        "saturday": "06:00-13:00",
+        "sunday": "07:00-12:00"
+      },
+      "summary": "Seit Generationen lebt unsere Familie das Handwerk des Brotbackens mit Hingabe und einer über Jahre gewachsenen Philosophie. Gestärkt durch den Rückenwind der Tradition und beflügelt von der Freude am ehrlichen Handwerk.",
+      "menu_items": [
+        {
+          "name": "Rindfleischsuppe Frittaten A C G L",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Rindfleischbällchen mit Currysauce, Karotten Basmatireis A F G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Gemüselasagne mit Paradeisersauce kunterbuntem Salat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Haussalat zum Mittagsgericht",
+          "price": "EUR 3,90",
+          "category": "Other"
+        },
+        {
+          "name": "Karotten-Ingwer-Suppe zum Mittagsgericht O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Käsespätzle mit Röstzwiebel buntem Blattsalat A C G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Brotsuppe zum Mittagsgericht A G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Calamari alla Marinara mit Krautsalat Sesam Focaccia A N O R",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Beluga Linsen-Spinat Curry Süßkartoffelpüree F O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Legierte Grießsuppe zum Mittagsgericht A C G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Grillhuhn mit Bratensaft Erbsenreis G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Kärntner Kasnudeln mit Salbei Buttersauce Vogerlsalat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Petersiliencremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Zanderfilet mit Speckkraut Gemüse Couscous A D G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Polenta Gnocchi mit Gorgonzolasauce Rucola Salat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Rindfleischsuppe Schinken Schöberl A C G L",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Maishendl-Chili mit Käferbohnen Couscous A",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Süßkartoffel-Zucchini-Moussaka mit Paradeisercreme kunterbuntem Salat G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "weiße Zwiebelcremesuppe mit Croutons zum Mittagsgericht A C G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Schweinebraten mit Sauerkraut Semmelknödel A C G M O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "karamellisierte Krautfleckerl mit Schnittlauch Fisolen Salat A O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Erdäpfel-Lauch-Cremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Hendlbällchen „Süß Sauer“ mit Paprika Wasabi Püree A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Gemüse-Gulasch mit Topfenbällchen Vogerlsalat A C G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Pilzcremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Pasta Carbonara mit Parmesan Krautsalat A G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "rotes Curry mit Gemüse, Cashewnüsse Limetten-Basmatireis H F O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Brokkolicremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Hechtbarschfilet mit Kohlgemüse Buttermilch Selleriepüree D G L O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "gefüllte Zucchini mit Pilzen, Frischkäse koreanisches Kimchi A C F G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Grünes Frühstück Avocadocreme, Hummus, Linsen-Curry-Aufstrich, Gartenkresse, Baguette A N",
+          "price": "EUR 9,40",
+          "category": "Other"
+        },
+        {
+          "name": "Amore Mio Bio Ei, Butter, Gartenkresse, Gewürzmischung, Bio Schwarzbrot A C G",
+          "price": "EUR 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "French Toast eingekochte Mango & Himbeeren A C G",
+          "price": "EUR 7,10",
+          "category": "Other"
+        },
+        {
+          "name": "Süße Grüße Butter, Marmelade, Semmel, Sorger Kipferl A G",
+          "price": "EUR 5,10",
+          "category": "Other"
+        },
+        {
+          "name": "Granola Bowl Joghurt, Bäckermüsli, eingekochte Mango & Himbeeren A G H N",
+          "price": "EUR 7,50",
+          "category": "Other"
+        },
+        {
+          "name": "Bio Eier, Gartenkresse, Sahnefrischkäse auf Bagel oder Bio Schwarzbrot (optional mit Selchfleischwürfel, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Spiegelei 2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis ) A C",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Spiegelei 2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Schinken-Käse-Toast Bäcker Toast, Schinken, Käse, Paradeiser-Ketchup A F G",
+          "price": "EUR 5,30",
+          "category": "Other"
+        }
+      ],
+      "menu_url": "https://sorgerbrot.at/filialen/",
+      "latitude": 47.0707123,
+      "longitude": 15.4029608,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Red Corner",
+      "address": "Weinzödl 1, 8046 Graz",
+      "phone": "+43 316 691383",
+      "website": "www.redlodge.at/restaurant-red-corner/",
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "07:30-22:00",
+        "tuesday": "07:30-22:00",
+        "wednesday": "07:30-22:00",
+        "thursday": "07:30-22:00",
+        "friday": "07:30-22:00",
+        "saturday": "08:00-18:00",
+        "sunday": "08:00-18:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.1081014,
+      "longitude": 15.401232,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Welat",
+      "address": "Andritzer Reichsstraße 42a, 8045 Graz",
+      "phone": "+43 316 698703",
+      "website": null,
+      "cuisine": [
+        "Kebab",
+        "Pizza"
+      ],
+      "price_range": "€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "10:00-21:00",
+        "tuesday": "10:00-21:00",
+        "wednesday": "10:00-21:00",
+        "thursday": "10:00-21:00",
+        "friday": "10:00-21:00",
+        "saturday": "10:00-21:00",
+        "sunday": "10:00-21:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.1035928,
+      "longitude": 15.421792,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Kaffee Mühle",
+      "address": "Andritzer Reichsstraße 58, 8045 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "monday": "11:00-22:00",
+        "tuesday": "11:00-22:00",
+        "wednesday": "11:00-22:00",
+        "thursday": "11:00-22:00",
+        "friday": "11:00-22:00",
+        "saturday": "11:00-22:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.105614,
+      "longitude": 15.4208359,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Glöcklbräu",
+      "address": "Glockenspielplatz 2-3, 8010 Graz",
+      "phone": "+43 316 814 781",
+      "website": "https://www.gloecklbraeu.at",
+      "cuisine": [
+        "Austrian",
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "10:30-22:00",
+        "tuesday": "10:30-22:00",
+        "wednesday": "10:30-22:00",
+        "thursday": "10:30-22:00",
+        "friday": "10:30-22:00",
+        "saturday": "10:30-22:00",
+        "sunday": "10:30-17:00"
+      },
+      "summary": "Unser steirisches Wirtshaus befindet am schönen Glockenspielplatz inmitten der Grazer Altstadt. Berühmt für unser exklusiv gebrautes Glöckl Bräu Bier, welches nach altem Rezept aus Holzfässern gezapft wird überzeugen wir auch mit Köstlichkeiten der steirischen Küche aus besten heimischen Landwirtsch",
+      "menu_items": [
+        {
+          "name": "Puntigamer 0,5l",
+          "price": "€ 5,40",
+          "category": "Drink"
+        },
+        {
+          "name": "Glühwein 0,25l",
+          "price": "€ 4,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Getrüffelte Kürbis Linguine",
+          "price": "€ 13,90",
+          "category": "Pasta"
+        },
+        {
+          "name": "Schweinsleber Wiener Art",
+          "price": "€ 11,80",
+          "category": "Main"
+        },
+        {
+          "name": "Kabeljaufilet in Bierbackteig",
+          "price": "€ 15,90",
+          "category": "Main"
+        },
+        {
+          "name": "Bauernschmaus",
+          "price": "€ 19,20",
+          "category": "Main"
+        },
+        {
+          "name": "Wildragout",
+          "price": "€ 20,70",
+          "category": "Main"
+        },
+        {
+          "name": "Rindsuppe",
+          "price": "€ 4,90",
+          "category": "Soup"
+        },
+        {
+          "name": "Hausgemachte Tatar",
+          "price": "€ 13,80",
+          "category": "Other"
+        },
+        {
+          "name": "Leberknödel",
+          "price": "€ 5,90",
+          "category": "Soup"
+        },
+        {
+          "name": "Kaspressknödel",
+          "price": "€ 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "Schweinsbraten",
+          "price": "€ 6,20",
+          "category": "Main"
+        },
+        {
+          "name": "Rindsgulasch",
+          "price": "€ 9,90",
+          "category": "Main"
+        },
+        {
+          "name": "Gemischter Salat",
+          "price": "€ 7,30",
+          "category": "Salad"
+        },
+        {
+          "name": "Käferbohnensalat",
+          "price": "€ 4,70",
+          "category": "Salad"
+        },
+        {
+          "name": "Erdäpfel mit Kernöl",
+          "price": "€ 4,70",
+          "category": "Salad"
+        },
+        {
+          "name": "Kraut mit Kümmel",
+          "price": "€ 4,70",
+          "category": "Salad"
+        },
+        {
+          "name": "Gebackene Hühnerstreifen",
+          "price": "€ 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "Schweinsbraten Burger",
+          "price": "€ 13,60",
+          "category": "Burger"
+        },
+        {
+          "name": "Hausgemachter Apfelstrudel",
+          "price": "€ 8,00",
+          "category": "Dessert"
+        },
+        {
+          "name": "Dreierlei Schokomousse",
+          "price": "€ 9,80",
+          "category": "Dessert"
+        },
+        {
+          "name": "Klassische Strauben",
+          "price": "€ 6,00",
+          "category": "Dessert"
+        },
+        {
+          "name": "Espresso",
+          "price": "€ 2,70",
+          "category": "Drink"
+        },
+        {
+          "name": "Cappuccino",
+          "price": "€ 4,40",
+          "category": "Drink"
+        },
+        {
+          "name": "Latte Macchiato",
+          "price": "€ 4,40",
+          "category": "Drink"
+        },
+        {
+          "name": "Eistee Pfirsich 0,3l",
+          "price": "€ 4,00",
+          "category": "Drink"
+        },
+        {
+          "name": "Coca Cola 0,3l",
+          "price": "€ 4,20",
+          "category": "Drink"
+        },
+        {
+          "name": "Prosecco Villa Sandi 0,2l",
+          "price": "€ 9,00",
+          "category": "Drink"
+        },
+        {
+          "name": "Zweigelt 1/8l",
+          "price": "€ 4,70",
+          "category": "Drink"
+        },
+        {
+          "name": "Holunderspritzer 1/4l",
+          "price": "€ 4,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Almdudler-Spritzer 1/4l",
+          "price": "€ 4,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Weißer Spritzer 1/4l",
+          "price": "€ 3,60",
+          "category": "Drink"
+        }
+      ],
+      "menu_url": "https://www.gloecklbraeu.at/_files/ugd/9fff3f_259d7226c1234c488c20710177956130.pdf",
+      "latitude": 47.0712636,
+      "longitude": 15.4412307,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Buschenschank Sattler",
+      "address": "Rohrbachhöhe 20, 8010 Graz",
+      "phone": "+43 316 391021-10",
+      "website": null,
+      "cuisine": [
+        "Buschenschank"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.1036227,
+      "longitude": 15.5152659,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Gasthaus St. Johann + Paul",
+      "address": "Sankt-Johann-und-Paul 1, 8052 Graz",
+      "phone": "+43 316 573166",
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating"
+      ],
+      "opening_hours": {
+        "monday": "closed"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0509684,
+      "longitude": 15.3814072,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Orthacker",
+      "address": "Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0340387,
+      "longitude": 15.3737325,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Café Pizzeria Rimini",
+      "address": "Peter-Tunner-Gasse 45, 8020 Graz",
+      "phone": "+4366499302403",
+      "website": "https://www.cafepizzeriarimini.at/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "tuesday": "11:00-21:00",
+        "wednesday": "11:00-21:00",
+        "thursday": "11:00-21:00",
+        "friday": "11:00-21:00",
+        "saturday": "11:00-21:00",
+        "sunday": "11:00-21:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.08108,
+      "longitude": 15.4041088,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Steffis Café",
+      "address": "Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "15:00-21:00",
+        "wednesday": "15:00-21:00",
+        "thursday": "15:00-21:00",
+        "friday": "15:00-21:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0642512,
+      "longitude": 15.4696701,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Schillerhof by Martin Auer",
+      "address": "Plüddemanngasse 2, 8010 Graz",
+      "phone": "+43 316 8040 115",
+      "website": "https://www.martinauer.at/filialen/",
+      "cuisine": [
+        "Breakfast",
+        "Sandwich",
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "06:00-19:00",
+        "tuesday": "06:00-19:00",
+        "wednesday": "06:00-19:00",
+        "thursday": "06:00-19:00",
+        "friday": "06:00-19:00",
+        "saturday": "06:30-19:00",
+        "sunday": "07:00-19:00"
+      },
+      "summary": "Hier gibt es eine Übersicht der über 40 Filialen von MARTIN AUER. Der praktische Filialen-Finder führt einen auch gleich hin. Nie war das nächste Brot so nahe.",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0683762,
+      "longitude": 15.4601981,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Big Mamas Southern BBQ",
+      "address": "Petersgasse 116, 8010 Graz",
+      "phone": null,
+      "website": "https://www.big-mamas-southern-bbq-graz.at/",
+      "cuisine": [
+        "Texan"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "11:30-21:15",
+        "tuesday": "11:30-21:15",
+        "wednesday": "11:30-21:15",
+        "thursday": "11:30-21:15",
+        "friday": "11:30-21:15",
+        "sunday": "16:00-21:15"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0601822,
+      "longitude": 15.4631541,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Temmel",
+      "address": "Mitterstraße 1, 8055 Graz",
+      "phone": "+43 316 2958020",
+      "website": "https://temmel.com/portfolio/stammhaus/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "wheelchair_accessible"
+      ],
+      "opening_hours": null,
+      "summary": "Willkommen im Stammhaus Temmel in Puntigam – Genuss mit Tradition seit 1986!",
+      "menu_items": [],
+      "menu_url": "https://temmel.com/portfolio/speisekarte/",
+      "latitude": 47.0282741,
+      "longitude": 15.4329631,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Mostschänke Schloss Lustbühel",
+      "address": "Lustbühelstraße 32, 8042 Graz",
+      "phone": "+43 664 1205662",
+      "website": "http://www.buschenschank.at/Graz/Mostschenke-Schlo%C3%9F-Lustb%C3%BChel",
+      "cuisine": [
+        "Heuriger"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating"
+      ],
+      "opening_hours": {
+        "thursday": "14:00-20:00+",
+        "friday": "14:00-20:00+",
+        "saturday": "14:00-20:00+",
+        "sunday": "14:00-20:00+"
+      },
+      "summary": "Raucher-RaumSitzplätze draußen: 80Sitzplätze drinnen: 70",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0701267,
+      "longitude": 15.4964642,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Cohibar",
+      "address": "Leonhardstraße 3, 8010 Graz",
+      "phone": "+43316 337470",
+      "website": "https://www.cohibar.at",
+      "cuisine": [
+        "Cuban"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "sunday": "17:00-02:00, Fr,Sa 17:00-03:00",
+        "monday": "17:00-02:00, Fr,Sa 17:00-03:00",
+        "tuesday": "17:00-02:00, Fr,Sa 17:00-03:00",
+        "wednesday": "17:00-02:00, Fr,Sa 17:00-03:00",
+        "thursday": "17:00-02:00, Fr,Sa 17:00-03:00"
+      },
+      "summary": "Cohibar Graz: Cafe Bar Cocktailbar und Lounge im Univiertel. Karibisch- kubanisches Flair, angenehme Atmosphäre, klassische Cocktails.",
+      "menu_items": [],
+      "menu_url": "https://www.cohibar.at/cocktails-cigarren-kubanisch-essen/kubanisch-essen-in-graz-cuba-gerichte/",
+      "latitude": 47.0722487,
+      "longitude": 15.4477908,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Reinerhof",
+      "address": "Sackstraße 20, 8010 Graz",
+      "phone": "+43 650 4105109",
+      "website": null,
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating"
+      ],
+      "opening_hours": {
+        "monday": "09:30-01:00, Sa 09:30-01:00",
+        "tuesday": "09:30-01:00, Sa 09:30-01:00",
+        "wednesday": "09:30-01:00, Sa 09:30-01:00",
+        "thursday": "09:30-01:00, Sa 09:30-01:00",
+        "friday": "09:30-01:00, Sa 09:30-01:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0730256,
+      "longitude": 15.4367279,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Asia Wok Royal",
+      "address": "Eggenberger Allee 46, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Chinese"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": {
+        "wednesday": "11:30-22:00",
+        "thursday": "11:30-22:00",
+        "friday": "11:30-22:00",
+        "saturday": "11:30-22:00",
+        "sunday": "11:30-22:00",
+        "monday": "11:30-22:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0708952,
+      "longitude": 15.4014928,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Gaisberg Stubn",
+      "address": "Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.066591,
+      "longitude": 15.3860316,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Kreuzwirt",
+      "address": "Annaplatz 2, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Restaurant"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0797134,
+      "longitude": 15.396272,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Bokan",
+      "address": "Mainersbergstraße 2, 8051 Graz",
+      "phone": "+43 316 571 434",
+      "website": "https://www.bokan-exclusiv.at/restaurant--bar",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": null,
+      "summary": "Mittags oder abends lockt das Restaurant in Graz zu einer gemütlichen Einkehr! Genießen Sie saisonale Spezialitäten aus der Küche! Jetzt Tisch reservieren!",
+      "menu_items": [
+        {
+          "name": "Menüpreis :",
+          "price": "EUR 11,60",
+          "category": "Other"
+        }
+      ],
+      "menu_url": "https://www.bokan-exclusiv.at/speisekarte--menue",
+      "latitude": 47.0850104,
+      "longitude": 15.4052994,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Cafe Sorger",
+      "address": "Südtiroler Platz 14, 8020 Graz",
+      "phone": "+43 316 714131-11",
+      "website": "https://www.sorgerbrot.at/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible"
+      ],
+      "opening_hours": {
+        "monday": "07:00-18:30",
+        "tuesday": "07:00-18:30",
+        "wednesday": "07:00-18:30",
+        "thursday": "07:00-18:30",
+        "friday": "07:00-18:30",
+        "saturday": "07:00-15:00",
+        "sunday": "08:00-15:00"
+      },
+      "summary": "Seit Generationen lebt unsere Familie das Handwerk des Brotbackens mit Hingabe und einer über Jahre gewachsenen Philosophie. Gestärkt durch den Rückenwind der Tradition und beflügelt von der Freude am ehrlichen Handwerk.",
+      "menu_items": [
+        {
+          "name": "Rindfleischsuppe Frittaten A C G L",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Rindfleischbällchen mit Currysauce, Karotten Basmatireis A F G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Gemüselasagne mit Paradeisersauce kunterbuntem Salat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Haussalat zum Mittagsgericht",
+          "price": "EUR 3,90",
+          "category": "Other"
+        },
+        {
+          "name": "Karotten-Ingwer-Suppe zum Mittagsgericht O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Käsespätzle mit Röstzwiebel buntem Blattsalat A C G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Brotsuppe zum Mittagsgericht A G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Calamari alla Marinara mit Krautsalat Sesam Focaccia A N O R",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Beluga Linsen-Spinat Curry Süßkartoffelpüree F O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Legierte Grießsuppe zum Mittagsgericht A C G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Grillhuhn mit Bratensaft Erbsenreis G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Kärntner Kasnudeln mit Salbei Buttersauce Vogerlsalat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Petersiliencremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Zanderfilet mit Speckkraut Gemüse Couscous A D G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Polenta Gnocchi mit Gorgonzolasauce Rucola Salat A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Rindfleischsuppe Schinken Schöberl A C G L",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Maishendl-Chili mit Käferbohnen Couscous A",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Süßkartoffel-Zucchini-Moussaka mit Paradeisercreme kunterbuntem Salat G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "weiße Zwiebelcremesuppe mit Croutons zum Mittagsgericht A C G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Schweinebraten mit Sauerkraut Semmelknödel A C G M O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "karamellisierte Krautfleckerl mit Schnittlauch Fisolen Salat A O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Erdäpfel-Lauch-Cremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Hendlbällchen „Süß Sauer“ mit Paprika Wasabi Püree A C G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Gemüse-Gulasch mit Topfenbällchen Vogerlsalat A C G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Pilzcremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Pasta Carbonara mit Parmesan Krautsalat A G O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "rotes Curry mit Gemüse, Cashewnüsse Limetten-Basmatireis H F O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Brokkolicremesuppe zum Mittagsgericht G O",
+          "price": "EUR 2,10",
+          "category": "Other"
+        },
+        {
+          "name": "Hechtbarschfilet mit Kohlgemüse Buttermilch Selleriepüree D G L O",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "gefüllte Zucchini mit Pilzen, Frischkäse koreanisches Kimchi A C F G",
+          "price": "EUR 11,90",
+          "category": "Other"
+        },
+        {
+          "name": "Grünes Frühstück Avocadocreme, Hummus, Linsen-Curry-Aufstrich, Gartenkresse, Baguette A N",
+          "price": "EUR 9,40",
+          "category": "Other"
+        },
+        {
+          "name": "Amore Mio Bio Ei, Butter, Gartenkresse, Gewürzmischung, Bio Schwarzbrot A C G",
+          "price": "EUR 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "French Toast eingekochte Mango & Himbeeren A C G",
+          "price": "EUR 7,10",
+          "category": "Other"
+        },
+        {
+          "name": "Süße Grüße Butter, Marmelade, Semmel, Sorger Kipferl A G",
+          "price": "EUR 5,10",
+          "category": "Other"
+        },
+        {
+          "name": "Granola Bowl Joghurt, Bäckermüsli, eingekochte Mango & Himbeeren A G H N",
+          "price": "EUR 7,50",
+          "category": "Other"
+        },
+        {
+          "name": "Bio Eier, Gartenkresse, Sahnefrischkäse auf Bagel oder Bio Schwarzbrot (optional mit Selchfleischwürfel, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Spiegelei 2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis ) A C",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Spiegelei 2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "2 Bio Eier, Gartenkresse, Handkaisersemmel oder Bio Schwarzbrot (optional mit Schinken, Aufpreis )",
+          "price": "EUR 0,80",
+          "category": "Other"
+        },
+        {
+          "name": "Schinken-Käse-Toast Bäcker Toast, Schinken, Käse, Paradeiser-Ketchup A F G",
+          "price": "EUR 5,30",
+          "category": "Other"
+        }
+      ],
+      "menu_url": "https://sorgerbrot.at/filialen/",
+      "latitude": 47.071113,
+      "longitude": 15.4326595,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Deutsch",
+      "address": "Radetzkystraße 13, 8010 Graz",
+      "phone": null,
+      "website": "https://vuyo.me/de-view.php?seo=cafe-konditorei-deutsch-554135",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "07:00-20:00",
+        "tuesday": "07:00-20:00",
+        "wednesday": "07:00-20:00",
+        "thursday": "07:00-20:00",
+        "friday": "07:00-20:00",
+        "saturday": "08:00-18:00"
+      },
+      "summary": "Zum MitnehmenSpeisen vor OrtLieferdienstServiceoptionen",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0663875,
+      "longitude": 15.4394936,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "eat Asia",
+      "address": "Radetzkystraße 6, 8010 Graz",
+      "phone": "+43 316 9028 92",
+      "website": null,
+      "cuisine": [
+        "Asian"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegan_options",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "tuesday": "11:00-22:00",
+        "wednesday": "11:00-22:00",
+        "thursday": "11:00-22:00",
+        "friday": "11:00-22:00",
+        "saturday": "11:00-22:00",
+        "sunday": "11:00-22:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0668002,
+      "longitude": 15.4405871,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Stix II",
+      "address": "Andreas-Hofer-Platz, 8010 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [],
+      "opening_hours": null,
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.069182,
+      "longitude": 15.4361446,
+      "data_sources": [
+        "openstreetmap"
+      ]
+    },
+    {
+      "name": "Der Steirer",
+      "address": "Belgiergasse 1, 8020 Graz",
+      "phone": "+43 316 703 654",
+      "website": "https://www.der-steirer.at/",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegetarian_options"
+      ],
+      "opening_hours": {
+        "monday": "11:00-24:00",
+        "tuesday": "11:00-24:00",
+        "wednesday": "11:00-24:00",
+        "thursday": "11:00-24:00",
+        "friday": "11:00-24:00",
+        "saturday": "11:00-24:00",
+        "sunday": "11:00-24:00"
+      },
+      "summary": "DER STEIRER bietet Steirisches mit all seinen unverwechselbaren Gaumenfreuden – traditionell und unverfälscht, von Kaisers Zeiten bis heute.",
+      "menu_items": [
+        {
+          "name": "Suppe und Hauptspeise  Tagesgericht  Tagessuppe",
+          "price": "EUR 14,00",
+          "category": "Drink"
+        },
+        {
+          "name": "Suppe und Hauptspeise",
+          "price": "EUR 14,00",
+          "category": "Drink"
+        },
+        {
+          "name": "Tagesgericht",
+          "price": "EUR 12,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Tagessuppe",
+          "price": "EUR 1,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Der Sonntagsbraten am 14.02. & 15.02.2026 Roastbeef mit Erdäpfelpürre und grünen Bohnen (GM)",
+          "price": "EUR 25,50",
+          "category": "Drink"
+        },
+        {
+          "name": "Brotkorb (A)  Butter und Aufstrich (A,G)",
+          "price": "EUR 3,00",
+          "category": "Other"
+        },
+        {
+          "name": "Beef Tatar vom Jungbullen mit Trüffelbutter, Toast und Wachtelei (A,C,G,L,M,O)",
+          "price": "EUR 21,50",
+          "category": "Other"
+        },
+        {
+          "name": "Kalt geräuchertes Lachsforellenfilet auf Avocadomousse und Limettenespuma (D,G,L,M,O)",
+          "price": "EUR 19,00",
+          "category": "Other"
+        },
+        {
+          "name": "Knackige Blattsalate mit Apfelessig und Backhendlstreifen (A,C,G,M,O)",
+          "price": "EUR 18,50",
+          "category": "Other"
+        },
+        {
+          "name": "Unser Steirersalat Blattsalat mit Käferbohnen, Kraut Erdäpfelsalat in Kernöl (M,O)",
+          "price": "EUR 7,90",
+          "category": "Other"
+        },
+        {
+          "name": "Vogerl oder Endiviensalat, Kernöldressing, gebratenem Speck, Erdapfel und Ei (C,L,M,O)",
+          "price": "EUR 10,50",
+          "category": "Other"
+        },
+        {
+          "name": "Rindsuppe wahlweise mit Grießnockerl, Leberknödel, Frittaten oder Fleischstrudel (A,C,G,L,O)",
+          "price": "EUR 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "Rote Rübenschaumsuppe mit Joghurt-Krennockerl (G,L,M,O)",
+          "price": "EUR 7,50",
+          "category": "Other"
+        },
+        {
+          "name": "Faschierte Laibchen mit Erdäpfelpüree (A,C,G,L,O)",
+          "price": "EUR 18,00",
+          "category": "Other"
+        },
+        {
+          "name": "Das beste Rindsgulasch nach traditioneller Rezeptur, dazu Polenta (A,C,G,L,O)",
+          "price": "EUR 16,50",
+          "category": "Other"
+        },
+        {
+          "name": "Das Steirerpfandl Saftiges Geschnetzeltes von der Pute mit Speckstreifen, Schwammerln und dazu Butterspätzle (A,C,G,L,O)",
+          "price": "EUR 19,50",
+          "category": "Other"
+        },
+        {
+          "name": "Hecken-Klescher Rostbraten geschmort mit Schwarzen Nüssen, cremiger Speckpolenta und grünen Bohnen (A,C,G,H,L,M,O)",
+          "price": "EUR 28,50",
+          "category": "Other"
+        },
+        {
+          "name": "Unser ofenfrischer Schweinsbraten (Mo-So ab 18:00) mit Semmelknödelschnitte, dazu warmer Krautsalat (A,C,G)",
+          "price": "EUR 19,00",
+          "category": "Other"
+        },
+        {
+          "name": "Das ECHTE Wiener Schnitzel vom Kalb",
+          "price": "EUR 28,90",
+          "category": "Other"
+        },
+        {
+          "name": "Das Wiener Schnitzel vom Schwein goldbraun gebacken, dazu Petersilienerdäpfel und Preiselbeeren (A,C,G)",
+          "price": "EUR 19,90",
+          "category": "Other"
+        },
+        {
+          "name": "Pouladenbrust mit Gänseleber gefüllt an cremigen Tagliolini und glaciertem Wildapfel (A,C,G,L,O)",
+          "price": "EUR 28,50",
+          "category": "Other"
+        },
+        {
+          "name": "Schweinsmedaillons im Speckmantel, mit grüner Pfeffersauce, Erdapfel-Trüffelroulade und wildem Brokkoli (A,C,G,L,M,O)",
+          "price": "EUR 29,50",
+          "category": "Other"
+        },
+        {
+          "name": "Bachsaiblingsfilet in Butterschmalz gebraten mit rosa Pfefferbeeren-Wildreisrisotto und Artischokenherzen (D,G,L,M,O)",
+          "price": "EUR 28,00",
+          "category": "Other"
+        },
+        {
+          "name": "Lachssteak mit Limettensauce, Safran Couscous und Lila Karfiol (A,D,G,L,O)",
+          "price": "EUR 26,50",
+          "category": "Other"
+        },
+        {
+          "name": "Heimischer Rehrücken zartrosa gebraten mit Pilzsauce, Rotkrautstrudel und glacierter Maroni (A,C,G,L,M,O)",
+          "price": "EUR 31,50",
+          "category": "Other"
+        },
+        {
+          "name": "Gegrillte Kräutersaitlinge mit Walnussöl auf Hokkaido-Püree und Mini Maiskolben (H,L,M,O) vegan",
+          "price": "EUR 18,50",
+          "category": "Other"
+        },
+        {
+          "name": "Crème brûlée mit Blutorangeneis (C,G,O)",
+          "price": "EUR 9,10",
+          "category": "Other"
+        },
+        {
+          "name": "Hausgemachter Apfelstrudel (A,C,G,H,O)",
+          "price": "EUR 5,90",
+          "category": "Other"
+        },
+        {
+          "name": "Tonkabohnenmousse-Törtchen mit Kumquartkonfit (A,C,G,H,O)",
+          "price": "EUR 9,50",
+          "category": "Other"
+        },
+        {
+          "name": "Topfenknödel in Walnussbrösel mit Beerenröster (A,C,G,H,O)",
+          "price": "EUR 10,50",
+          "category": "Other"
+        },
+        {
+          "name": "Bananen-Stracciatella Parfait mit Karamell (C,G,H,O)",
+          "price": "EUR 9,00",
+          "category": "Other"
+        },
+        {
+          "name": "STEIRER EDITION Fl.  Steirer ‚Brut Rosé‘ (O) 0,1l  Steirer ‚Brut Muskateller‘ (O) 0,1l",
+          "price": "EUR 45,00",
+          "category": "Drink"
+        },
+        {
+          "name": "STRAUS Welschriesling (O) Südsteiermark DAC Fl.  1/8",
+          "price": "EUR 27.00",
+          "category": "Drink"
+        },
+        {
+          "name": "BROLLI Arkadenhof Scheurebe-Sämling (O) Gamlitz, Steiermark Fl.  1/8",
+          "price": "EUR 35,40",
+          "category": "Drink"
+        },
+        {
+          "name": "TSCHERMONEGG Gelber Muskateller (O) Südoststeiermark Fl.  1/8",
+          "price": "EUR 39.00",
+          "category": "Drink"
+        },
+        {
+          "name": "ELSNEGG Weißburgunder Klassik (O) Südoststeiermark DAC Fl.  1/8",
+          "price": "EUR 35.90",
+          "category": "Drink"
+        },
+        {
+          "name": "STIEGELMAR Chardonnay (O) Fl.  1/8",
+          "price": "EUR 41.40",
+          "category": "Drink"
+        },
+        {
+          "name": "WOHLMUTH Sauvignon Blanc Stmk DAC  (O) Fl.  1/8",
+          "price": "EUR 39.00",
+          "category": "Drink"
+        },
+        {
+          "name": "SCHMÖLZER Sauvignon Blanc Gaisriegl (O) Fl.  1/8 EURO 7.50",
+          "price": "EUR 45.00",
+          "category": "Drink"
+        },
+        {
+          "name": "SCHWARZ Grauburgunder Hochberg (O) Südsteiermark DAC Fl.  1/8",
+          "price": "EUR 45.00",
+          "category": "Drink"
+        },
+        {
+          "name": "STIEGELMAR Cuveé Heideboden 2019 (O) Fl.  1/8  PITTNAUER Mythos Pannonia (O) Fl.  1/8",
+          "price": "EUR 45.00",
+          "category": "Drink"
+        },
+        {
+          "name": "STIEGELMAR Cuveé Heideboden 2019 (O) Fl.  1/8",
+          "price": "EUR 45.00",
+          "category": "Drink"
+        },
+        {
+          "name": "PITTNAUER Mythos Pannonia (O) Fl.  1/8",
+          "price": "EUR 45.00",
+          "category": "Drink"
+        },
+        {
+          "name": "STIEGELMAR Beerenauslese 0,375l (O) Fl.  1/16  HUTTER Cuvée F.J.H. (O) Fl.  1/8",
+          "price": "EUR 41.40",
+          "category": "Drink"
+        },
+        {
+          "name": "STIEGELMAR Beerenauslese 0,375l (O) Fl.  1/16",
+          "price": "EUR 41.40",
+          "category": "Drink"
+        },
+        {
+          "name": "HUTTER Cuvée F.J.H. (O) Fl.  1/8",
+          "price": "EUR 41.40",
+          "category": "Drink"
+        },
+        {
+          "name": "THALLER Blauer Zweigelt (O) Fl.  1/8  IGLER Blaufränkisch 2021 (O) Fl.  1/8",
+          "price": "EUR 35.40",
+          "category": "Drink"
+        },
+        {
+          "name": "THALLER Blauer Zweigelt (O) Fl.  1/8",
+          "price": "EUR 35.40",
+          "category": "Drink"
+        },
+        {
+          "name": "IGLER Blaufränkisch 2021 (O) Fl.  1/8",
+          "price": "EUR 41,40",
+          "category": "Drink"
+        }
+      ],
+      "menu_url": "https://www.der-steirer.at/#steirer-menue",
+      "latitude": 47.0694638,
+      "longitude": 15.4343741,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Kaffee Weitzer",
+      "address": "Grieskai 12, 8020 Graz",
+      "phone": "+43316703400",
+      "website": "http://www.hotelweitzer.com/en/the-hotel/kaffee-weitzer/",
+      "cuisine": [
+        "Cafe"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "wheelchair_accessible",
+        "vegetarian_options",
+        "wifi"
+      ],
+      "opening_hours": {
+        "monday": "07:00-19:00",
+        "tuesday": "07:00-19:00",
+        "wednesday": "07:00-19:00",
+        "thursday": "07:00-19:00",
+        "friday": "07:00-19:00",
+        "saturday": "09:00-19:00",
+        "sunday": "09:00-19:00"
+      },
+      "summary": "Hotel in the Old Town of Graz – 201 well‑appointed rooms, a rooftop sauna, perfectly located in the heart of the old town, right by the Mur River and just steps from the Schlossberg. The House of the City since 1910.",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0694626,
+      "longitude": 15.4345258,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Mangolds",
+      "address": "Griesgasse 11, 8020 Graz",
+      "phone": "+43 316 71 80 02",
+      "website": "https://www.mangolds.com/restaurant-cafe/mangolds-griesgasse/",
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "vegan_options",
+        "vegetarian_options",
+        "wifi",
+        "delivery",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "11:30-18:00",
+        "tuesday": "11:30-18:00",
+        "wednesday": "11:30-18:00",
+        "thursday": "11:30-18:00",
+        "friday": "11:30-18:00",
+        "saturday": "11:30-17:00"
+      },
+      "summary": "Mangolds Selbstbedienungs-Restaurant & Café in der Griesgasse 11 in Graz.❣️Alles frisch gekocht und hausgemacht ➡️ Zutaten: Bio, Vollwert & aus der Region",
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0698974,
+      "longitude": 15.4341606,
+      "data_sources": [
+        "openstreetmap",
+        "website"
+      ]
+    },
+    {
+      "name": "Gasthof Zum Bayernbrunnen",
+      "address": "Baiernstraße 102, 8020 Graz",
+      "phone": null,
+      "website": null,
+      "cuisine": [
+        "Regional"
+      ],
+      "price_range": "€€",
+      "rating": null,
+      "review_count": 0,
+      "features": [
+        "outdoor_seating",
+        "takeaway"
+      ],
+      "opening_hours": {
+        "monday": "09:00-23:00",
+        "tuesday": "09:00-23:00",
+        "wednesday": "09:00-23:00",
+        "thursday": "09:00-23:00",
+        "friday": "09:00-23:00",
+        "saturday": "09:00-15:00"
+      },
+      "summary": null,
+      "menu_items": [],
+      "menu_url": null,
+      "latitude": 47.0645313,
+      "longitude": 15.3872757,
+      "data_sources": [
+        "openstreetmap"
+      ]
     }
   ],
-  "scraped_at": "2026-02-16T11:55:18.490509+00:00",
+  "scraped_at": "2026-02-16T14:00:38.743975+00:00",
   "source": "openstreetmap",
-  "count": 30
+  "count": 60
 }

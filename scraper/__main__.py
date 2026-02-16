@@ -2,16 +2,23 @@
 
 Usage::
 
-    python -m scraper                       # OSM data only
-    python -m scraper --enrich              # Also scrape restaurant websites
-    python -m scraper --enrich --enrich-js  # + Playwright for JS-rendered menus
+    python -m scraper                                    # OSM data only
+    python -m scraper --enrich                           # Also scrape restaurant websites
+    python -m scraper --enrich --enrich-js               # + Playwright for JS-rendered menus
+    python -m scraper --enrich --enrich-vision           # + GPT-4o vision for PDF/image menus
+    python -m scraper --enrich --enrich-js --enrich-vision  # All extraction methods
     python -m scraper --output-dir data/
 """
 
 import argparse
 import asyncio
 import logging
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from scraper.output import write_clean, write_raw
 from scraper.overpass import scrape as scrape_overpass
@@ -44,6 +51,7 @@ def _deduplicate(restaurants: list[dict]) -> list[dict]:
 async def run(
     enrich: bool = False,
     enrich_js: bool = False,
+    enrich_vision: bool = False,
     output_dir: str = "data",
     limit: int = 0,
 ) -> None:
@@ -89,9 +97,30 @@ async def run(
 
     # --- Step 5: Enrich (optional) --------------------------------------------
     if enrich:
-        mode = "BS4 + Playwright" if enrich_js else "BS4 only"
+        modes = ["BS4"]
+        if enrich_js:
+            modes.append("Playwright")
+        if enrich_vision:
+            modes.append("Vision")
+        mode = " + ".join(modes)
         logger.info("Step 5/6: Enriching from restaurant websites (%s) …", mode)
-        restaurants = await enrich_restaurants(restaurants, use_playwright=enrich_js)
+
+        # Resolve OpenAI API key for vision extraction
+        openai_key: str | None = None
+        if enrich_vision:
+            openai_key = os.environ.get("OPENAI_API_KEY", "")
+            if not openai_key:
+                logger.warning(
+                    "OPENAI_API_KEY not set — vision extraction will be skipped. "
+                    "Set it in .env or export it before running."
+                )
+
+        restaurants = await enrich_restaurants(
+            restaurants,
+            use_playwright=enrich_js,
+            use_vision=enrich_vision,
+            openai_api_key=openai_key,
+        )
     else:
         logger.info("Step 5/6: Skipping website enrichment (use --enrich to enable)")
 
@@ -178,6 +207,14 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--enrich-vision",
+        action="store_true",
+        help=(
+            "Use GPT-4o-mini vision API to extract menus from PDF and image"
+            " files (requires OPENAI_API_KEY env variable)."
+        ),
+    )
+    parser.add_argument(
         "--output-dir",
         default="data",
         help="Output directory for JSON files (default: data/).",
@@ -192,11 +229,14 @@ def main() -> None:
 
     if args.enrich_js and not args.enrich:
         parser.error("--enrich-js requires --enrich")
+    if args.enrich_vision and not args.enrich:
+        parser.error("--enrich-vision requires --enrich")
 
     asyncio.run(
         run(
             enrich=args.enrich,
             enrich_js=args.enrich_js,
+            enrich_vision=args.enrich_vision,
             output_dir=args.output_dir,
             limit=args.limit,
         )

@@ -147,16 +147,35 @@ def _extract_summary(soup: BeautifulSoup) -> str | None:
 
 
 def _find_menu_url(soup: BeautifulSoup, base_url: str) -> str | None:
-    """Return the absolute URL of the first menu-like link found."""
+    """Return the absolute URL of the first HTML menu-like link found."""
     for a_tag in soup.find_all("a", href=True):
         href = str(a_tag["href"])
         text = a_tag.get_text(strip=True).lower()
         combined = f"{href.lower()} {text}"
         if any(kw in combined for kw in _MENU_KEYWORDS):
-            # Skip anchors that point to PDFs / images
-            if any(href.lower().endswith(ext) for ext in (".pdf", ".jpg", ".png")):
+            # Skip anchors that point to PDFs / images (handled by vision)
+            if any(
+                href.lower().split("?")[0].endswith(ext)
+                for ext in (".pdf", ".jpg", ".jpeg", ".png", ".webp")
+            ):
                 continue
             return urljoin(base_url, href)
+    return None
+
+
+def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
+    """Return the absolute URL of the first PDF/image menu link found."""
+    for a_tag in soup.find_all("a", href=True):
+        href = str(a_tag["href"])
+        text = a_tag.get_text(strip=True).lower()
+        combined = f"{href.lower()} {text}"
+        if any(kw in combined for kw in _MENU_KEYWORDS):
+            clean_href = href.lower().split("?")[0]
+            if any(
+                clean_href.endswith(ext)
+                for ext in (".pdf", ".jpg", ".jpeg", ".png", ".webp")
+            ):
+                return urljoin(base_url, href)
     return None
 
 
@@ -408,15 +427,21 @@ async def _scrape_menu_playwright(
 async def scrape_restaurant_website(
     url: str,
     client: httpx.AsyncClient,
+    *,
+    use_vision: bool = False,
+    openai_api_key: str | None = None,
 ) -> dict[str, Any] | None:
     """Fetch a restaurant website and extract summary + menu data.
 
     If the homepage links to a dedicated menu page, that page is also
     fetched and parsed for menu items.
 
+    When *use_vision* is True, PDF and image menu links are downloaded
+    and processed via GPT-4o-mini vision as a final fallback.
+
     Returns:
-        Dict with ``summary``, ``menu_items``, and ``menu_url`` keys,
-        or ``None`` on failure.
+        Dict with ``summary``, ``menu_items``, ``menu_url``, and
+        ``menu_file_url`` keys, or ``None`` on failure.
     """
     soup = await _fetch_html(client, url)
     if soup is None:
@@ -424,6 +449,7 @@ async def scrape_restaurant_website(
 
     summary = _extract_summary(soup)
     menu_url = _find_menu_url(soup, url)
+    menu_file_url = _find_menu_file_url(soup, url)
 
     # Try extracting menu items from the homepage first
     menu_items = _extract_menu_items_from_soup(soup)
@@ -438,10 +464,26 @@ async def scrape_restaurant_website(
             if len(menu_page_items) > len(menu_items):
                 menu_items = menu_page_items
 
+    # --- Vision fallback for PDF/image menus ---
+    if use_vision and len(menu_items) < 3 and menu_file_url:
+        from scraper.menu_vision import extract_menu_from_file_url
+
+        logger.info("  → Vision extraction for %s", menu_file_url)
+        await asyncio.sleep(1)
+        try:
+            vision_items = await extract_menu_from_file_url(
+                menu_file_url, client, api_key=openai_api_key
+            )
+            if len(vision_items) > len(menu_items):
+                menu_items = vision_items
+        except Exception:
+            logger.debug("Vision extraction failed for %s", menu_file_url, exc_info=True)
+
     return {
         "summary": summary,
         "menu_items": menu_items,
-        "menu_url": menu_url,
+        "menu_url": menu_url or menu_file_url,
+        "menu_file_url": menu_file_url,
     }
 
 
@@ -449,6 +491,8 @@ async def enrich_restaurants(
     restaurants: list[dict[str, Any]],
     *,
     use_playwright: bool = False,
+    use_vision: bool = False,
+    openai_api_key: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetch each restaurant's website and merge extracted data in-place.
 
@@ -460,9 +504,15 @@ async def enrich_restaurants(
     launched once and used as a fallback for any restaurant where the
     static BS4 pass found fewer than 3 menu items but a menu URL exists.
 
+    When *use_vision* is ``True``, PDF and image menu links are
+    downloaded and processed via GPT-4o-mini vision API. Requires
+    an OpenAI API key (via *openai_api_key* or ``OPENAI_API_KEY`` env).
+
     Args:
         restaurants: List of restaurant dicts (modified in place).
         use_playwright: Enable Playwright JS-rendering fallback.
+        use_vision: Enable GPT-4o vision extraction for PDF/image menus.
+        openai_api_key: OpenAI API key for vision extraction.
 
     Returns:
         The same list with enriched data where available.
@@ -471,6 +521,7 @@ async def enrich_restaurants(
     enriched_count = 0
     menu_count = 0
     pw_count = 0
+    vision_count = 0
 
     # Optionally launch Playwright browser
     browser: Browser | None = None
@@ -511,7 +562,12 @@ async def enrich_restaurants(
                 logger.info("Enriching %d/%d: %s", idx, total, name)
 
                 try:
-                    result = await scrape_restaurant_website(url, client)
+                    result = await scrape_restaurant_website(
+                        url,
+                        client,
+                        use_vision=use_vision,
+                        openai_api_key=openai_api_key,
+                    )
                 except Exception:
                     logger.warning("Unexpected error scraping %s", url, exc_info=True)
                     result = None
@@ -547,6 +603,9 @@ async def enrich_restaurants(
                 if menu_items:
                     restaurant["menu_items"] = menu_items
                     menu_count += 1
+                    # Track if vision was used for this restaurant
+                    if result.get("menu_file_url") and use_vision:
+                        vision_count += 1
 
                 # Track that we enriched from the website
                 sources = restaurant.get("data_sources", [])
@@ -565,13 +624,18 @@ async def enrich_restaurants(
         if pw_context is not None:
             await pw_context.__aexit__(None, None, None)
 
-    pw_msg = f", {pw_count} via Playwright" if use_playwright else ""
+    extra_parts: list[str] = []
+    if use_playwright:
+        extra_parts.append(f"{pw_count} via Playwright")
+    if use_vision:
+        extra_parts.append(f"{vision_count} via Vision")
+    extra_msg = f" ({', '.join(extra_parts)})" if extra_parts else ""
     logger.info(
         "Website enrichment complete: %d/%d restaurants enriched, "
         "%d with menu items%s",
         enriched_count,
         total,
         menu_count,
-        pw_msg,
+        extra_msg,
     )
     return restaurants
