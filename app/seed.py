@@ -82,6 +82,8 @@ async def seed_from_json(file_path: str) -> None:
                 address=entry["address"],
                 phone=entry.get("phone"),
                 website=entry.get("website"),
+                facebook_url=entry.get("facebook_url"),
+                instagram_url=entry.get("instagram_url"),
                 cuisine=entry.get("cuisine", []),
                 price_range=entry.get("price_range", "€€"),
                 rating=entry.get("rating"),

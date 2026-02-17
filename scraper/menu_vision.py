@@ -375,6 +375,139 @@ async def extract_menu_from_file_url(
         return []
 
 
+async def extract_menu_from_page_images(
+    soup: "BeautifulSoup",
+    page_url: str,
+    http_client: httpx.AsyncClient,
+    api_key: str | None = None,
+    model: str = "gpt-4o-mini",
+    max_images: int = 6,
+) -> list[dict[str, str]]:
+    """Extract menu items from <img> tags embedded on a menu page.
+
+    Many restaurants display their menu as photographs of physical menu
+    cards (e.g. San Pietro).  This function finds likely menu images on
+    the page, downloads them, and sends each to the vision API.
+
+    Args:
+        soup: Parsed HTML of the menu page.
+        page_url: Base URL for resolving relative image paths.
+        http_client: Async HTTP client for downloading images.
+        api_key: OpenAI API key.
+        model: Vision-capable model to use.
+        max_images: Maximum number of images to process (cost control).
+
+    Returns:
+        List of ``{"name": …, "price": …, "category": …}`` dicts.
+    """
+    from urllib.parse import urljoin
+
+    key = api_key or os.environ.get("OPENAI_API_KEY", "")
+    if not key:
+        logger.warning("No OpenAI API key — cannot use vision extraction")
+        return []
+
+    # Find candidate menu images: large images on the page that look like
+    # menu cards (by filename, alt text, or size)
+    _menu_img_hints = (
+        "menu", "speisekarte", "karte", "tageskarte", "abendkarte",
+        "mittagskarte", "dessert", "nachmittag", "wochenmenu",
+        "speisen", "gerichte",
+    )
+    _skip_patterns = (
+        "logo", "icon", "favicon", "banner", "header", "footer",
+        "facebook", "google", "twitter", "instagram", "avatar",
+        "placeholder", "spinner", "loading",
+    )
+
+    candidates: list[str] = []
+    for img in soup.find_all("img", src=True):
+        src = str(img.get("src", ""))
+        alt = str(img.get("alt", "")).lower()
+        src_lower = src.lower()
+
+        # Skip obvious non-menu images
+        if any(skip in src_lower or skip in alt for skip in _skip_patterns):
+            continue
+
+        # Skip tiny images (tracking pixels, icons)
+        width = img.get("width")
+        height = img.get("height")
+        if width and height:
+            try:
+                if int(width) < 200 or int(height) < 200:
+                    continue
+            except ValueError:
+                pass
+
+        # Skip non-image extensions
+        clean_src = src_lower.split("?")[0]
+        if not any(
+            clean_src.endswith(ext)
+            for ext in (".jpg", ".jpeg", ".png", ".webp")
+        ):
+            continue
+
+        # Prioritize images with menu-related filenames/alt text
+        is_menu_hint = any(
+            hint in src_lower or hint in alt for hint in _menu_img_hints
+        )
+
+        if is_menu_hint:
+            candidates.insert(0, urljoin(page_url, src))
+        else:
+            candidates.append(urljoin(page_url, src))
+
+    if not candidates:
+        logger.debug("No candidate menu images found on %s", page_url)
+        return []
+
+    # Limit to avoid excessive API costs
+    candidates = candidates[:max_images]
+    logger.info(
+        "  → Found %d candidate menu image(s) on page", len(candidates)
+    )
+
+    # Download and process each image
+    all_items: list[dict[str, str]] = []
+    seen_names: set[str] = set()
+
+    for img_url in candidates:
+        result = await _download_file(http_client, img_url)
+        if result is None:
+            continue
+
+        img_bytes, content_type = result
+
+        # Skip small files (likely icons/placeholders)
+        if len(img_bytes) < 10_000:  # < 10KB is unlikely a menu photo
+            continue
+
+        # Skip very large files
+        if len(img_bytes) > 10 * 1024 * 1024:
+            continue
+
+        mime = (
+            content_type
+            if content_type.startswith("image/")
+            else _mime_from_url(img_url)
+        )
+        items = _extract_menu_from_image(img_bytes, key, model, mime_type=mime)
+
+        for item in items:
+            name_key = item.get("name", "").lower().strip()
+            if name_key and name_key not in seen_names:
+                seen_names.add(name_key)
+                all_items.append(item)
+
+    logger.debug(
+        "Extracted %d menu items from %d page images",
+        len(all_items),
+        len(candidates),
+    )
+    return all_items
+
+
 def _extract_menu_from_pdf(
     pdf_bytes: bytes,
     api_key: str,

@@ -54,6 +54,10 @@ function formatRestaurants(restaurants) {
         if (restaurant.features && restaurant.features.length > 0) {
             html += `<p><strong>Features:</strong> ${restaurant.features.join(', ')}</p>`;
         }
+
+        if (restaurant.menu_url) {
+            html += `<p><strong>Menu:</strong> <a href="${escapeHtml(restaurant.menu_url)}" target="_blank" rel="noopener">View full menu</a></p>`;
+        }
         
         html += `</div>`;
     });

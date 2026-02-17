@@ -59,6 +59,10 @@ class Restaurant(Base):
     # Direct URL to the restaurant's menu page (if found)
     menu_url: Mapped[Optional[str]] = mapped_column(String(500))
 
+    # Social media URLs (from OSM contact:facebook / contact:instagram tags)
+    facebook_url: Mapped[Optional[str]] = mapped_column(String(500))
+    instagram_url: Mapped[Optional[str]] = mapped_column(String(500))
+
     # Geographic coordinates
     latitude: Mapped[Optional[float]] = mapped_column()
     longitude: Mapped[Optional[float]] = mapped_column()

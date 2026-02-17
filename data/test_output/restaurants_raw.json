@@ -4782,10 +4782,12 @@
       "osm_type": "node",
       "tags": {
         "amenity": "restaurant",
-        "check_date": "2024-04-06",
+        "check_date": "2026-02-16",
+        "check_date:opening_hours": "2026-02-16",
         "cuisine": "greek",
         "indoor_seating": "yes",
         "name": "Cafe Bistro Santorini \"Zum verlorenen Sohn\"",
+        "opening_hours": "Mo-Sa 12:00-23:00",
         "outdoor_seating": "yes",
         "source": "survey"
       },
@@ -6307,6 +6309,7 @@
         "indoor_seating": "yes",
         "name": "Nobless",
         "old_name": "Plan B",
+        "opening_hours": "We,Th,Su,Mo 17:00-02:00, Fr,Sa 18:00-04:00",
         "outdoor_seating": "no",
         "shop": "vacant"
       },
@@ -23578,7 +23581,7 @@
       "longitude": 15.4365747
     }
   ],
-  "scraped_at": "2026-02-16T09:48:24.739049+00:00",
+  "scraped_at": "2026-02-16T15:18:34.784454+00:00",
   "source": "openstreetmap",
   "count": 1085
 }

@@ -479,11 +479,11 @@ async def scrape_restaurant_website(
             if len(menu_page_items) > len(menu_items):
                 menu_items = menu_page_items
 
-    # --- Vision fallback for PDF/image menus ---
+    # --- Vision fallback 1: PDF/image file links ---
     if use_vision and len(menu_items) < 3 and menu_file_url:
         from scraper.menu_vision import extract_menu_from_file_url
 
-        logger.info("  → Vision extraction for %s", menu_file_url)
+        logger.info("  → Vision extraction (file) for %s", menu_file_url)
         await asyncio.sleep(1)
         try:
             vision_items = await extract_menu_from_file_url(
@@ -493,6 +493,35 @@ async def scrape_restaurant_website(
                 menu_items = vision_items
         except Exception:
             logger.debug("Vision extraction failed for %s", menu_file_url, exc_info=True)
+
+    # --- Vision fallback 2: embedded <img> tags on menu page ---
+    if use_vision and len(menu_items) < 3 and menu_url:
+        from scraper.menu_vision import extract_menu_from_page_images
+
+        # Use the menu page soup if we already fetched it, otherwise homepage
+        target_soup = None
+        target_url = menu_url
+        if menu_url and menu_url != url:
+            # We already fetched the menu page above — re-fetch for vision
+            # (soup variable may not be in scope if the earlier block ran)
+            await asyncio.sleep(1)
+            target_soup = await _fetch_html(client, menu_url)
+        else:
+            target_soup = soup
+            target_url = url
+
+        if target_soup is not None:
+            logger.info("  → Vision extraction (page images) for %s", target_url)
+            try:
+                img_items = await extract_menu_from_page_images(
+                    target_soup, target_url, client, api_key=openai_api_key
+                )
+                if len(img_items) > len(menu_items):
+                    menu_items = img_items
+            except Exception:
+                logger.debug(
+                    "Page image extraction failed for %s", target_url, exc_info=True
+                )
 
     return {
         "summary": summary,

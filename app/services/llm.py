@@ -71,6 +71,12 @@ def format_restaurant_data(restaurants: list[Restaurant]) -> str:
         if restaurant.website:
             info.append(f"   Website: {restaurant.website}")
 
+        if restaurant.facebook_url:
+            info.append(f"   Facebook: {restaurant.facebook_url}")
+
+        if restaurant.instagram_url:
+            info.append(f"   Instagram: {restaurant.instagram_url}")
+
         if restaurant.features:
             info.append(f"   Features: {', '.join(restaurant.features)}")
 

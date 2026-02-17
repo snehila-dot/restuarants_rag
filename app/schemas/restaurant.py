@@ -42,6 +42,12 @@ class RestaurantResponse(BaseModel):
     menu_url: Optional[str] = Field(
         default=None, description="Direct URL to the menu page"
     )
+    facebook_url: Optional[str] = Field(
+        default=None, description="Facebook page URL"
+    )
+    instagram_url: Optional[str] = Field(
+        default=None, description="Instagram profile URL"
+    )
     latitude: Optional[float] = None
     longitude: Optional[float] = None
 

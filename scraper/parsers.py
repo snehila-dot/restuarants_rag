@@ -187,6 +187,21 @@ def parse_website(tags: dict[str, str]) -> str | None:
     return tags.get("website") or tags.get("contact:website") or None
 
 
+def parse_menu_url(tags: dict[str, str]) -> str | None:
+    """Extract a direct menu page URL from ``website:menu``."""
+    return tags.get("website:menu") or None
+
+
+def parse_facebook_url(tags: dict[str, str]) -> str | None:
+    """Extract Facebook page URL from ``contact:facebook``."""
+    return tags.get("contact:facebook") or None
+
+
+def parse_instagram_url(tags: dict[str, str]) -> str | None:
+    """Extract Instagram profile URL from ``contact:instagram`` or ``instagram``."""
+    return tags.get("contact:instagram") or tags.get("instagram") or None
+
+
 # --- Composite -----------------------------------------------------------------
 
 
@@ -200,6 +215,8 @@ def raw_to_restaurant(element: dict[str, Any]) -> dict[str, Any]:
         "address": parse_address(tags),
         "phone": parse_phone(tags),
         "website": parse_website(tags),
+        "facebook_url": parse_facebook_url(tags),
+        "instagram_url": parse_instagram_url(tags),
         "cuisine": parse_cuisine(tags),
         "price_range": parse_price_range(tags),
         "rating": None,
@@ -208,7 +225,7 @@ def raw_to_restaurant(element: dict[str, Any]) -> dict[str, Any]:
         "opening_hours": parse_opening_hours(tags.get("opening_hours")),
         "summary": None,
         "menu_items": [],
-        "menu_url": None,
+        "menu_url": parse_menu_url(tags),
         "latitude": element.get("latitude"),
         "longitude": element.get("longitude"),
         "data_sources": ["openstreetmap"],
