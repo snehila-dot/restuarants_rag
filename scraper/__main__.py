@@ -7,7 +7,9 @@ Usage::
     python -m scraper --enrich                           # + scrape restaurant websites
     python -m scraper --enrich --enrich-vision           # + GPT-4o vision for PDF/image menus
     python -m scraper --enrich --enrich-js               # + Playwright for JS-rendered menus
-    python -m scraper --discover-websites --enrich --enrich-vision  # Full pipeline
+    python -m scraper --google-maps                      # + enrich ratings/price from Google Maps (Playwright)
+    python -m scraper --google-places                    # + enrich via Google Places API (recommended)
+    python -m scraper --discover-websites --enrich --enrich-vision --google-places  # Full pipeline
     python -m scraper --output-dir data/
 """
 
@@ -21,6 +23,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from scraper.google_maps import enrich_restaurants as enrich_from_google_maps
+from scraper.google_places import enrich_restaurants as enrich_from_google_places
 from scraper.output import write_clean, write_raw
 from scraper.overpass import scrape as scrape_overpass
 from scraper.parsers import raw_to_restaurant
@@ -33,6 +37,10 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 logger = logging.getLogger(__name__)
+
+# Suppress noisy httpx request/response logs (they log every HTTP call at INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 
 def _deduplicate(restaurants: list[dict]) -> list[dict]:
@@ -55,6 +63,8 @@ async def run(
     enrich_js: bool = False,
     enrich_vision: bool = False,
     discover_websites: bool = False,
+    google_maps: bool = False,
+    google_places: bool = False,
     output_dir: str = "data",
     limit: int = 0,
 ) -> None:
@@ -66,28 +76,29 @@ async def run(
     4. Deduplicate by name.
     4b. (Optional) Discover missing websites via DuckDuckGo.
     5. (Optional) Enrich from individual restaurant websites.
+    5b. (Optional) Enrich ratings/price/reviews from Google Maps.
     6. Save clean data.
     7. Log summary statistics.
     """
     out = Path(output_dir)
 
     # --- Step 1: Scrape OSM ---------------------------------------------------
-    logger.info("Step 1/6: Querying OpenStreetMap Overpass API …")
+    logger.info("Step 1/7: Querying OpenStreetMap Overpass API …")
     raw_elements = await scrape_overpass()
     if not raw_elements:
         logger.warning("No restaurant data returned from Overpass API")
         return
 
     # --- Step 2: Save raw data ------------------------------------------------
-    logger.info("Step 2/6: Writing raw data …")
+    logger.info("Step 2/7: Writing raw data …")
     write_raw(raw_elements, output_dir=out)
 
     # --- Step 3: Parse --------------------------------------------------------
-    logger.info("Step 3/6: Parsing %d raw elements …", len(raw_elements))
+    logger.info("Step 3/7: Parsing %d raw elements …", len(raw_elements))
     restaurants = [raw_to_restaurant(el) for el in raw_elements]
 
     # --- Step 4: Deduplicate --------------------------------------------------
-    logger.info("Step 4/6: Deduplicating …")
+    logger.info("Step 4/7: Deduplicating …")
     restaurants = _deduplicate(restaurants)
 
     # --- Optional limit (for testing) -----------------------------------------
@@ -124,7 +135,7 @@ async def run(
         if enrich_vision:
             modes.append("Vision")
         mode = " + ".join(modes)
-        logger.info("Step 5/6: Enriching from restaurant websites (%s) …", mode)
+        logger.info("Step 5/7: Enriching from restaurant websites (%s) …", mode)
 
         # Resolve OpenAI API key for vision extraction
         openai_key: str | None = None
@@ -143,10 +154,45 @@ async def run(
             openai_api_key=openai_key,
         )
     else:
-        logger.info("Step 5/6: Skipping website enrichment (use --enrich to enable)")
+        logger.info("Step 5/7: Skipping website enrichment (use --enrich to enable)")
+
+    # --- Step 5b: Google Maps enrichment (optional) ----------------------------
+    if google_maps:
+        without_rating = sum(1 for r in restaurants if not r.get("rating"))
+        logger.info(
+            "Step 5b/7: Enriching from Google Maps via Playwright "
+            "(%d without rating) …",
+            without_rating,
+        )
+        restaurants = await enrich_from_google_maps(restaurants)
+    else:
+        without_rating = sum(1 for r in restaurants if not r.get("rating"))
+        if without_rating:
+            logger.info(
+                "Step 5b/7: Skipping Google Maps enrichment "
+                "(%d without rating, use --google-maps to enable)",
+                without_rating,
+            )
+
+    # --- Step 5c: Google Places API enrichment (optional) -------------------------
+    if google_places:
+        without_rating = sum(1 for r in restaurants if not r.get("rating"))
+        without_website = sum(1 for r in restaurants if not r.get("website"))
+        logger.info(
+            "Step 5c: Enriching from Google Places API "
+            "(%d without rating, %d without website) …",
+            without_rating,
+            without_website,
+        )
+        restaurants = await enrich_from_google_places(restaurants)
+    else:
+        logger.info(
+            "Step 5c: Skipping Google Places API enrichment "
+            "(use --google-places to enable)"
+        )
 
     # --- Step 6: Save clean data ------------------------------------------------
-    logger.info("Step 6/6: Writing clean data …")
+    logger.info("Step 6/7: Writing clean data …")
     write_clean(restaurants, output_dir=out)
 
     # --- Summary --------------------------------------------------------------
@@ -167,6 +213,11 @@ def _log_summary(restaurants: list[dict]) -> None:
     with_cuisine = sum(1 for r in restaurants if r.get("cuisine"))
     with_summary = sum(1 for r in restaurants if r.get("summary"))
     with_menu = sum(1 for r in restaurants if r.get("menu_items"))
+    with_rating = sum(1 for r in restaurants if r.get("rating"))
+    with_reviews = sum(1 for r in restaurants if r.get("review_count", 0) > 0)
+    with_real_price = sum(
+        1 for r in restaurants if r.get("price_range") and r["price_range"] != "€€"
+    )
 
     logger.info("=" * 50)
     logger.info("SCRAPE SUMMARY")
@@ -198,6 +249,21 @@ def _log_summary(restaurants: list[dict]) -> None:
         _pct(with_cuisine, total),
     )
     logger.info(
+        "  With rating:        %d (%.0f%%)",
+        with_rating,
+        _pct(with_rating, total),
+    )
+    logger.info(
+        "  With reviews:       %d (%.0f%%)",
+        with_reviews,
+        _pct(with_reviews, total),
+    )
+    logger.info(
+        "  With real price:    %d (%.0f%%)",
+        with_real_price,
+        _pct(with_real_price, total),
+    )
+    logger.info(
         "  With summary:       %d (%.0f%%)",
         with_summary,
         _pct(with_summary, total),
@@ -225,7 +291,7 @@ def main() -> None:
     parser.add_argument(
         "--enrich",
         action="store_true",
-        help=("Also scrape individual restaurant websites for summaries" " (slower)."),
+        help=("Also scrape individual restaurant websites for summaries (slower)."),
     )
     parser.add_argument(
         "--enrich-js",
@@ -241,6 +307,23 @@ def main() -> None:
         help=(
             "Use GPT-4o-mini vision API to extract menus from PDF and image"
             " files (requires OPENAI_API_KEY env variable)."
+        ),
+    )
+    parser.add_argument(
+        "--google-maps",
+        action="store_true",
+        help=(
+            "Enrich restaurants with ratings, review counts, and price levels"
+            " from Google Maps via Playwright (slow — ~3s per restaurant)."
+        ),
+    )
+    parser.add_argument(
+        "--google-places",
+        action="store_true",
+        help=(
+            "Enrich restaurants with ratings, reviews, price, website, phone,"
+            " hours, and features from Google Places API (New)."
+            " Requires GOOGLE_PLACES_API_KEY env variable."
         ),
     )
     parser.add_argument(
@@ -267,6 +350,8 @@ def main() -> None:
             enrich_js=args.enrich_js,
             enrich_vision=args.enrich_vision,
             discover_websites=args.discover_websites,
+            google_maps=args.google_maps,
+            google_places=args.google_places,
             output_dir=args.output_dir,
             limit=args.limit,
         )

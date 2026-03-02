@@ -34,6 +34,9 @@ class Restaurant(Base):
     # Price range: "€", "€€", "€€€", "€€€€"
     price_range: Mapped[str] = mapped_column(String(10), nullable=False, default="€€")
 
+    # Actual price range from Google (e.g. "EUR 8–25")
+    price_range_text: Mapped[Optional[str]] = mapped_column(String(50))
+
     # Opening hours as JSON (e.g., {"monday": "10:00-22:00", ...})
     opening_hours: Mapped[Optional[dict[str, str]]] = mapped_column(JSON)
 
@@ -62,6 +65,9 @@ class Restaurant(Base):
     # Social media URLs (from OSM contact:facebook / contact:instagram tags)
     facebook_url: Mapped[Optional[str]] = mapped_column(String(500))
     instagram_url: Mapped[Optional[str]] = mapped_column(String(500))
+
+    # Google Places API identifier (for future re-syncs)
+    google_place_id: Mapped[Optional[str]] = mapped_column(String(200))
 
     # Geographic coordinates
     latitude: Mapped[Optional[float]] = mapped_column()

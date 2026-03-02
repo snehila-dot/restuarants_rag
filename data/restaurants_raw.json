@@ -4106,26 +4106,6 @@
       "longitude": 15.4624901
     },
     {
-      "osm_id": 926922266,
-      "osm_type": "node",
-      "tags": {
-        "addr:city": "Graz",
-        "addr:country": "AT",
-        "addr:housenumber": "3",
-        "addr:postcode": "8041",
-        "addr:street": "Ostbahnstraße",
-        "amenity": "restaurant",
-        "cuisine": "japanese",
-        "level": "1",
-        "name": "Buddha",
-        "smoking": "no",
-        "wheelchair": "yes",
-        "wheelchair:description": "Barrierefreies WC im Einkaufszentrum"
-      },
-      "latitude": 47.0406823,
-      "longitude": 15.4636759
-    },
-    {
       "osm_id": 926922391,
       "osm_type": "node",
       "tags": {
@@ -5253,19 +5233,6 @@
       "longitude": 15.4426718
     },
     {
-      "osm_id": 1259706278,
-      "osm_type": "node",
-      "tags": {
-        "amenity": "fast_food",
-        "indoor_seating": "no",
-        "name": "Crispy Chicken",
-        "outdoor_seating": "no",
-        "takeaway": "only"
-      },
-      "latitude": 47.0675873,
-      "longitude": 15.4422626
-    },
-    {
       "osm_id": 1259706281,
       "osm_type": "node",
       "tags": {
@@ -6257,7 +6224,7 @@
         "addr:street": "Schlögelgasse",
         "amenity": "pub",
         "contact:phone": "+43 316 820258",
-        "cuisine": "pizza,toast,salad",
+        "cuisine": "pizza;toast;salad",
         "indoor_seating": "yes",
         "name": "Sägewerk ToGo",
         "opening_hours": "Mo-Su 09:00-02:00",
@@ -6329,9 +6296,11 @@
         "cuisine": "pizza;burger;sausage",
         "diet:vegetarian": "yes",
         "drive_through": "no",
+        "indoor_seating": "yes",
         "level": "0",
         "name": "Tommy's Caffe | Grill | & more",
         "opening_hours": "Mo-Sa 10:00-22:00; Su 11:30-21:00",
+        "outdoor_seating": "yes",
         "phone": "+43316765798",
         "source": "survey;local knowledge"
       },
@@ -6896,8 +6865,8 @@
         "opening_hours": "Mo-Sa 07:30-20:30; Su,PH 09:00-12:00, 15:00-20:00;Jul-Sep SH Su,PH 09:00-12:00, 16:00-20:00",
         "website": "https://www.konditorei-kraner.at/"
       },
-      "latitude": 47.0470613,
-      "longitude": 15.3951089
+      "latitude": 47.047054,
+      "longitude": 15.3950653
     },
     {
       "osm_id": 1602166398,
@@ -7771,18 +7740,6 @@
       },
       "latitude": 47.0662903,
       "longitude": 15.4415581
-    },
-    {
-      "osm_id": 1789077953,
-      "osm_type": "node",
-      "tags": {
-        "amenity": "fast_food",
-        "cuisine": "sausages",
-        "name": "Arland",
-        "source": "survey"
-      },
-      "latitude": 47.0999981,
-      "longitude": 15.4155596
     },
     {
       "osm_id": 1790776955,
@@ -9246,7 +9203,7 @@
         "amenity": "cafe",
         "internet_access": "yes",
         "name": "Jeden Tag",
-        "opening_hours": "Mo-Su 06:00-23:00",
+        "opening_hours": "Tu-Su 06:00-23:00",
         "outdoor_seating": "streetside",
         "smoking": "outside",
         "wheelchair": "no"
@@ -9455,16 +9412,18 @@
         "addr:street": "Jakominiplatz",
         "amenity": "restaurant",
         "bar": "no",
-        "check_date": "2023-09-20",
-        "cuisine": "ramen;chinese",
+        "check_date": "2026-03-02",
+        "cuisine": "ramen;chinese;asian",
+        "diet:vegan": "yes",
         "diet:vegetarian": "yes",
+        "email": "xiuqing.wu1971@gmail.com",
         "name": "Nudelhaus",
-        "opening_hours": "Mo-Su 10:00-22:00",
+        "opening_hours": "Mo-Su 11:00-21:00",
         "outdoor_seating": "no",
         "phone": "+43 681 81302424",
         "source": "survey",
         "toilets": "yes",
-        "website": "https://nudelhaus.business.site/"
+        "website": "https://www.nudelhausgraz.at/"
       },
       "latitude": 47.0677569,
       "longitude": 15.4438123
@@ -14568,7 +14527,7 @@
         "entrance": "yes",
         "indoor_seating": "yes",
         "name": "Lin Box To Go",
-        "opening_hours": "Mo-Fr 11:00-21:00; Sa 11:00-17:00; PH,Su off",
+        "opening_hours": "Mo-Fr 11:00-21:00; Sa 11:00-17:00; Su,PH off",
         "outdoor_seating": "no",
         "start_date": "2017-03-01",
         "wheelchair": "no"
@@ -16081,15 +16040,9 @@
         "addr:postcode": "8041",
         "addr:street": "Ostbahnstraße",
         "amenity": "cafe",
-        "cuisine": "ice_cream;bakery;burger",
-        "email": "bakery@gotthard.at",
-        "internet_access": "yes",
-        "internet_access:fee": "no",
-        "name": "Gotthardt's Bakery",
-        "opening_hours": "Mo-Fr 7:30-20:30; Sa 7:30-19:00",
+        "indoor_seating": "yes",
+        "name": "Tante Frida",
         "outdoor_seating": "no",
-        "phone": "+43 664 75020009",
-        "website": "http://gotthardts-bakery.at/",
         "wheelchair": "yes"
       },
       "latitude": 47.0406342,
@@ -16180,7 +16133,7 @@
         "addr:postcode": "8020",
         "addr:street": "Südtiroler Platz",
         "amenity": "restaurant",
-        "check_date:opening_hours": "2024-10-28",
+        "check_date:opening_hours": "2026-02-21",
         "cuisine": "sushi;japanese",
         "indoor_seating": "yes",
         "level": "0",
@@ -16301,7 +16254,7 @@
         "opening_hours": "Mo-Fr 09:00-19:30; Sa 09:00-18:00",
         "smoking": "no",
         "start_date": "2019-12",
-        "website": "http://paulundbohne.at",
+        "website": "https://paulundbohne.at",
         "wheelchair": "yes",
         "wheelchair:description": "Barrierefreies WC im Einkaufszentrum"
       },
@@ -19870,6 +19823,77 @@
       "longitude": 15.4298461
     },
     {
+      "osm_id": 13591697568,
+      "osm_type": "node",
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "90",
+        "addr:postcode": "8053",
+        "addr:street": "Grottenhofstraße",
+        "amenity": "fast_food",
+        "cuisine": "turkish",
+        "delivery": "yes",
+        "name": "Berliner Kebaphaus"
+      },
+      "latitude": 47.0469631,
+      "longitude": 15.3950734
+    },
+    {
+      "osm_id": 13591697569,
+      "osm_type": "node",
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:housenumber": "90",
+        "addr:postcode": "8053",
+        "addr:street": "Grottenhofstraße",
+        "amenity": "fast_food",
+        "cuisine": "turkish;pizza;coffee_shop",
+        "delivery": "yes",
+        "name": "Nikki Caffe"
+      },
+      "latitude": 47.0468631,
+      "longitude": 15.3950609
+    },
+    {
+      "osm_id": 13596046473,
+      "osm_type": "node",
+      "tags": {
+        "amenity": "cafe",
+        "cuisine": "bubble_tea",
+        "level": "1",
+        "name": "Boba",
+        "wheelchair": "yes"
+      },
+      "latitude": 47.0403958,
+      "longitude": 15.4637034
+    },
+    {
+      "osm_id": 13596127849,
+      "osm_type": "node",
+      "tags": {
+        "addr:city": "Graz",
+        "addr:country": "AT",
+        "addr:flats": "1",
+        "addr:housenumber": "10",
+        "addr:postcode": "8020",
+        "addr:street": "UNESCO-Esplanade",
+        "amenity": "fast_food",
+        "brand": "Noodle King",
+        "brand:wikidata": "Q112571654",
+        "cuisine": "noodle",
+        "level": "0",
+        "name": "Noodle King",
+        "opening_hours": "Mo-Su 11:00-22:00",
+        "phone": "+43 676 670 79 61",
+        "start_date": "2026-02-24",
+        "takeaway": "yes"
+      },
+      "latitude": 47.0635041,
+      "longitude": 15.4107505
+    },
+    {
       "osm_id": 24776172,
       "osm_type": "way",
       "tags": {
@@ -20346,7 +20370,7 @@
         "indoor_seating": "yes",
         "name": "Burger King",
         "opening_hours": "Su-Th, PH 10:00-23:30; Fr-Sa 10:00-01:00",
-        "operator": "MFAT AdFund",
+        "operator": "TQSR GPU GmbH",
         "outdoor_seating": "yes",
         "smoking": "no",
         "source": "data.graz.gv.at Basiskarte",
@@ -21217,22 +21241,6 @@
       },
       "latitude": 47.0903835,
       "longitude": 15.3852245
-    },
-    {
-      "osm_id": 125070178,
-      "osm_type": "way",
-      "tags": {
-        "amenity": "fast_food",
-        "building": "yes",
-        "building:levels": "10",
-        "cuisine": "turkish",
-        "delivery": "yes",
-        "name": "Berliner Kebaphaus",
-        "roof:shape": "flat",
-        "takeaway": "yes"
-      },
-      "latitude": 47.0469499,
-      "longitude": 15.3951464
     },
     {
       "osm_id": 125225887,
@@ -23581,7 +23589,7 @@
       "longitude": 15.4365747
     }
   ],
-  "scraped_at": "2026-02-17T08:19:09.879242+00:00",
+  "scraped_at": "2026-03-02T13:39:36.872812+00:00",
   "source": "openstreetmap",
   "count": 1085
 }

@@ -15,8 +15,11 @@ class Settings(BaseSettings):
         description="Database connection URL",
     )
 
-    # LLM Configuration
+    # API Keys
     openai_api_key: str = Field(default="", description="OpenAI API key")
+    google_places_api_key: str = Field(
+        default="", description="Google Places API key (for scraper enrichment)"
+    )
     llm_model: str = Field(default="gpt-4", description="LLM model to use")
     llm_temperature: float = Field(
         default=0.3,

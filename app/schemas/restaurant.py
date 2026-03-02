@@ -30,6 +30,9 @@ class RestaurantResponse(BaseModel):
     website: Optional[str] = None
     cuisine: list[str]
     price_range: str
+    price_range_text: Optional[str] = Field(
+        default=None, description="Actual price range (e.g. 'EUR 8–25')"
+    )
     opening_hours: Optional[dict[str, str]] = None
     features: list[str]
     rating: Optional[float] = None
@@ -42,11 +45,12 @@ class RestaurantResponse(BaseModel):
     menu_url: Optional[str] = Field(
         default=None, description="Direct URL to the menu page"
     )
-    facebook_url: Optional[str] = Field(
-        default=None, description="Facebook page URL"
-    )
+    facebook_url: Optional[str] = Field(default=None, description="Facebook page URL")
     instagram_url: Optional[str] = Field(
         default=None, description="Instagram profile URL"
+    )
+    google_place_id: Optional[str] = Field(
+        default=None, description="Google Places API identifier"
     )
     latitude: Optional[float] = None
     longitude: Optional[float] = None

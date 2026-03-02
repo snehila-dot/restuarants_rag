@@ -35,6 +35,30 @@ def _parse_price(price_text: str | None) -> float | None:
         return None
 
 
+def _merge_cuisines(
+    osm_cuisine: list[str],
+    google_cuisine: list[str],
+) -> list[str]:
+    """Merge OSM and Google cuisine lists, deduplicating case-insensitively.
+
+    OSM values take priority. Google values are appended if they add
+    new information not already present.
+    """
+    seen: set[str] = set()
+    merged: list[str] = []
+    for c in osm_cuisine:
+        key = c.lower()
+        if key not in seen:
+            seen.add(key)
+            merged.append(c)
+    for c in google_cuisine:
+        key = c.lower()
+        if key not in seen:
+            seen.add(key)
+            merged.append(c)
+    return merged
+
+
 async def seed_from_json(file_path: str) -> None:
     """
     Seed database from JSON file.
@@ -84,8 +108,13 @@ async def seed_from_json(file_path: str) -> None:
                 website=entry.get("website"),
                 facebook_url=entry.get("facebook_url"),
                 instagram_url=entry.get("instagram_url"),
-                cuisine=entry.get("cuisine", []),
+                google_place_id=entry.get("google_place_id"),
+                cuisine=_merge_cuisines(
+                    entry.get("cuisine", []),
+                    entry.get("google_cuisine", []),
+                ),
                 price_range=entry.get("price_range", "€€"),
+                price_range_text=entry.get("price_range_text"),
                 rating=entry.get("rating"),
                 review_count=entry.get("review_count", 0),
                 features=entry.get("features", []),

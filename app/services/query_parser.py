@@ -232,6 +232,30 @@ def parse_query(message: str) -> QueryFilters:
         "reservations": ["reservation", "reservierung", "booking", "book"],
         "wifi": ["wifi", "wlan", "internet"],
         "parking": ["parking", "parkplatz"],
+        # Meal types
+        "serves_breakfast": ["breakfast", "frühstück", "fruehstueck"],
+        "serves_brunch": ["brunch"],
+        "serves_lunch": ["lunch", "mittagessen"],
+        "serves_dinner": ["dinner", "abendessen"],
+        # Drinks
+        "serves_beer": ["beer", "bier"],
+        "serves_wine": ["wine", "wein"],
+        "serves_cocktails": ["cocktail", "cocktails"],
+        "serves_coffee": ["coffee", "kaffee"],
+        # Audience & amenities
+        "dogs_allowed": ["dog", "dogs", "hund", "hunde", "hundefreundlich"],
+        "good_for_children": [
+            "kids",
+            "children",
+            "family",
+            "kinder",
+            "familie",
+            "familienfreundlich",
+        ],
+        "good_for_groups": ["group", "groups", "gruppe", "gruppen"],
+        "sports_viewing": ["sport", "match", "game", "fußball", "football"],
+        "live_music": ["live music", "livemusik", "live-musik"],
+        "children_menu": ["children menu", "kinderkarte", "kids menu"],
     }
 
     for feature, keywords in feature_patterns.items():

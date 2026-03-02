@@ -36,7 +36,7 @@ function formatRestaurants(restaurants) {
                 <h4>${escapeHtml(restaurant.name)}</h4>
                 <p><strong>Address:</strong> ${escapeHtml(restaurant.address)}</p>
                 <p class="cuisine"><strong>Cuisine:</strong> ${restaurant.cuisine.join(', ')}</p>
-                <p><strong>Price:</strong> ${escapeHtml(restaurant.price_range)}</p>
+                <p><strong>Price:</strong> ${escapeHtml(restaurant.price_range)}${restaurant.price_range_text ? ' (' + escapeHtml(restaurant.price_range_text) + ')' : ''}</p>
         `;
         
         if (restaurant.rating) {

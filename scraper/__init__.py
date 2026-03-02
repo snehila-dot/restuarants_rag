@@ -6,4 +6,5 @@ Usage::
     python -m scraper --discover-websites          # + find missing websites via DuckDuckGo
     python -m scraper --enrich                     # + scrape restaurant websites
     python -m scraper --enrich --enrich-vision     # + GPT-4o vision for PDF/image menus
+    python -m scraper --google-places              # + enrich via Google Places API (recommended)
 """

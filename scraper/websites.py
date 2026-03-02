@@ -112,12 +112,22 @@ async def _fetch_html(
     except (httpx.HTTPStatusError, httpx.RequestError) as exc:
         logger.warning("Failed to fetch %s: %s", url, exc)
         return None
-
     content_type = resp.headers.get("content-type", "")
+    content_len = len(resp.content)
     if "text/html" not in content_type:
-        logger.debug("Skipping non-HTML response from %s", url)
+        logger.debug(
+            "Skipping non-HTML response from %s (content-type: %s)",
+            url,
+            content_type,
+        )
         return None
 
+    logger.debug(
+        "Fetched %s — %d bytes, content-type: %s",
+        url,
+        content_len,
+        content_type,
+    )
     return BeautifulSoup(resp.text, "html.parser")
 
 
@@ -128,7 +138,6 @@ async def _fetch_html(
 
 def _extract_summary(soup: BeautifulSoup) -> str | None:
     """Extract a short description from the page.
-
     Priority: ``<meta name="description">``, then first ``<p>`` with
     enough text content (≥ 40 chars).
     """
@@ -136,13 +145,13 @@ def _extract_summary(soup: BeautifulSoup) -> str | None:
     if meta and meta.get("content"):
         desc = str(meta["content"]).strip()
         if len(desc) >= 20:
+            logger.debug("Summary via <meta description> (%d chars)", len(desc))
             return desc[:300]
-
     for p in soup.find_all("p", limit=10):
         text = p.get_text(strip=True)
         if len(text) >= 40:
+            logger.debug("Summary via <p> tag (%d chars)", len(text))
             return text[:300]
-
     return None
 
 
@@ -159,19 +168,20 @@ def _find_menu_url(soup: BeautifulSoup, base_url: str) -> str | None:
                 for ext in (".pdf", ".jpg", ".jpeg", ".png", ".webp")
             ):
                 continue
-            return urljoin(base_url, href)
+            resolved = urljoin(base_url, href)
+            logger.debug("Found menu page link: %s", resolved)
+            return resolved
+    logger.debug("No menu page link found")
     return None
 
 
 def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
     """Return the absolute URL of the first PDF/image menu link found.
-
     Detects file links by extension OR by known CMS download patterns
     (e.g. WordPress ``?wpdmdl=``, ``?download=``, ``/download/``).
     """
     # Query-string patterns that indicate a file download
     _download_patterns = ("wpdmdl=", "download=", "/download/", "action=download")
-
     for a_tag in soup.find_all("a", href=True):
         href = str(a_tag["href"])
         text = a_tag.get_text(strip=True).lower()
@@ -179,18 +189,20 @@ def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
         if any(kw in combined for kw in _MENU_KEYWORDS):
             href_lower = href.lower()
             clean_href = href_lower.split("?")[0]
-
             # Match by file extension
             if any(
                 clean_href.endswith(ext)
                 for ext in (".pdf", ".jpg", ".jpeg", ".png", ".webp")
             ):
-                return urljoin(base_url, href)
-
+                resolved = urljoin(base_url, href)
+                logger.debug("Found menu file link (extension): %s", resolved)
+                return resolved
             # Match by CMS download pattern in URL
             if any(pat in href_lower for pat in _download_patterns):
-                return urljoin(base_url, href)
-
+                resolved = urljoin(base_url, href)
+                logger.debug("Found menu file link (CMS pattern): %s", resolved)
+                return resolved
+    logger.debug("No menu file link found")
     return None
 
 
@@ -215,25 +227,23 @@ def _extract_menu_items_from_soup(
     soup: BeautifulSoup,
 ) -> list[dict[str, str]]:
     """Best-effort extraction of structured menu items from HTML.
-
-    Strategy (tried in order):
     1. **Schema.org / JSON-LD** — ``application/ld+json`` with ``Menu`` or
        ``MenuItem`` types.
     2. **Heuristic HTML parsing** — walk headings (h2/h3 = category) and
        sibling elements looking for dish-name + price patterns.
-
-    Returns a list of ``{"name": …, "price": …, "category": …}`` dicts.
     Items without a recognisable name are skipped.
     """
     items: list[dict[str, str]] = []
-
-    # --- Strategy 1: JSON-LD structured data --------------------------------
     items = _extract_from_jsonld(soup)
     if items:
+        logger.debug("Menu extraction via JSON-LD: %d items", len(items))
         return items
-
     # --- Strategy 2: Heuristic HTML walk ------------------------------------
     items = _extract_from_html_heuristic(soup)
+    if items:
+        logger.debug("Menu extraction via HTML heuristic: %d items", len(items))
+    else:
+        logger.debug("Menu extraction: no items found (JSON-LD and heuristic both empty)")
     return items
 
 
@@ -319,8 +329,6 @@ def _extract_from_html_heuristic(
     soup: BeautifulSoup,
 ) -> list[dict[str, str]]:
     """Walk headings + siblings to find dish-name / price pairs.
-
-    Looks for patterns like:
         <h2>Hauptgerichte</h2>
         <div>Wiener Schnitzel ... €14.90</div>
         <div>Tafelspitz ... €18.50</div>
@@ -328,41 +336,35 @@ def _extract_from_html_heuristic(
     """
     items: list[dict[str, str]] = []
     current_category = "Other"
-
+    elements_scanned = 0
     # Collect all headings and the block-level elements between them
     for element in soup.find_all(["h1", "h2", "h3", "h4", "li", "tr", "div", "p"]):
         if not isinstance(element, Tag):
             continue
-
         tag_name = element.name
         text = element.get_text(separator=" ", strip=True)
-
         if not text or len(text) < 3:
             continue
 
+        elements_scanned += 1
         # Update category from headings
         if tag_name in ("h1", "h2", "h3", "h4"):
             current_category = _infer_category(text)
             continue
-
         # Skip very long blocks (likely paragraphs of prose, not menu items)
         if len(text) > 200:
             continue
-
         # A menu item typically has a price
         price = _extract_price(text)
         if not price:
             continue
-
         # Remove the price from the text to get the dish name
         name = _PRICE_RE.sub("", text).strip()
         # Clean up stray separators
         name = re.sub(r"[\.\-–—]+\s*$", "", name).strip()
         name = re.sub(r"^\s*[\.\-–—]+", "", name).strip()
-
         if not name or len(name) < 3 or len(name) > 120:
             continue
-
         items.append(
             {
                 "name": name,
@@ -370,7 +372,6 @@ def _extract_from_html_heuristic(
                 "category": current_category,
             }
         )
-
     # Deduplicate by name (keep first)
     seen: set[str] = set()
     unique: list[dict[str, str]] = []
@@ -379,7 +380,13 @@ def _extract_from_html_heuristic(
         if key not in seen:
             seen.add(key)
             unique.append(item)
-
+    dupes = len(items) - len(unique)
+    logger.debug(
+        "HTML heuristic: scanned %d elements, found %d items (%d duplicates removed)",
+        elements_scanned,
+        len(unique),
+        dupes,
+    )
     return unique
 
 
@@ -460,29 +467,48 @@ async def scrape_restaurant_website(
     """
     soup = await _fetch_html(client, url)
     if soup is None:
+        logger.debug("Homepage fetch failed, skipping: %s", url)
         return None
-
     summary = _extract_summary(soup)
     menu_url = _find_menu_url(soup, url)
     menu_file_url = _find_menu_file_url(soup, url)
-
     # Try extracting menu items from the homepage first
     menu_items = _extract_menu_items_from_soup(soup)
-
+    logger.debug(
+        "Homepage pass: summary=%s, menu_url=%s, file_url=%s, items=%d",
+        "yes" if summary else "no",
+        menu_url or "none",
+        menu_file_url or "none",
+        len(menu_items),
+    )
     # If we found a separate menu page and didn't get items from homepage,
     # fetch and parse the menu page too
     if menu_url and menu_url != url and len(menu_items) < 3:
+        logger.debug(
+            "Homepage yielded %d items (<3), fetching menu page: %s",
+            len(menu_items),
+            menu_url,
+        )
         await asyncio.sleep(1)  # polite delay before second request
         menu_soup = await _fetch_html(client, menu_url)
         if menu_soup is not None:
             menu_page_items = _extract_menu_items_from_soup(menu_soup)
             if len(menu_page_items) > len(menu_items):
+                logger.debug(
+                    "Menu page yielded %d items (better than homepage %d)",
+                    len(menu_page_items),
+                    len(menu_items),
+                )
                 menu_items = menu_page_items
-
+            else:
+                logger.debug(
+                    "Menu page yielded %d items (not better than homepage %d)",
+                    len(menu_page_items),
+                    len(menu_items),
+                )
     # --- Vision fallback 1: PDF/image file links ---
     if use_vision and len(menu_items) < 3 and menu_file_url:
         from scraper.menu_vision import extract_menu_from_file_url
-
         logger.info("  → Vision extraction (file) for %s", menu_file_url)
         await asyncio.sleep(1)
         try:
@@ -490,14 +516,20 @@ async def scrape_restaurant_website(
                 menu_file_url, client, api_key=openai_api_key
             )
             if len(vision_items) > len(menu_items):
+                logger.debug(
+                    "Vision (file) yielded %d items (better than previous %d)",
+                    len(vision_items),
+                    len(menu_items),
+                )
                 menu_items = vision_items
         except Exception:
-            logger.debug("Vision extraction failed for %s", menu_file_url, exc_info=True)
+            logger.debug(
+                "Vision extraction failed for %s", menu_file_url, exc_info=True
+            )
 
     # --- Vision fallback 2: embedded <img> tags on menu page ---
     if use_vision and len(menu_items) < 3 and menu_url:
         from scraper.menu_vision import extract_menu_from_page_images
-
         # Use the menu page soup if we already fetched it, otherwise homepage
         target_soup = None
         target_url = menu_url
@@ -509,7 +541,6 @@ async def scrape_restaurant_website(
         else:
             target_soup = soup
             target_url = url
-
         if target_soup is not None:
             logger.info("  → Vision extraction (page images) for %s", target_url)
             try:
@@ -517,12 +548,25 @@ async def scrape_restaurant_website(
                     target_soup, target_url, client, api_key=openai_api_key
                 )
                 if len(img_items) > len(menu_items):
+                    logger.debug(
+                        "Vision (page images) yielded %d items (better than previous %d)",
+                        len(img_items),
+                        len(menu_items),
+                    )
                     menu_items = img_items
             except Exception:
                 logger.debug(
-                    "Page image extraction failed for %s", target_url, exc_info=True
+                    "Page image extraction failed for %s",
+                    target_url,
+                    exc_info=True,
                 )
 
+    logger.debug(
+        "Final result: summary=%s, menu_items=%d, menu_url=%s",
+        "yes" if summary else "no",
+        len(menu_items),
+        menu_url or menu_file_url or "none",
+    )
     return {
         "summary": summary,
         "menu_items": menu_items,
@@ -595,16 +639,25 @@ async def enrich_restaurants(
             for idx, restaurant in enumerate(restaurants, start=1):
                 url = restaurant.get("website")
                 if not url:
+                    logger.debug(
+                        "Skipping %d/%d: %s (no website)",
+                        idx,
+                        total,
+                        restaurant.get("name", "unknown"),
+                    )
                     continue
-
                 # Skip malformed URLs (no scheme, relative paths, etc.)
                 if not url.startswith(("http://", "https://")):
-                    logger.debug("Skipping invalid URL: %s", url)
+                    logger.warning(
+                        "Skipping %d/%d: %s (invalid URL: %s)",
+                        idx,
+                        total,
+                        restaurant.get("name", "unknown"),
+                        url,
+                    )
                     continue
-
                 name = restaurant.get("name", "unknown")
                 logger.info("Enriching %d/%d: %s", idx, total, name)
-
                 try:
                     result = await scrape_restaurant_website(
                         url,
@@ -616,23 +669,18 @@ async def enrich_restaurants(
                     logger.warning("Unexpected error scraping %s", url, exc_info=True)
                     result = None
                 if result is None:
+                    logger.info("  ✗ %s: fetch failed", name)
                     continue
-
                 # Merge summary
                 if result.get("summary") and not restaurant.get("summary"):
                     restaurant["summary"] = result["summary"]
-
-                # Merge menu URL
                 menu_url = result.get("menu_url")
                 if menu_url:
                     restaurant["menu_url"] = menu_url
-
-                # Merge menu items from BS4
                 menu_items = result.get("menu_items", [])
-
-                # --- Playwright fallback ---
                 # If BS4 found <3 items and we have a menu URL, try JS render
-                if browser is not None and len(menu_items) < 3 and menu_url:
+                bs4_count = len(menu_items)
+                if browser is not None and bs4_count < 3 and menu_url:
                     target = menu_url if menu_url != url else url
                     logger.info("  → Playwright fallback for %s", name)
                     try:
@@ -640,25 +688,40 @@ async def enrich_restaurants(
                     except Exception:
                         logger.debug("Playwright error for %s", target, exc_info=True)
                         pw_items = []
-                    if len(pw_items) > len(menu_items):
+                    if len(pw_items) > bs4_count:
+                        logger.info(
+                            "  → Playwright improved: %d → %d items",
+                            bs4_count,
+                            len(pw_items),
+                        )
                         menu_items = pw_items
                         pw_count += 1
-
+                    else:
+                        logger.debug(
+                            "Playwright did not improve: %d items (BS4 had %d)",
+                            len(pw_items),
+                            bs4_count,
+                        )
                 if menu_items:
                     restaurant["menu_items"] = menu_items
                     menu_count += 1
                     # Track if vision was used for this restaurant
                     if result.get("menu_file_url") and use_vision:
                         vision_count += 1
-
-                # Track that we enriched from the website
                 sources = restaurant.get("data_sources", [])
                 if "website" not in sources:
                     sources.append("website")
                     restaurant["data_sources"] = sources
-
                 enriched_count += 1
 
+                # Per-restaurant outcome line
+                logger.info(
+                    "  ✓ %s: summary=%s, menu_items=%d, menu_url=%s",
+                    name,
+                    "yes" if result.get("summary") else "no",
+                    len(menu_items),
+                    menu_url or "none",
+                )
                 # Polite delay between restaurants
                 await asyncio.sleep(_DELAY_BETWEEN_REQUESTS)
     finally:
