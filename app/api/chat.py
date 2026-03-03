@@ -33,11 +33,11 @@ async def chat(
         HTTPException: On errors during processing
     """
     try:
-        # Detect language if not provided
-        language = request.language or query_parser.detect_language(request.message)
+        # Parse user query to extract filters (async LLM extraction)
+        filters = await query_parser.parse_query(request.message)
 
-        # Parse user query to extract filters
-        filters = query_parser.parse_query(request.message)
+        # Detect language — prefer explicit request, then parser result
+        language = request.language or filters.language
 
         # Retrieve matching restaurants
         try:
