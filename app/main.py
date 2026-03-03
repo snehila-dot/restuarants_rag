@@ -1,8 +1,8 @@
 """FastAPI application factory and configuration."""
 
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -19,6 +19,17 @@ logging.basicConfig(
     level=logging.INFO if not settings.debug else logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
+
+# Silence noisy third-party loggers even in debug mode
+for _noisy_logger in (
+    "aiosqlite",
+    "httpcore",
+    "httpx",
+    "openai",
+    "sqlalchemy.engine.Engine",
+    "sqlalchemy.engine",
+):
+    logging.getLogger(_noisy_logger).setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 

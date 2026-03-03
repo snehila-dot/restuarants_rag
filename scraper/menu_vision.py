@@ -14,7 +14,6 @@ import io
 import json
 import logging
 import os
-from typing import Any
 
 import httpx
 
@@ -376,7 +375,7 @@ async def extract_menu_from_file_url(
 
 
 async def extract_menu_from_page_images(
-    soup: "BeautifulSoup",
+    soup: BeautifulSoup,
     page_url: str,
     http_client: httpx.AsyncClient,
     api_key: str | None = None,

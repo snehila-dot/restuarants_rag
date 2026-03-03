@@ -55,18 +55,18 @@ async def session() -> AsyncGenerator[AsyncSession, None]:
 @pytest.fixture
 async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Provide test client with overridden database session."""
-    
+
     async def override_get_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
-    
+
     app.dependency_overrides[get_session] = override_get_session
-    
+
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test"
     ) as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 
 
@@ -101,9 +101,9 @@ async def sample_restaurants(session: AsyncSession) -> list[Restaurant]:
             last_verified=datetime.utcnow(),
         ),
     ]
-    
+
     for restaurant in restaurants:
         session.add(restaurant)
-    
+
     await session.commit()
     return restaurants

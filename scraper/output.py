@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,7 +27,7 @@ def write_raw(
 
     payload = {
         "restaurants": restaurants,
-        "scraped_at": datetime.now(timezone.utc).isoformat(),
+        "scraped_at": datetime.now(UTC).isoformat(),
         "source": "openstreetmap",
         "count": len(restaurants),
     }
@@ -59,7 +59,7 @@ def write_clean(
 
     payload = {
         "restaurants": restaurants,
-        "scraped_at": datetime.now(timezone.utc).isoformat(),
+        "scraped_at": datetime.now(UTC).isoformat(),
         "source": "openstreetmap",
         "count": len(restaurants),
     }

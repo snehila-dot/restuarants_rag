@@ -15,7 +15,7 @@ async def test_search_restaurants_by_cuisine(
     """Test searching restaurants by cuisine."""
     filters = parse_query("Italian restaurant")
     results = await search_restaurants(session, filters)
-    
+
     assert len(results) > 0
     assert any("Italian" in r.cuisine for r in results)
 
@@ -27,7 +27,7 @@ async def test_search_restaurants_by_price(
     """Test searching restaurants by price range."""
     filters = QueryFilters()
     filters.price_ranges = ["€"]
-    
+
     results = await search_restaurants(session, filters)
     assert len(results) > 0
     assert all(r.price_range == "€" for r in results)
@@ -40,7 +40,7 @@ async def test_search_restaurants_by_features(
     """Test searching restaurants by features."""
     filters = QueryFilters()
     filters.features = ["vegan_options"]
-    
+
     results = await search_restaurants(session, filters)
     assert len(results) > 0
     assert all("vegan_options" in r.features for r in results)
@@ -50,6 +50,6 @@ async def test_search_restaurants_no_results(session: AsyncSession) -> None:
     """Test handling of no results."""
     filters = QueryFilters()
     filters.cuisine_types = ["NonexistentCuisine"]
-    
+
     with pytest.raises(NoRestaurantsFoundError):
         await search_restaurants(session, filters)

@@ -53,7 +53,7 @@ async def _dump_raw(page: Page, name: str) -> None:
     html = await page.content()
 
     # --- 1. Find review count patterns in raw HTML ---
-    print(f"\n  === REVIEW COUNT PATTERNS ===")
+    print("\n  === REVIEW COUNT PATTERNS ===")
     # Google often embeds review data as numbers near "rezension/review" text
     for pattern, desc in [
         (r'(\d[\d.,]*)\s*(?:Rezension|review|Bewertung)', "review word"),
@@ -73,7 +73,7 @@ async def _dump_raw(page: Page, name: str) -> None:
             print(f"    {desc}: {matches[:5]}")
 
     # --- 2. Find price patterns in raw HTML ---
-    print(f"\n  === PRICE PATTERNS ===")
+    print("\n  === PRICE PATTERNS ===")
     for pattern, desc in [
         (r'"priceLevel"[:\s]*"?(\w+)"?', "priceLevel"),
         (r'"price_level"[:\s]*(\d)', "price_level (numeric)"),
@@ -89,7 +89,7 @@ async def _dump_raw(page: Page, name: str) -> None:
             print(f"    {desc}: {matches[:5]}")
 
     # --- 3. Find all large number arrays that might be review-related ---
-    print(f"\n  === RATING VALUE IN DATA ===")
+    print("\n  === RATING VALUE IN DATA ===")
     # Google Maps embeds data as arrays: [null,4.4,null,null,1234,...]
     # Look for the rating value we know (to find the right data array)
     # Then check nearby numbers for review count
@@ -103,7 +103,7 @@ async def _dump_raw(page: Page, name: str) -> None:
             print(f"    {desc}: {matches[:8]}")
 
     # --- 4. Search for known structured data formats ---
-    print(f"\n  === JSON-LD / STRUCTURED DATA ===")
+    print("\n  === JSON-LD / STRUCTURED DATA ===")
     ld_blocks = re.findall(
         r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>',
         html,
@@ -121,7 +121,7 @@ async def _dump_raw(page: Page, name: str) -> None:
             pass
 
     # --- 5. Dump interesting data blobs near "review" keyword ---
-    print(f"\n  === DATA CONTEXT AROUND 'review' ===")
+    print("\n  === DATA CONTEXT AROUND 'review' ===")
     for m in re.finditer(r'review', html, re.IGNORECASE):
         start = max(0, m.start() - 100)
         end = min(len(html), m.end() + 100)

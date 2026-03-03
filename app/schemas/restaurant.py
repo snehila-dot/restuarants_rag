@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -26,34 +25,34 @@ class RestaurantResponse(BaseModel):
     id: uuid.UUID
     name: str
     address: str
-    phone: Optional[str] = None
-    website: Optional[str] = None
+    phone: str | None = None
+    website: str | None = None
     cuisine: list[str]
     price_range: str
-    price_range_text: Optional[str] = Field(
+    price_range_text: str | None = Field(
         default=None, description="Actual price range (e.g. 'EUR 8–25')"
     )
-    opening_hours: Optional[dict[str, str]] = None
+    opening_hours: dict[str, str] | None = None
     features: list[str]
-    rating: Optional[float] = None
+    rating: float | None = None
     review_count: int
-    summary: Optional[str] = None
+    summary: str | None = None
     menu_items: list[MenuItemResponse] = Field(
         default_factory=list,
         description="Structured menu items from the menu_items table",
     )
-    menu_url: Optional[str] = Field(
+    menu_url: str | None = Field(
         default=None, description="Direct URL to the menu page"
     )
-    facebook_url: Optional[str] = Field(default=None, description="Facebook page URL")
-    instagram_url: Optional[str] = Field(
+    facebook_url: str | None = Field(default=None, description="Facebook page URL")
+    instagram_url: str | None = Field(
         default=None, description="Instagram profile URL"
     )
-    google_place_id: Optional[str] = Field(
+    google_place_id: str | None = Field(
         default=None, description="Google Places API identifier"
     )
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class ChatRequest(BaseModel):
@@ -62,7 +61,7 @@ class ChatRequest(BaseModel):
     message: str = Field(
         ..., min_length=1, max_length=1000, description="User's question"
     )
-    language: Optional[str] = Field(
+    language: str | None = Field(
         default=None,
         pattern="^(de|en)$",
         description="Response language (de=German, en=English)",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import JSON, String, Text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -25,8 +25,8 @@ class Restaurant(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     address: Mapped[str] = mapped_column(String(300), nullable=False)
-    phone: Mapped[Optional[str]] = mapped_column(String(50))
-    website: Mapped[Optional[str]] = mapped_column(String(500))
+    phone: Mapped[str | None] = mapped_column(String(50))
+    website: Mapped[str | None] = mapped_column(String(500))
 
     # Cuisine types as JSON array (e.g., ["Italian", "Pizza"])
     cuisine: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
@@ -35,22 +35,22 @@ class Restaurant(Base):
     price_range: Mapped[str] = mapped_column(String(10), nullable=False, default="€€")
 
     # Actual price range from Google (e.g. "EUR 8–25")
-    price_range_text: Mapped[Optional[str]] = mapped_column(String(50))
+    price_range_text: Mapped[str | None] = mapped_column(String(50))
 
     # Opening hours as JSON (e.g., {"monday": "10:00-22:00", ...})
-    opening_hours: Mapped[Optional[dict[str, str]]] = mapped_column(JSON)
+    opening_hours: Mapped[dict[str, str] | None] = mapped_column(JSON)
 
     # Features/attributes (e.g., ["vegan_options", "outdoor_seating", "wheelchair_accessible"])
     features: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
     # Rating (0.0 - 5.0)
-    rating: Mapped[Optional[float]] = mapped_column()
+    rating: Mapped[float | None] = mapped_column()
 
     # Number of reviews
     review_count: Mapped[int] = mapped_column(default=0)
 
     # Short description/summary
-    summary: Mapped[Optional[str]] = mapped_column(Text)
+    summary: Mapped[str | None] = mapped_column(Text)
 
     # Menu items — stored in a separate table via relationship
     menu_items: Mapped[list[MenuItem]] = relationship(
@@ -60,18 +60,18 @@ class Restaurant(Base):
     )
 
     # Direct URL to the restaurant's menu page (if found)
-    menu_url: Mapped[Optional[str]] = mapped_column(String(500))
+    menu_url: Mapped[str | None] = mapped_column(String(500))
 
     # Social media URLs (from OSM contact:facebook / contact:instagram tags)
-    facebook_url: Mapped[Optional[str]] = mapped_column(String(500))
-    instagram_url: Mapped[Optional[str]] = mapped_column(String(500))
+    facebook_url: Mapped[str | None] = mapped_column(String(500))
+    instagram_url: Mapped[str | None] = mapped_column(String(500))
 
     # Google Places API identifier (for future re-syncs)
-    google_place_id: Mapped[Optional[str]] = mapped_column(String(200))
+    google_place_id: Mapped[str | None] = mapped_column(String(200))
 
     # Geographic coordinates
-    latitude: Mapped[Optional[float]] = mapped_column()
-    longitude: Mapped[Optional[float]] = mapped_column()
+    latitude: Mapped[float | None] = mapped_column()
+    longitude: Mapped[float | None] = mapped_column()
 
     # Data sources (e.g., ["google_maps", "website"])
     data_sources: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
@@ -81,7 +81,7 @@ class Restaurant(Base):
     updated_at: Mapped[datetime] = mapped_column(
         default=datetime.utcnow, onupdate=datetime.utcnow
     )
-    last_verified: Mapped[Optional[datetime]] = mapped_column()
+    last_verified: Mapped[datetime | None] = mapped_column()
 
     def __repr__(self) -> str:
         return f"<Restaurant(name='{self.name}', cuisine={self.cuisine})>"

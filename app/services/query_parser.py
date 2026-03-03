@@ -1,6 +1,46 @@
 """Query parser service for extracting user intent and filters from natural language."""
 
 import re
+from enum import StrEnum
+
+from pydantic import BaseModel
+
+
+class SortPreference(StrEnum):
+    """User's explicit sorting preference."""
+
+    RATING = "rating"
+    DISTANCE = "distance"
+    PRICE_ASC = "price_asc"
+    PRICE_DESC = "price_desc"
+
+
+class Mood(StrEnum):
+    """Occasion or atmosphere the user is looking for."""
+
+    DATE_NIGHT = "date_night"
+    BUSINESS = "business"
+    CASUAL = "casual"
+    FAMILY = "family"
+    CELEBRATION = "celebration"
+
+
+class ParsedQuery(BaseModel):
+    """LLM-extracted structured query from user message."""
+
+    cuisine_types: list[str]
+    excluded_cuisines: list[str]
+    price_ranges: list[str]
+    excluded_price_ranges: list[str]
+    features: list[str]
+    dish_keywords: list[str]
+    location_name: str | None
+    mood: Mood | None
+    group_size: int | None
+    time_preference: str | None
+    sort_by: SortPreference | None
+    language: str
+
 
 # ---------------------------------------------------------------------------
 # Graz location database — (latitude, longitude) for known places
@@ -108,6 +148,13 @@ class QueryFilters:
         self.location_lng: float | None = None
         self.location_radius_m: float = _DEFAULT_RADIUS_M
         self.query_text: str = ""
+        self.excluded_cuisines: list[str] = []
+        self.excluded_price_ranges: list[str] = []
+        self.mood: Mood | None = None
+        self.group_size: int | None = None
+        self.time_preference: str | None = None
+        self.sort_by: SortPreference | None = None
+        self.language: str = "en"
 
     @property
     def has_location(self) -> bool:

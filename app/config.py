@@ -27,6 +27,10 @@ class Settings(BaseSettings):
         le=1.0,
         description="LLM temperature (0.0-1.0, lower = more deterministic)",
     )
+    parser_model: str = Field(
+        default="gpt-4o-mini",
+        description="LLM model for query parsing (cheaper/faster than response model)",
+    )
     max_results: int = Field(
         default=5, ge=1, le=10, description="Maximum restaurants to return per query"
     )

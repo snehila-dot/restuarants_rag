@@ -74,7 +74,7 @@ async def seed_from_json(file_path: str) -> None:
         logger.error("File not found: %s", file_path)
         return
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = json.load(f)
 
     restaurants_data = data.get("restaurants", [])
