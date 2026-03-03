@@ -45,9 +45,7 @@ class RestaurantResponse(BaseModel):
         default=None, description="Direct URL to the menu page"
     )
     facebook_url: str | None = Field(default=None, description="Facebook page URL")
-    instagram_url: str | None = Field(
-        default=None, description="Instagram profile URL"
-    )
+    instagram_url: str | None = Field(default=None, description="Instagram profile URL")
     google_place_id: str | None = Field(
         default=None, description="Google Places API identifier"
     )

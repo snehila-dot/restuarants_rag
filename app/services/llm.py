@@ -58,7 +58,11 @@ def format_restaurant_data(restaurants: list[Restaurant]) -> str:
             f"   Address: {restaurant.address}",
             f"   Cuisine: {', '.join(restaurant.cuisine)}",
             f"   Price Range: {restaurant.price_range}"
-            + (f" ({restaurant.price_range_text})" if restaurant.price_range_text else ""),
+            + (
+                f" ({restaurant.price_range_text})"
+                if restaurant.price_range_text
+                else ""
+            ),
         ]
 
         if restaurant.rating:

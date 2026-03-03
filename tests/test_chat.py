@@ -44,9 +44,7 @@ async def test_chat_endpoint_success(
         mock_response = AsyncMock()
         mock_response.choices = [
             AsyncMock(
-                message=AsyncMock(
-                    content="I found some Italian restaurants for you."
-                )
+                message=AsyncMock(content="I found some Italian restaurants for you.")
             )
         ]
         mock_llm.return_value = mock_response
@@ -88,9 +86,7 @@ async def test_chat_endpoint_language_detection(
         mock_parser.return_value = _mock_parsed_query(language="de")
 
         mock_response = AsyncMock()
-        mock_response.choices = [
-            AsyncMock(message=AsyncMock(content="Test response"))
-        ]
+        mock_response.choices = [AsyncMock(message=AsyncMock(content="Test response"))]
         mock_llm.return_value = mock_response
 
         response = await client.post(

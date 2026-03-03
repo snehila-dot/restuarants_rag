@@ -17,7 +17,6 @@ from app.services.query_parser import (
     parse_query,
 )
 
-
 # ---------------------------------------------------------------------------
 # Legacy tests (detect_language kept for backward compat)
 # ---------------------------------------------------------------------------
@@ -147,9 +146,7 @@ async def test_llm_extract_simple_cuisine() -> None:
     mock_response.choices = [mock_choice]
 
     with patch("app.services.query_parser._parser_client") as mock_client:
-        mock_client.beta.chat.completions.parse = AsyncMock(
-            return_value=mock_response
-        )
+        mock_client.beta.chat.completions.parse = AsyncMock(return_value=mock_response)
         result = await _llm_extract("I want Italian pizza")
 
     assert result.cuisine_types == ["italian"]
@@ -171,9 +168,7 @@ async def test_llm_extract_refusal_returns_empty() -> None:
     mock_response.choices = [mock_choice]
 
     with patch("app.services.query_parser._parser_client") as mock_client:
-        mock_client.beta.chat.completions.parse = AsyncMock(
-            return_value=mock_response
-        )
+        mock_client.beta.chat.completions.parse = AsyncMock(return_value=mock_response)
         result = await _llm_extract("something inappropriate")
 
     assert result.cuisine_types == []
@@ -195,9 +190,7 @@ async def test_llm_extract_null_parsed_returns_empty() -> None:
     mock_response.choices = [mock_choice]
 
     with patch("app.services.query_parser._parser_client") as mock_client:
-        mock_client.beta.chat.completions.parse = AsyncMock(
-            return_value=mock_response
-        )
+        mock_client.beta.chat.completions.parse = AsyncMock(return_value=mock_response)
         result = await _llm_extract("...")
 
     assert result.cuisine_types == []

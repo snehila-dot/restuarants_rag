@@ -105,9 +105,7 @@ async def search_restaurants(
     # Negation: exclude restaurants matching excluded price ranges
     if filters.excluded_price_ranges:
         restaurants = [
-            r
-            for r in restaurants
-            if r.price_range not in filters.excluded_price_ranges
+            r for r in restaurants if r.price_range not in filters.excluded_price_ranges
         ]
 
     # Time preference: exclude restaurants known to be closed
@@ -157,9 +155,7 @@ async def search_restaurants(
     elif filters.sort_by == SortPreference.PRICE_ASC:
         restaurants.sort(key=lambda r: _PRICE_ORDER.get(r.price_range, 99))
     elif filters.sort_by == SortPreference.PRICE_DESC:
-        restaurants.sort(
-            key=lambda r: _PRICE_ORDER.get(r.price_range, 0), reverse=True
-        )
+        restaurants.sort(key=lambda r: _PRICE_ORDER.get(r.price_range, 0), reverse=True)
     elif filters.sort_by == SortPreference.RATING:
         restaurants.sort(key=lambda r: (r.rating or 0.0, r.review_count), reverse=True)
     else:
