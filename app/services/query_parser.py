@@ -154,6 +154,7 @@ async def _llm_extract(message: str) -> ParsedQuery:
             ],
             response_format=ParsedQuery,
             temperature=0.0,
+            timeout=5.0,
         )
 
         # Handle refusal (safety filter)
@@ -263,6 +264,32 @@ _GRAZ_LOCATIONS: dict[str, tuple[float, float]] = {
     "liebenau": (47.0434, 15.4589),
     "ries": (47.0950, 15.4730),
     "sankt peter": (47.0556, 15.4716),
+}
+
+# Valid feature values (must match DB schema / prompt instructions)
+_VALID_FEATURES: set[str] = {
+    "vegan_options",
+    "vegetarian_options",
+    "outdoor_seating",
+    "wheelchair_accessible",
+    "delivery",
+    "reservations",
+    "wifi",
+    "parking",
+    "serves_breakfast",
+    "serves_brunch",
+    "serves_lunch",
+    "serves_dinner",
+    "serves_beer",
+    "serves_wine",
+    "serves_cocktails",
+    "serves_coffee",
+    "dogs_allowed",
+    "good_for_children",
+    "good_for_groups",
+    "sports_viewing",
+    "live_music",
+    "children_menu",
 }
 
 # Default search radius in metres
@@ -428,7 +455,12 @@ async def parse_query(message: str) -> QueryFilters:
     filters.excluded_cuisines = parsed.excluded_cuisines
     filters.price_ranges = parsed.price_ranges
     filters.excluded_price_ranges = parsed.excluded_price_ranges
-    filters.features = list(parsed.features)
+    # Filter out hallucinated feature names from LLM extraction
+    valid_features = [f for f in parsed.features if f in _VALID_FEATURES]
+    invalid_features = [f for f in parsed.features if f not in _VALID_FEATURES]
+    if invalid_features:
+        logger.warning("Dropped invalid features from LLM: %s", invalid_features)
+    filters.features = valid_features
     filters.dish_keywords = parsed.dish_keywords
     filters.mood = parsed.mood
     filters.group_size = parsed.group_size
