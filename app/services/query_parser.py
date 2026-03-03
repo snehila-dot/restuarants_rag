@@ -322,193 +322,131 @@ def detect_language(text: str) -> str:
     return "de" if german_matches >= 2 else "en"
 
 
-def _detect_location(
-    message_lower: str,
+def _resolve_location(
+    location_name: str,
 ) -> tuple[str | None, float | None, float | None]:
-    """Match the longest known Graz location in the message.
+    """Resolve a location name to coordinates using the Graz location database.
 
-    Returns ``(name, lat, lng)`` or ``(None, None, None)``.
-    Longest-match-first avoids "lend" matching inside "glockenspielplatz".
+    Tries exact match first, then substring match in the dictionary keys.
+
+    Returns:
+        (name, lat, lng) or (None, None, None) if not found.
     """
-    # Sort by key length descending so longer names match first
-    for name in sorted(_GRAZ_LOCATIONS, key=len, reverse=True):
-        if name in message_lower:
-            lat, lng = _GRAZ_LOCATIONS[name]
-            return name, lat, lng
+    name_lower = location_name.lower().strip()
+
+    # Exact match
+    if name_lower in _GRAZ_LOCATIONS:
+        lat, lng = _GRAZ_LOCATIONS[name_lower]
+        return name_lower, lat, lng
+
+    # Substring match — longest first to avoid "lend" matching inside longer names
+    for key in sorted(_GRAZ_LOCATIONS, key=len, reverse=True):
+        if key in name_lower:
+            lat, lng = _GRAZ_LOCATIONS[key]
+            return key, lat, lng
+
     return None, None, None
 
 
-def parse_query(message: str) -> QueryFilters:
+def _keyword_fallback(message: str) -> ParsedQuery:
+    """Minimal keyword-based parser used when LLM API is unavailable.
+
+    Extracts basic cuisine, price, and language. Does NOT support
+    negation, mood, time, group size, or sorting.
     """
-    Parse user query to extract structured filters.
+    message_lower = message.lower()
+
+    cuisine_map: dict[str, list[str]] = {
+        "italian": ["italian", "italienisch", "pizza", "pasta"],
+        "asian": ["asian", "asiatisch", "chinese", "thai", "japanese", "sushi"],
+        "austrian": ["austrian", "österreichisch", "schnitzel"],
+        "indian": ["indian", "indisch", "curry"],
+        "mexican": ["mexican", "mexikanisch", "taco", "burrito"],
+        "vegan": ["vegan"],
+        "vegetarian": ["vegetarian", "vegetarisch"],
+        "burger": ["burger"],
+        "cafe": ["café", "cafe", "coffee", "kaffee"],
+    }
+    cuisine_types = [
+        cuisine
+        for cuisine, keywords in cuisine_map.items()
+        if any(kw in message_lower for kw in keywords)
+    ]
+
+    price_map: dict[str, list[str]] = {
+        "€": ["cheap", "günstig", "billig", "budget"],
+        "€€": ["moderate", "mittel"],
+        "€€€": ["expensive", "teuer", "fine dining"],
+    }
+    price_ranges = [
+        price
+        for price, keywords in price_map.items()
+        if any(kw in message_lower for kw in keywords)
+    ]
+
+    german_words = ["ich", "suche", "ein", "der", "die", "das", "und", "für", "mit"]
+    german_count = sum(1 for w in german_words if f" {w} " in f" {message_lower} ")
+    language = "de" if german_count >= 2 else "en"
+
+    return ParsedQuery(
+        cuisine_types=cuisine_types,
+        excluded_cuisines=[],
+        price_ranges=price_ranges,
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=[],
+        location_name=None,
+        mood=None,
+        group_size=None,
+        time_preference=None,
+        sort_by=None,
+        language=language,
+    )
+
+
+async def parse_query(message: str) -> QueryFilters:
+    """Parse user query to extract structured filters.
+
+    Uses LLM structured extraction (gpt-4o-mini) with keyword fallback
+    on API failure.
 
     Args:
         message: User's natural language query
 
     Returns:
-        QueryFilters object with extracted information
+        QueryFilters with extracted and enriched filters
     """
+    try:
+        parsed = await _llm_extract(message)
+    except Exception:
+        logger.warning("LLM extraction failed, using keyword fallback")
+        parsed = _keyword_fallback(message)
+
     filters = QueryFilters()
     filters.query_text = message
-    message_lower = message.lower()
+    filters.cuisine_types = parsed.cuisine_types
+    filters.excluded_cuisines = parsed.excluded_cuisines
+    filters.price_ranges = parsed.price_ranges
+    filters.excluded_price_ranges = parsed.excluded_price_ranges
+    filters.features = list(parsed.features)
+    filters.dish_keywords = parsed.dish_keywords
+    filters.mood = parsed.mood
+    filters.group_size = parsed.group_size
+    filters.time_preference = parsed.time_preference
+    filters.sort_by = parsed.sort_by
+    filters.language = parsed.language
 
-    # Cuisine type detection (English and German)
-    cuisine_patterns = {
-        "italian": ["italian", "italienisch", "pizza", "pasta"],
-        "asian": [
-            "asian",
-            "asiatisch",
-            "chinese",
-            "chinesisch",
-            "thai",
-            "japanese",
-            "japanisch",
-            "sushi",
-        ],
-        "austrian": ["austrian", "österreichisch", "schnitzel", "traditional"],
-        "indian": ["indian", "indisch", "curry"],
-        "mexican": ["mexican", "mexikanisch", "taco", "burrito"],
-        "mediterranean": ["mediterranean", "mediterran", "greek", "griechisch"],
-        "vegan": ["vegan"],
-        "vegetarian": ["vegetarian", "vegetarisch"],
-        "burger": ["burger", "burgers"],
-        "cafe": ["café", "cafe", "coffee", "kaffee"],
-    }
+    # Resolve location name to coordinates
+    if parsed.location_name:
+        loc_name, loc_lat, loc_lng = _resolve_location(parsed.location_name)
+        if loc_name is not None:
+            filters.location_name = loc_name
+            filters.location_lat = loc_lat
+            filters.location_lng = loc_lng
 
-    for cuisine, keywords in cuisine_patterns.items():
-        if any(keyword in message_lower for keyword in keywords):
-            filters.cuisine_types.append(cuisine)
-
-    # Price range detection
-    price_patterns = {
-        "€": ["cheap", "günstig", "billig", "budget", "affordable", "inexpensive"],
-        "€€": ["moderate", "mittel", "reasonable"],
-        "€€€": ["expensive", "teuer", "upscale", "fine dining", "gehobene küche"],
-        "€€€€": ["luxury", "luxus", "very expensive", "sehr teuer"],
-    }
-
-    for price_range, keywords in price_patterns.items():
-        if any(keyword in message_lower for keyword in keywords):
-            filters.price_ranges.append(price_range)
-
-    # Feature detection
-    feature_patterns = {
-        "vegan_options": ["vegan"],
-        "vegetarian_options": ["vegetarian", "vegetarisch"],
-        "outdoor_seating": [
-            "outdoor",
-            "terrace",
-            "terrasse",
-            "garden",
-            "garten",
-            "outside",
-        ],
-        "wheelchair_accessible": [
-            "wheelchair",
-            "accessible",
-            "rollstuhl",
-            "barrierefrei",
-        ],
-        "delivery": ["delivery", "lieferung", "takeaway", "abholen"],
-        "reservations": ["reservation", "reservierung", "booking", "book"],
-        "wifi": ["wifi", "wlan", "internet"],
-        "parking": ["parking", "parkplatz"],
-        # Meal types
-        "serves_breakfast": ["breakfast", "frühstück", "fruehstueck"],
-        "serves_brunch": ["brunch"],
-        "serves_lunch": ["lunch", "mittagessen"],
-        "serves_dinner": ["dinner", "abendessen"],
-        # Drinks
-        "serves_beer": ["beer", "bier"],
-        "serves_wine": ["wine", "wein"],
-        "serves_cocktails": ["cocktail", "cocktails"],
-        "serves_coffee": ["coffee", "kaffee"],
-        # Audience & amenities
-        "dogs_allowed": ["dog", "dogs", "hund", "hunde", "hundefreundlich"],
-        "good_for_children": [
-            "kids",
-            "children",
-            "family",
-            "kinder",
-            "familie",
-            "familienfreundlich",
-        ],
-        "good_for_groups": ["group", "groups", "gruppe", "gruppen"],
-        "sports_viewing": ["sport", "match", "game", "fußball", "football"],
-        "live_music": ["live music", "livemusik", "live-musik"],
-        "children_menu": ["children menu", "kinderkarte", "kids menu"],
-    }
-
-    for feature, keywords in feature_patterns.items():
-        if any(keyword in message_lower for keyword in keywords):
-            filters.features.append(feature)
-
-    # Dish / menu item keyword detection (common dishes in Graz restaurants)
-    dish_patterns = [
-        "schnitzel",
-        "tafelspitz",
-        "gulasch",
-        "goulash",
-        "käsespätzle",
-        "ramen",
-        "sushi",
-        "sashimi",
-        "maki",
-        "nigiri",
-        "tempura",
-        "tonkatsu",
-        "gyoza",
-        "udon",
-        "bento",
-        "pizza",
-        "pasta",
-        "risotto",
-        "lasagna",
-        "gnocchi",
-        "tiramisu",
-        "curry",
-        "tikka",
-        "naan",
-        "biryani",
-        "tandoori",
-        "dal",
-        "taco",
-        "burrito",
-        "enchilada",
-        "quesadilla",
-        "guacamole",
-        "kebab",
-        "döner",
-        "falafel",
-        "hummus",
-        "shawarma",
-        "burger",
-        "steak",
-        "ribs",
-        "wings",
-        "pho",
-        "pad thai",
-        "spring roll",
-        "dim sum",
-        "wonton",
-        "crêpe",
-        "croissant",
-        "quiche",
-        "bowl",
-        "wrap",
-        "sandwich",
-        "salad",
-    ]
-
-    for dish in dish_patterns:
-        if dish in message_lower:
-            filters.dish_keywords.append(dish)
-
-    # Location detection — resolve to coordinates
-    loc_name, loc_lat, loc_lng = _detect_location(message_lower)
-    if loc_name is not None:
-        filters.location_name = loc_name
-        filters.location_lat = loc_lat
-        filters.location_lng = loc_lng
+    # Group size >= 5 adds good_for_groups to features
+    if parsed.group_size is not None and parsed.group_size >= 5:
+        if "good_for_groups" not in filters.features:
+            filters.features.append("good_for_groups")
 
     return filters

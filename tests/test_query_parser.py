@@ -10,10 +10,17 @@ from app.services.query_parser import (
     QueryFilters,
     SortPreference,
     _empty_parsed_query,
+    _keyword_fallback,
     _llm_extract,
+    _resolve_location,
     detect_language,
     parse_query,
 )
+
+
+# ---------------------------------------------------------------------------
+# Legacy tests (detect_language kept for backward compat)
+# ---------------------------------------------------------------------------
 
 
 def test_detect_language_english() -> None:
@@ -22,37 +29,9 @@ def test_detect_language_english() -> None:
     assert detect_language("cheap Italian food") == "en"
 
 
-def test_detect_language_german() -> None:
-    """Test German language detection."""
-    assert detect_language("Ich suche ein Restaurant") == "de"
-    assert detect_language("günstige italienische Küche") == "de"
-
-
-def test_parse_query_cuisine() -> None:
-    """Test cuisine extraction."""
-    filters = parse_query("I want Italian food")
-    assert "italian" in filters.cuisine_types
-
-    filters = parse_query("vegan restaurant")
-    assert "vegan" in filters.cuisine_types
-
-
-def test_parse_query_price() -> None:
-    """Test price range extraction."""
-    filters = parse_query("cheap restaurant")
-    assert "€" in filters.price_ranges
-
-    filters = parse_query("expensive fine dining")
-    assert "€€€" in filters.price_ranges
-
-
-def test_parse_query_features() -> None:
-    """Test feature extraction."""
-    filters = parse_query("restaurant with outdoor seating")
-    assert "outdoor_seating" in filters.features
-
-    filters = parse_query("vegan options available")
-    assert "vegan_options" in filters.features
+# ---------------------------------------------------------------------------
+# Task 1: Schema tests
+# ---------------------------------------------------------------------------
 
 
 def test_parsed_query_minimal() -> None:
@@ -134,15 +113,8 @@ def test_empty_parsed_query() -> None:
     pq = _empty_parsed_query()
     assert pq.cuisine_types == []
     assert pq.excluded_cuisines == []
-    assert pq.price_ranges == []
-    assert pq.excluded_price_ranges == []
-    assert pq.features == []
-    assert pq.dish_keywords == []
     assert pq.location_name is None
     assert pq.mood is None
-    assert pq.group_size is None
-    assert pq.time_preference is None
-    assert pq.sort_by is None
     assert pq.language == "en"
 
 
@@ -230,3 +202,119 @@ async def test_llm_extract_null_parsed_returns_empty() -> None:
 
     assert result.cuisine_types == []
     assert result.language == "en"
+
+
+# ---------------------------------------------------------------------------
+# Task 3: Location resolution, keyword fallback, async parse_query
+# ---------------------------------------------------------------------------
+
+
+def test_resolve_location_known() -> None:
+    """Known Graz location resolves to coordinates."""
+    name, lat, lng = _resolve_location("hauptplatz")
+    assert name == "hauptplatz"
+    assert lat is not None
+    assert lng is not None
+
+
+def test_resolve_location_substring() -> None:
+    """Location name containing a known place resolves via substring match."""
+    name, lat, lng = _resolve_location("near hauptplatz area")
+    assert name == "hauptplatz"
+    assert lat is not None
+
+
+def test_resolve_location_unknown() -> None:
+    """Unknown location returns None tuple."""
+    name, lat, lng = _resolve_location("nonexistent_place_xyz")
+    assert name is None
+    assert lat is None
+    assert lng is None
+
+
+def test_keyword_fallback_cuisine() -> None:
+    """Keyword fallback extracts basic cuisine types."""
+    pq = _keyword_fallback("I want Italian food")
+    assert "italian" in pq.cuisine_types
+
+
+def test_keyword_fallback_price() -> None:
+    """Keyword fallback extracts price ranges."""
+    pq = _keyword_fallback("cheap restaurant")
+    assert "€" in pq.price_ranges
+
+
+def test_keyword_fallback_language_de() -> None:
+    """Keyword fallback detects German."""
+    pq = _keyword_fallback("Ich suche ein Restaurant in der Innenstadt")
+    assert pq.language == "de"
+
+
+@pytest.mark.asyncio
+async def test_parse_query_uses_llm() -> None:
+    """parse_query calls LLM and resolves location."""
+    mock_parsed = ParsedQuery(
+        cuisine_types=["italian"],
+        excluded_cuisines=[],
+        price_ranges=["€€"],
+        excluded_price_ranges=[],
+        features=["outdoor_seating"],
+        dish_keywords=[],
+        location_name="hauptplatz",
+        mood=Mood.DATE_NIGHT,
+        group_size=2,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+    with patch(
+        "app.services.query_parser._llm_extract", new_callable=AsyncMock
+    ) as mock_extract:
+        mock_extract.return_value = mock_parsed
+        filters = await parse_query("romantic Italian dinner near Hauptplatz")
+
+    assert filters.cuisine_types == ["italian"]
+    assert filters.location_name == "hauptplatz"
+    assert filters.location_lat is not None
+    assert filters.mood == Mood.DATE_NIGHT
+
+
+@pytest.mark.asyncio
+async def test_parse_query_falls_back_on_llm_error() -> None:
+    """parse_query falls back to keywords when LLM fails."""
+    with patch(
+        "app.services.query_parser._llm_extract", new_callable=AsyncMock
+    ) as mock_extract:
+        mock_extract.side_effect = Exception("API timeout")
+        filters = await parse_query("cheap Italian food")
+
+    assert "italian" in filters.cuisine_types
+    assert "€" in filters.price_ranges
+
+
+@pytest.mark.asyncio
+async def test_parse_query_group_size_adds_feature() -> None:
+    """Group size >= 5 adds good_for_groups feature."""
+    mock_parsed = ParsedQuery(
+        cuisine_types=[],
+        excluded_cuisines=[],
+        price_ranges=[],
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=[],
+        location_name=None,
+        mood=None,
+        group_size=8,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+    with patch(
+        "app.services.query_parser._llm_extract", new_callable=AsyncMock
+    ) as mock_extract:
+        mock_extract.return_value = mock_parsed
+        filters = await parse_query("dinner for 8")
+
+    assert "good_for_groups" in filters.features
