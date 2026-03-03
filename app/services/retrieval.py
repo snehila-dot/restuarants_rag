@@ -9,7 +9,19 @@ from sqlalchemy.orm import selectinload
 from app.config import settings
 from app.models.menu_item import MenuItem
 from app.models.restaurant import Restaurant
-from app.services.query_parser import QueryFilters
+from app.services.query_parser import Mood, QueryFilters, SortPreference
+
+# Mood → preferred features mapping (soft ranking boosts, not hard filters)
+_MOOD_FEATURES: dict[Mood, list[str]] = {
+    Mood.DATE_NIGHT: ["serves_wine", "outdoor_seating", "reservations"],
+    Mood.BUSINESS: ["reservations", "wifi"],
+    Mood.FAMILY: ["good_for_children", "children_menu"],
+    Mood.CASUAL: [],
+    Mood.CELEBRATION: ["good_for_groups", "reservations", "serves_cocktails"],
+}
+
+# Price range ordering for sort
+_PRICE_ORDER: dict[str, int] = {"€": 1, "€€": 2, "€€€": 3, "€€€€": 4}
 
 # Approximate metres-per-degree at Graz latitude (~47°N)
 _M_PER_DEG_LAT = 111_000.0
@@ -79,6 +91,49 @@ async def search_restaurants(
             if all(feature in r.features for feature in filters.features)
         ]
 
+    # Negation: exclude restaurants matching excluded cuisines
+    if filters.excluded_cuisines:
+        restaurants = [
+            r
+            for r in restaurants
+            if not any(
+                exc.lower() in [c.lower() for c in r.cuisine]
+                for exc in filters.excluded_cuisines
+            )
+        ]
+
+    # Negation: exclude restaurants matching excluded price ranges
+    if filters.excluded_price_ranges:
+        restaurants = [
+            r
+            for r in restaurants
+            if r.price_range not in filters.excluded_price_ranges
+        ]
+
+    # Time preference: exclude restaurants known to be closed
+    if filters.time_preference:
+        time_lower = filters.time_preference.lower()
+        day_names = [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        ]
+        target_days = [d for d in day_names if d in time_lower]
+        if target_days:
+            restaurants = [
+                r
+                for r in restaurants
+                if not r.opening_hours  # Keep restaurants without hours data
+                or not any(
+                    r.opening_hours.get(day, "").lower() == "closed"
+                    for day in target_days
+                )
+            ]
+
     # Geo-distance filtering — keep only restaurants within radius
     if filters.has_location:
         assert filters.location_lat is not None  # for type checker
@@ -99,9 +154,28 @@ async def search_restaurants(
         # Sort by distance (closest first)
         scored.sort(key=lambda t: t[0])
         restaurants = [r for _, r in scored]
-    else:
-        # No location → rank by rating
+    elif filters.sort_by == SortPreference.PRICE_ASC:
+        restaurants.sort(key=lambda r: _PRICE_ORDER.get(r.price_range, 99))
+    elif filters.sort_by == SortPreference.PRICE_DESC:
+        restaurants.sort(
+            key=lambda r: _PRICE_ORDER.get(r.price_range, 0), reverse=True
+        )
+    elif filters.sort_by == SortPreference.RATING:
         restaurants.sort(key=lambda r: (r.rating or 0.0, r.review_count), reverse=True)
+    else:
+        # Default: rating-based, with mood boost if applicable
+        if filters.mood and filters.mood in _MOOD_FEATURES:
+            preferred = _MOOD_FEATURES[filters.mood]
+
+            def _mood_score(r: Restaurant) -> tuple[int, float, int]:
+                feature_hits = sum(1 for f in preferred if f in r.features)
+                return (feature_hits, r.rating or 0.0, r.review_count)
+
+            restaurants.sort(key=_mood_score, reverse=True)
+        else:
+            restaurants.sort(
+                key=lambda r: (r.rating or 0.0, r.review_count), reverse=True
+            )
 
     # Limit results
     restaurants = restaurants[: settings.max_results]
