@@ -1,9 +1,15 @@
 """Query parser service for extracting user intent and filters from natural language."""
 
+import logging
 import re
 from enum import StrEnum
 
+from openai import AsyncOpenAI
 from pydantic import BaseModel
+
+from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class SortPreference(StrEnum):
@@ -40,6 +46,134 @@ class ParsedQuery(BaseModel):
     time_preference: str | None
     sort_by: SortPreference | None
     language: str
+
+
+# Parser-specific OpenAI client (separate from response generation client)
+_parser_client = AsyncOpenAI(api_key=settings.openai_api_key)
+
+PARSER_SYSTEM_PROMPT = """\
+You extract structured restaurant search filters from user messages about \
+restaurants in Graz, Austria. Extract ONLY what the user explicitly states \
+or clearly implies. When uncertain, leave fields empty/null rather than guessing.
+
+FIELD INSTRUCTIONS:
+
+cuisine_types: Normalized cuisine categories. Map variations to canonical names:
+  "pizza/pasta" → "italian", "sushi/ramen/japanese" → "asian",
+  "schnitzel/wiener" → "austrian", "kebab/döner" → "turkish",
+  "curry/naan/tikka" → "indian", "taco/burrito" → "mexican",
+  "gyros/souvlaki" → "mediterranean", "burger" → "burger",
+  "café/coffee" → "cafe", "vegan" → "vegan", "vegetarian" → "vegetarian"
+  Only include cuisines the user WANTS.
+
+excluded_cuisines: Cuisines the user explicitly does NOT want.
+  "no Italian" → ["italian"], "anything but Asian" → ["asian"]
+
+price_ranges: Map to symbols: "€" (cheap/budget), "€€" (moderate/mid-range), \
+"€€€" (upscale/expensive), "€€€€" (luxury).
+
+excluded_price_ranges: Prices the user explicitly avoids.
+  "nothing too expensive" → ["€€€", "€€€€"], "not cheap" → ["€"]
+
+features: ONLY use values from this list:
+  vegan_options, vegetarian_options, outdoor_seating, wheelchair_accessible, \
+  delivery, reservations, wifi, parking, serves_breakfast, serves_brunch, \
+  serves_lunch, serves_dinner, serves_beer, serves_wine, serves_cocktails, \
+  serves_coffee, dogs_allowed, good_for_children, good_for_groups, \
+  sports_viewing, live_music, children_menu
+
+dish_keywords: Specific dish names mentioned (schnitzel, curry, burger, etc.)
+
+location_name: A Graz location if mentioned. Normalize to lowercase:
+  "near the clock tower" → "uhrturm", "main square" → "hauptplatz", \
+  "train station" → "hauptbahnhof", "old town" → "altstadt", \
+  "Lendplatz area" → "lendplatz", "university" → "uni graz"
+
+mood: Occasion/atmosphere. Use null if not expressed.
+  "romantic dinner" → "date_night", "work lunch" → "business", \
+  "just grabbing a bite" → "casual", "birthday party" → "celebration", \
+  "with the kids" → "family"
+
+group_size: Number of people if mentioned. "just me" → 1, "for four" → 4. \
+  Null if not mentioned.
+
+time_preference: When the user wants to eat, as natural language. \
+  "open right now" → "open now", "sunday evening", "late night", \
+  "for lunch tomorrow" → "lunch". Null if not mentioned.
+
+sort_by: Explicit sorting preference. Null if not mentioned.
+  "best rated" → "rating", "closest" → "distance", \
+  "cheapest" → "price_asc", "most expensive" → "price_desc"
+
+language: "de" if the message is in German, "en" otherwise.\
+"""
+
+
+def _empty_parsed_query() -> ParsedQuery:
+    """Return a ParsedQuery with all fields empty/null."""
+    return ParsedQuery(
+        cuisine_types=[],
+        excluded_cuisines=[],
+        price_ranges=[],
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=[],
+        location_name=None,
+        mood=None,
+        group_size=None,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+
+async def _llm_extract(message: str) -> ParsedQuery:
+    """Extract structured query filters from a user message using the LLM.
+
+    Args:
+        message: User's natural language query
+
+    Returns:
+        ParsedQuery with extracted filters
+
+    Raises:
+        Exception: If LLM API call fails (caller should handle fallback)
+    """
+    try:
+        response = await _parser_client.beta.chat.completions.parse(
+            model=settings.parser_model,
+            messages=[
+                {"role": "system", "content": PARSER_SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": (
+                        "Extract restaurant search filters from this"
+                        f' message: "{message}"'
+                    ),
+                },
+            ],
+            response_format=ParsedQuery,
+            temperature=0.0,
+        )
+
+        # Handle refusal (safety filter)
+        if response.choices[0].message.refusal:
+            logger.warning(
+                "Parser LLM refused request: %s",
+                response.choices[0].message.refusal,
+            )
+            return _empty_parsed_query()
+
+        parsed = response.choices[0].message.parsed
+        if parsed is None:
+            logger.warning("Parser LLM returned null parsed result")
+            return _empty_parsed_query()
+
+        return parsed
+
+    except Exception:
+        logger.exception("LLM extraction failed")
+        raise
 
 
 # ---------------------------------------------------------------------------

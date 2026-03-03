@@ -1,11 +1,16 @@
 """Tests for query parser service."""
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from app.services.query_parser import (
     Mood,
     ParsedQuery,
     QueryFilters,
     SortPreference,
+    _empty_parsed_query,
+    _llm_extract,
     detect_language,
     parse_query,
 )
@@ -117,3 +122,111 @@ def test_query_filters_new_fields() -> None:
     assert qf.time_preference is None
     assert qf.sort_by is None
     assert qf.language == "en"
+
+
+# ---------------------------------------------------------------------------
+# Task 2: LLM extraction tests
+# ---------------------------------------------------------------------------
+
+
+def test_empty_parsed_query() -> None:
+    """_empty_parsed_query returns all-empty ParsedQuery."""
+    pq = _empty_parsed_query()
+    assert pq.cuisine_types == []
+    assert pq.excluded_cuisines == []
+    assert pq.price_ranges == []
+    assert pq.excluded_price_ranges == []
+    assert pq.features == []
+    assert pq.dish_keywords == []
+    assert pq.location_name is None
+    assert pq.mood is None
+    assert pq.group_size is None
+    assert pq.time_preference is None
+    assert pq.sort_by is None
+    assert pq.language == "en"
+
+
+@pytest.mark.asyncio
+async def test_llm_extract_simple_cuisine() -> None:
+    """LLM extraction returns ParsedQuery for simple cuisine query."""
+    mock_parsed = ParsedQuery(
+        cuisine_types=["italian"],
+        excluded_cuisines=[],
+        price_ranges=[],
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=["pizza"],
+        location_name=None,
+        mood=None,
+        group_size=None,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+    mock_message = MagicMock()
+    mock_message.parsed = mock_parsed
+    mock_message.refusal = None
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+
+    with patch("app.services.query_parser._parser_client") as mock_client:
+        mock_client.beta.chat.completions.parse = AsyncMock(
+            return_value=mock_response
+        )
+        result = await _llm_extract("I want Italian pizza")
+
+    assert result.cuisine_types == ["italian"]
+    assert result.dish_keywords == ["pizza"]
+    assert result.language == "en"
+
+
+@pytest.mark.asyncio
+async def test_llm_extract_refusal_returns_empty() -> None:
+    """LLM refusal returns empty ParsedQuery."""
+    mock_message = MagicMock()
+    mock_message.parsed = None
+    mock_message.refusal = "I cannot process this request."
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+
+    with patch("app.services.query_parser._parser_client") as mock_client:
+        mock_client.beta.chat.completions.parse = AsyncMock(
+            return_value=mock_response
+        )
+        result = await _llm_extract("something inappropriate")
+
+    assert result.cuisine_types == []
+    assert result.mood is None
+    assert result.language == "en"
+
+
+@pytest.mark.asyncio
+async def test_llm_extract_null_parsed_returns_empty() -> None:
+    """LLM returning null parsed (no refusal) returns empty ParsedQuery."""
+    mock_message = MagicMock()
+    mock_message.parsed = None
+    mock_message.refusal = None
+
+    mock_choice = MagicMock()
+    mock_choice.message = mock_message
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
+
+    with patch("app.services.query_parser._parser_client") as mock_client:
+        mock_client.beta.chat.completions.parse = AsyncMock(
+            return_value=mock_response
+        )
+        result = await _llm_extract("...")
+
+    assert result.cuisine_types == []
+    assert result.language == "en"
