@@ -35,7 +35,7 @@ function formatRestaurants(restaurants) {
             <div class="restaurant-card">
                 <h4>${escapeHtml(restaurant.name)}</h4>
                 <p><strong>Address:</strong> ${escapeHtml(restaurant.address)}</p>
-                <p class="cuisine"><strong>Cuisine:</strong> ${restaurant.cuisine.join(', ')}</p>
+                <p class="cuisine"><strong>Cuisine:</strong> ${restaurant.cuisine.map(c => escapeHtml(c)).join(', ')}</p>
                 <p><strong>Price:</strong> ${escapeHtml(restaurant.price_range)}${restaurant.price_range_text ? ' (' + escapeHtml(restaurant.price_range_text) + ')' : ''}</p>
         `;
         
@@ -52,7 +52,7 @@ function formatRestaurants(restaurants) {
         }
         
         if (restaurant.features && restaurant.features.length > 0) {
-            html += `<p><strong>Features:</strong> ${restaurant.features.join(', ')}</p>`;
+            html += `<p><strong>Features:</strong> ${restaurant.features.map(f => escapeHtml(f)).join(', ')}</p>`;
         }
 
         if (restaurant.menu_url) {

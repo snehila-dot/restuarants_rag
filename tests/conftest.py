@@ -3,7 +3,7 @@
 import asyncio
 import uuid
 from collections.abc import AsyncGenerator, Generator
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -84,7 +84,7 @@ async def sample_restaurants(session: AsyncSession) -> list[Restaurant]:
             features=["outdoor_seating"],
             summary="A test Italian restaurant",
             data_sources=["test"],
-            last_verified=datetime.utcnow(),
+            last_verified=datetime.now(UTC),
         ),
         Restaurant(
             id=uuid.uuid4(),
@@ -97,7 +97,7 @@ async def sample_restaurants(session: AsyncSession) -> list[Restaurant]:
             features=["vegan_options", "wifi"],
             summary="A test vegan cafe",
             data_sources=["test"],
-            last_verified=datetime.utcnow(),
+            last_verified=datetime.now(UTC),
         ),
         Restaurant(
             id=uuid.uuid4(),
@@ -121,7 +121,7 @@ async def sample_restaurants(session: AsyncSession) -> list[Restaurant]:
             latitude=47.0717,
             longitude=15.4377,
             data_sources=["test"],
-            last_verified=datetime.utcnow(),
+            last_verified=datetime.now(UTC),
         ),
         Restaurant(
             id=uuid.uuid4(),
@@ -150,7 +150,7 @@ async def sample_restaurants(session: AsyncSession) -> list[Restaurant]:
             latitude=47.0740,
             longitude=15.4310,
             data_sources=["test"],
-            last_verified=datetime.utcnow(),
+            last_verified=datetime.now(UTC),
         ),
     ]
 

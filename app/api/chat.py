@@ -2,10 +2,11 @@
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
+from app.limiter import limiter
 from app.schemas.restaurant import ChatRequest, ChatResponse, RestaurantResponse
 from app.services import llm, query_parser, retrieval
 
@@ -15,15 +16,18 @@ router = APIRouter(prefix="/api", tags=["chat"])
 
 
 @router.post("/chat", response_model=ChatResponse)
+@limiter.limit("10/minute")
 async def chat(
-    request: ChatRequest,
-    session: AsyncSession = Depends(get_session),
+    request: Request,
+    body: ChatRequest,
+    session: AsyncSession = Depends(get_session),  # noqa: B008
 ) -> ChatResponse:
     """
     Process a chat message and return restaurant recommendations.
 
     Args:
-        request: ChatRequest with user's message and optional language
+        request: Starlette request (used by rate limiter)
+        body: ChatRequest with user's message and optional language
         session: Database session (injected dependency)
 
     Returns:
@@ -34,10 +38,10 @@ async def chat(
     """
     try:
         # Parse user query to extract filters (async LLM extraction)
-        filters = await query_parser.parse_query(request.message)
+        filters = await query_parser.parse_query(body.message)
 
         # Detect language — prefer explicit request, then parser result
-        language = request.language or filters.language
+        language = body.language or filters.language
 
         # Retrieve matching restaurants
         try:
@@ -58,14 +62,14 @@ async def chat(
                 raise HTTPException(
                     status_code=404,
                     detail="No restaurants found matching your criteria.",
-                )
+                ) from None
 
         # Generate LLM response
         location_hint = (
             f" near {filters.location_name}" if filters.location_name else ""
         )
         response_message = await llm.generate_response(
-            user_message=request.message,
+            user_message=body.message,
             restaurants=restaurants,
             language=language,
             location_hint=location_hint,
@@ -83,12 +87,14 @@ async def chat(
         )
 
     except retrieval.NoRestaurantsFoundError as e:
-        logger.warning(f"No restaurants found: {e}")
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("No restaurants found: %s", e)
+        raise HTTPException(
+            status_code=404, detail=str(e)
+        ) from None
 
     except Exception as e:
-        logger.error(f"Error processing chat request: {e}", exc_info=True)
+        logger.error("Error processing chat request: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
             detail="An error occurred while processing your request. Please try again.",
-        )
+        ) from e

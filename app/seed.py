@@ -5,7 +5,7 @@ import json
 import logging
 import re
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sqlalchemy import delete, select
@@ -124,7 +124,7 @@ async def seed_from_json(file_path: str) -> None:
                 longitude=entry.get("longitude"),
                 opening_hours=entry.get("opening_hours"),
                 data_sources=entry.get("data_sources", []),
-                last_verified=datetime.utcnow(),
+                last_verified=datetime.now(UTC),
             )
             session.add(restaurant)
 

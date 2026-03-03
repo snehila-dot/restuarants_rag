@@ -160,6 +160,7 @@ Please answer the user's question using ONLY the information provided above. Be 
             ],
             temperature=settings.llm_temperature,
             max_tokens=500,
+            timeout=30.0,
         )
 
         return response.choices[0].message.content or "I couldn't generate a response."

@@ -14,4 +14,5 @@ duckduckgo-search==7.5.1
 pdfplumber==0.11.4
 playwright==1.48.0
 openai==1.54.4
+slowapi==0.1.9
 python-dotenv==1.0.1
