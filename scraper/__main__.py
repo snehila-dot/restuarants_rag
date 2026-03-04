@@ -4,12 +4,13 @@ Usage::
 
     python -m scraper                                    # OSM data only
     python -m scraper --discover-websites                # + find missing websites via DuckDuckGo
-    python -m scraper --enrich                           # + scrape restaurant websites
-    python -m scraper --enrich --enrich-vision           # + GPT-4o vision for PDF/image menus
-    python -m scraper --enrich --enrich-js               # + Playwright for JS-rendered menus
+    python -m scraper --enrich                           # + scrape websites (Playwright + LLM + Vision)
+    python -m scraper --enrich --no-llm                  # + scrape websites (Playwright + BS4 only, free)
+    python -m scraper --enrich --no-vision               # + scrape websites (skip PDF/image vision)
+    python -m scraper --enrich --limit 20                # + test on first 20 restaurants
     python -m scraper --google-maps                      # + enrich ratings/price from Google Maps (Playwright)
     python -m scraper --google-places                    # + enrich via Google Places API (recommended)
-    python -m scraper --discover-websites --enrich --enrich-vision --google-places  # Full pipeline
+    python -m scraper --discover-websites --enrich --google-places  # Full pipeline
     python -m scraper --output-dir data/
 """
 
@@ -62,6 +63,8 @@ async def run(
     enrich: bool = False,
     enrich_js: bool = False,
     enrich_vision: bool = False,
+    no_llm: bool = False,
+    no_vision: bool = False,
     discover_websites: bool = False,
     google_maps: bool = False,
     google_places: bool = False,
@@ -105,7 +108,7 @@ async def run(
     if limit > 0:
         logger.info("Limiting to %d restaurants (--limit flag)", limit)
         logger.warning(
-            "⚠ Using --limit writes truncated output. "
+            "[WARNING] Using --limit writes truncated output. "
             "Use --output-dir to avoid overwriting production data."
         )
         restaurants = restaurants[:limit]
@@ -129,28 +132,49 @@ async def run(
 
     # --- Step 5: Enrich (optional) --------------------------------------------
     if enrich:
-        modes = ["BS4"]
+        # Deprecation warnings for old flags
         if enrich_js:
-            modes.append("Playwright")
+            logger.warning(
+                "--enrich-js is deprecated (Playwright is now always-on). "
+                "Flag will be ignored."
+            )
         if enrich_vision:
+            logger.warning(
+                "--enrich-vision is deprecated (vision is now on by default). "
+                "Use --no-vision to disable. Flag will be ignored."
+            )
+
+        # Determine effective settings
+        use_llm = not no_llm
+        use_vision_flag = not no_vision
+
+        # Resolve OpenAI API key for LLM/vision extraction
+        openai_key: str | None = None
+        if use_llm or use_vision_flag:
+            openai_key = os.environ.get("OPENAI_API_KEY", "")
+            if not openai_key:
+                logger.warning(
+                    "OPENAI_API_KEY not set — running with BS4 heuristic only. "
+                    "Set OPENAI_API_KEY for LLM-powered extraction."
+                )
+                use_llm = False
+                use_vision_flag = False
+
+        modes = ["Playwright"]
+        if use_llm:
+            modes.append("LLM")
+        else:
+            modes.append("BS4-only")
+        if use_vision_flag:
             modes.append("Vision")
         mode = " + ".join(modes)
         logger.info("Step 5/7: Enriching from restaurant websites (%s) …", mode)
 
-        # Resolve OpenAI API key for vision extraction
-        openai_key: str | None = None
-        if enrich_vision:
-            openai_key = os.environ.get("OPENAI_API_KEY", "")
-            if not openai_key:
-                logger.warning(
-                    "OPENAI_API_KEY not set — vision extraction will be skipped. "
-                    "Set it in .env or export it before running."
-                )
-
         restaurants = await enrich_restaurants(
             restaurants,
-            use_playwright=enrich_js,
-            use_vision=enrich_vision,
+            use_playwright=True,
+            use_vision=use_vision_flag,
+            use_llm=use_llm,
             openai_api_key=openai_key,
         )
     else:
@@ -305,9 +329,20 @@ def main() -> None:
         "--enrich-vision",
         action="store_true",
         help=(
-            "Use GPT-4o-mini vision API to extract menus from PDF and image"
-            " files (requires OPENAI_API_KEY env variable)."
+            "[DEPRECATED] Vision is now on by default. Use --no-vision to disable."
         ),
+    )
+    parser.add_argument(
+        "--no-llm",
+        action="store_true",
+        help=(
+            "Skip LLM text parsing (use BS4 heuristic only, free but lower yield)."
+        ),
+    )
+    parser.add_argument(
+        "--no-vision",
+        action="store_true",
+        help="Skip vision extraction for PDF/image menus.",
     )
     parser.add_argument(
         "--google-maps",
@@ -339,16 +374,18 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if args.enrich_js and not args.enrich:
-        parser.error("--enrich-js requires --enrich")
-    if args.enrich_vision and not args.enrich:
-        parser.error("--enrich-vision requires --enrich")
+    if args.no_llm and not args.enrich:
+        parser.error("--no-llm requires --enrich")
+    if args.no_vision and not args.enrich:
+        parser.error("--no-vision requires --enrich")
 
     asyncio.run(
         run(
             enrich=args.enrich,
             enrich_js=args.enrich_js,
             enrich_vision=args.enrich_vision,
+            no_llm=args.no_llm,
+            no_vision=args.no_vision,
             discover_websites=args.discover_websites,
             google_maps=args.google_maps,
             google_places=args.google_places,
