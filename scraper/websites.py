@@ -32,9 +32,15 @@ _REQUEST_TIMEOUT = 15.0
 _DELAY_BETWEEN_REQUESTS = 2.0  # seconds — be polite
 
 # Keywords that hint a link leads to a menu / Speisekarte page
-_MENU_KEYWORDS = frozenset(
-    {"menu", "speisekarte", "karte", "gerichte", "dishes", "speisen"}
-)
+_MENU_KEYWORDS = frozenset({
+    # English
+    "menu", "dishes", "food", "our food", "cuisine",
+    "eat", "dine", "a la carte", "à la carte",
+    # German
+    "speisekarte", "karte", "gerichte", "speisen",
+    "essen", "mittagstisch", "angebot", "wochenkarte",
+    "tagesmenü", "tagesmenu", "küche",
+})
 
 # Regex for prices in European format: €12, € 12.50, 12,90€, EUR 9.50, etc.
 _PRICE_RE = re.compile(
@@ -203,6 +209,34 @@ def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
                 logger.debug("Found menu file link (CMS pattern): %s", resolved)
                 return resolved
     logger.debug("No menu file link found")
+    return None
+
+
+_COMMON_MENU_PATHS = [
+    "/menu", "/speisekarte", "/karte", "/food",
+    "/essen", "/speisen", "/our-menu", "/the-menu",
+]
+
+
+async def _probe_menu_paths(
+    client: httpx.AsyncClient,
+    base_url: str,
+) -> str | None:
+    """Try common menu URL paths when no link was found in page HTML.
+
+    Sends HEAD requests to avoid downloading full pages. Returns the
+    first path that responds with HTTP 200, or ``None``.
+    """
+    for path in _COMMON_MENU_PATHS:
+        probe_url = urljoin(base_url, path)
+        try:
+            resp = await client.head(probe_url)
+            if resp.status_code == 200:
+                logger.debug("Probed menu path found: %s", probe_url)
+                return probe_url
+        except httpx.RequestError:
+            continue
+    logger.debug("No common menu paths responded for %s", base_url)
     return None
 
 
@@ -391,6 +425,35 @@ def _extract_from_html_heuristic(
 
 
 # ---------------------------------------------------------------------------
+# LLM text extraction
+# ---------------------------------------------------------------------------
+
+
+async def _extract_menu_with_llm(
+    visible_text: str,
+    api_key: str,
+    model: str = "gpt-4o-mini",
+) -> list[dict[str, str]]:
+    """Send visible page text to LLM for structured menu extraction.
+
+    Delegates to :func:`scraper.menu_vision.parse_menu_text_with_llm`
+    which handles the OpenAI API call and JSON parsing.
+
+    Returns an empty list if the text is too short (<50 chars) or if
+    the LLM call fails.
+    """
+    if not visible_text or len(visible_text.strip()) < 50:
+        logger.debug("Text too short for LLM extraction (%d chars)", len(visible_text))
+        return []
+    from scraper.menu_vision import parse_menu_text_with_llm
+
+    # Truncate to stay within token budget (~6000 chars ≈ ~2000 tokens)
+    truncated = visible_text[:6000]
+    logger.debug("Sending %d chars to LLM for menu extraction", len(truncated))
+    return parse_menu_text_with_llm(truncated, api_key, model)
+
+
+# ---------------------------------------------------------------------------
 # Playwright fallback
 # ---------------------------------------------------------------------------
 
@@ -441,6 +504,45 @@ async def _scrape_menu_playwright(
     return _extract_menu_items_from_soup(soup)
 
 
+async def _scrape_menu_playwright_llm(
+    url: str,
+    browser: Browser,
+    *,
+    api_key: str,
+    model: str = "gpt-4o-mini",
+) -> list[dict[str, str]]:
+    """Render *url* with Playwright, extract visible text, parse with LLM.
+
+    Opens a new browser page, waits for JS to finish rendering,
+    extracts the visible text content, then sends it to GPT-4o-mini
+    for structured menu item extraction.
+
+    Falls back to empty list on any error. Always closes the page.
+    """
+    page = await browser.new_page()
+    try:
+        await page.goto(
+            url,
+            wait_until="networkidle",
+            timeout=_PW_NAV_TIMEOUT,
+        )
+        await page.wait_for_timeout(1500)
+        visible_text = await page.inner_text("body")
+        if not visible_text or len(visible_text.strip()) < 50:
+            logger.debug(
+                "Playwright page text too short for %s (%d chars)",
+                url,
+                len(visible_text or ""),
+            )
+            return []
+        return await _extract_menu_with_llm(visible_text, api_key, model)
+    except Exception as exc:
+        logger.debug("Playwright+LLM failed for %s: %s", url, exc)
+        return []
+    finally:
+        await page.close()
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -450,16 +552,19 @@ async def scrape_restaurant_website(
     url: str,
     client: httpx.AsyncClient,
     *,
+    browser: Browser | None = None,
+    api_key: str | None = None,
     use_vision: bool = False,
-    openai_api_key: str | None = None,
 ) -> dict[str, Any] | None:
     """Fetch a restaurant website and extract summary + menu data.
 
-    If the homepage links to a dedicated menu page, that page is also
-    fetched and parsed for menu items.
-
-    When *use_vision* is True, PDF and image menu links are downloaded
-    and processed via GPT-4o-mini vision as a final fallback.
+    Extraction cascade (stops at first success with >=3 items):
+    1. JSON-LD structured data (free, instant)
+    2. BS4 HTML heuristic on homepage + menu page (free)
+    3. Playwright + LLM text parsing (requires *browser* + *api_key*)
+    4. Playwright + BS4 heuristic (when no *api_key*, fallback)
+    5. Vision: PDF/image files via GPT-4o-mini (requires *use_vision*)
+    6. Vision: embedded page images (requires *use_vision*)
 
     Returns:
         Dict with ``summary``, ``menu_items``, ``menu_url``, and
@@ -469,58 +574,82 @@ async def scrape_restaurant_website(
     if soup is None:
         logger.debug("Homepage fetch failed, skipping: %s", url)
         return None
+
     summary = _extract_summary(soup)
     menu_url = _find_menu_url(soup, url)
     menu_file_url = _find_menu_file_url(soup, url)
-    # Try extracting menu items from the homepage first
-    menu_items = _extract_menu_items_from_soup(soup)
-    logger.debug(
-        "Homepage pass: summary=%s, menu_url=%s, file_url=%s, items=%d",
-        "yes" if summary else "no",
-        menu_url or "none",
-        menu_file_url or "none",
-        len(menu_items),
-    )
-    # If we found a separate menu page and didn't get items from homepage,
-    # fetch and parse the menu page too
+
+    # Probe common paths if no menu link found in HTML
+    if not menu_url and not menu_file_url:
+        menu_url = await _probe_menu_paths(client, url)
+
+    # --- Fast path 1: JSON-LD (free, instant) ---
+    menu_items = _extract_from_jsonld(soup)
+    if len(menu_items) >= 3:
+        logger.debug("JSON-LD fast path: %d items", len(menu_items))
+        return {
+            "summary": summary,
+            "menu_items": menu_items,
+            "menu_url": menu_url or url,
+            "menu_file_url": menu_file_url,
+        }
+
+    # --- Fast path 2: BS4 heuristic on homepage (free) ---
+    heuristic_items = _extract_from_html_heuristic(soup)
+    if len(heuristic_items) > len(menu_items):
+        menu_items = heuristic_items
+
+    # --- Fast path 3: BS4 on dedicated menu page (free) ---
     if menu_url and menu_url != url and len(menu_items) < 3:
         logger.debug(
             "Homepage yielded %d items (<3), fetching menu page: %s",
             len(menu_items),
             menu_url,
         )
-        await asyncio.sleep(1)  # polite delay before second request
+        await asyncio.sleep(1)
         menu_soup = await _fetch_html(client, menu_url)
         if menu_soup is not None:
-            menu_page_items = _extract_menu_items_from_soup(menu_soup)
-            if len(menu_page_items) > len(menu_items):
-                logger.debug(
-                    "Menu page yielded %d items (better than homepage %d)",
-                    len(menu_page_items),
-                    len(menu_items),
-                )
-                menu_items = menu_page_items
-            else:
-                logger.debug(
-                    "Menu page yielded %d items (not better than homepage %d)",
-                    len(menu_page_items),
-                    len(menu_items),
-                )
+            jsonld_items = _extract_from_jsonld(menu_soup)
+            if len(jsonld_items) > len(menu_items):
+                menu_items = jsonld_items
+            if len(menu_items) < 3:
+                page_items = _extract_from_html_heuristic(menu_soup)
+                if len(page_items) > len(menu_items):
+                    menu_items = page_items
+
+    # --- LLM text path: Playwright render + GPT-4o-mini ---
+    if browser is not None and api_key and len(menu_items) < 3:
+        target = menu_url if menu_url and menu_url != url else url
+        logger.info("  -> Playwright+LLM for %s", target)
+        llm_items = await _scrape_menu_playwright_llm(
+            target, browser, api_key=api_key
+        )
+        if len(llm_items) > len(menu_items):
+            logger.debug(
+                "Playwright+LLM improved: %d -> %d items",
+                len(menu_items),
+                len(llm_items),
+            )
+            menu_items = llm_items
+    # --- Playwright BS4 fallback (no API key, --no-llm mode) ---
+    elif browser is not None and not api_key and len(menu_items) < 3:
+        target = menu_url if menu_url and menu_url != url else url
+        logger.info("  -> Playwright+BS4 for %s", target)
+        pw_items = await _scrape_menu_playwright(target, browser)
+        if len(pw_items) > len(menu_items):
+            menu_items = pw_items
+
     # --- Vision fallback 1: PDF/image file links ---
-    if use_vision and len(menu_items) < 3 and menu_file_url:
+    if use_vision and api_key and len(menu_items) < 3 and menu_file_url:
         from scraper.menu_vision import extract_menu_from_file_url
-        logger.info("  → Vision extraction (file) for %s", menu_file_url)
+
+        logger.info("  -> Vision extraction (file) for %s", menu_file_url)
         await asyncio.sleep(1)
         try:
             vision_items = await extract_menu_from_file_url(
-                menu_file_url, client, api_key=openai_api_key
+                menu_file_url, client, api_key=api_key
             )
             if len(vision_items) > len(menu_items):
-                logger.debug(
-                    "Vision (file) yielded %d items (better than previous %d)",
-                    len(vision_items),
-                    len(menu_items),
-                )
                 menu_items = vision_items
         except Exception:
             logger.debug(
@@ -528,31 +657,24 @@ async def scrape_restaurant_website(
             )
 
     # --- Vision fallback 2: embedded <img> tags on menu page ---
-    if use_vision and len(menu_items) < 3 and menu_url:
+    if use_vision and api_key and len(menu_items) < 3 and menu_url:
         from scraper.menu_vision import extract_menu_from_page_images
-        # Use the menu page soup if we already fetched it, otherwise homepage
+
         target_soup = None
         target_url = menu_url
         if menu_url and menu_url != url:
-            # We already fetched the menu page above — re-fetch for vision
-            # (soup variable may not be in scope if the earlier block ran)
             await asyncio.sleep(1)
             target_soup = await _fetch_html(client, menu_url)
         else:
             target_soup = soup
             target_url = url
         if target_soup is not None:
-            logger.info("  → Vision extraction (page images) for %s", target_url)
+            logger.info("  -> Vision extraction (page images) for %s", target_url)
             try:
                 img_items = await extract_menu_from_page_images(
-                    target_soup, target_url, client, api_key=openai_api_key
+                    target_soup, target_url, client, api_key=api_key
                 )
                 if len(img_items) > len(menu_items):
-                    logger.debug(
-                        "Vision (page images) yielded %d items (better than previous %d)",
-                        len(img_items),
-                        len(menu_items),
-                    )
                     menu_items = img_items
             except Exception:
                 logger.debug(
@@ -578,8 +700,9 @@ async def scrape_restaurant_website(
 async def enrich_restaurants(
     restaurants: list[dict[str, Any]],
     *,
-    use_playwright: bool = False,
-    use_vision: bool = False,
+    use_playwright: bool = True,
+    use_vision: bool = True,
+    use_llm: bool = True,
     openai_api_key: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetch each restaurant's website and merge extracted data in-place.
@@ -588,19 +711,22 @@ async def enrich_restaurants(
     a ``website`` field are skipped.  A 2-second delay is inserted
     between restaurants to respect rate limits.
 
-    When *use_playwright* is ``True``, a headless Chromium browser is
-    launched once and used as a fallback for any restaurant where the
-    static BS4 pass found fewer than 3 menu items but a menu URL exists.
+    Playwright is launched by default for JS-rendered pages. When
+    *use_llm* is ``True`` (default), visible page text is sent to
+    GPT-4o-mini for structured extraction. When ``False``, only
+    the BS4 heuristic is used on Playwright-rendered HTML.
 
-    When *use_vision* is ``True``, PDF and image menu links are
-    downloaded and processed via GPT-4o-mini vision API. Requires
-    an OpenAI API key (via *openai_api_key* or ``OPENAI_API_KEY`` env).
+    When *use_vision* is ``True`` (default), PDF and image menu links
+    are processed via GPT-4o-mini vision API as a final fallback.
+
+    Both LLM and vision require an OpenAI API key.
 
     Args:
         restaurants: List of restaurant dicts (modified in place).
-        use_playwright: Enable Playwright JS-rendering fallback.
+        use_playwright: Launch Playwright for JS-rendered pages.
         use_vision: Enable GPT-4o vision extraction for PDF/image menus.
-        openai_api_key: OpenAI API key for vision extraction.
+        use_llm: Enable LLM text parsing (vs BS4 heuristic only).
+        openai_api_key: OpenAI API key for LLM/vision extraction.
 
     Returns:
         The same list with enriched data where available.
@@ -608,10 +734,10 @@ async def enrich_restaurants(
     total = len(restaurants)
     enriched_count = 0
     menu_count = 0
-    pw_count = 0
+    llm_count = 0
     vision_count = 0
 
-    # Optionally launch Playwright browser
+    # Launch Playwright browser (default: always-on)
     browser: Browser | None = None
     pw_context = None
     if use_playwright:
@@ -662,14 +788,15 @@ async def enrich_restaurants(
                     result = await scrape_restaurant_website(
                         url,
                         client,
+                        browser=browser,
+                        api_key=openai_api_key if use_llm else None,
                         use_vision=use_vision,
-                        openai_api_key=openai_api_key,
                     )
                 except Exception:
                     logger.warning("Unexpected error scraping %s", url, exc_info=True)
                     result = None
                 if result is None:
-                    logger.info("  ✗ %s: fetch failed", name)
+                    logger.info("  [FAIL] %s: fetch failed", name)
                     continue
                 # Merge summary
                 if result.get("summary") and not restaurant.get("summary"):
@@ -678,30 +805,6 @@ async def enrich_restaurants(
                 if menu_url:
                     restaurant["menu_url"] = menu_url
                 menu_items = result.get("menu_items", [])
-                # If BS4 found <3 items and we have a menu URL, try JS render
-                bs4_count = len(menu_items)
-                if browser is not None and bs4_count < 3 and menu_url:
-                    target = menu_url if menu_url != url else url
-                    logger.info("  → Playwright fallback for %s", name)
-                    try:
-                        pw_items = await _scrape_menu_playwright(target, browser)
-                    except Exception:
-                        logger.debug("Playwright error for %s", target, exc_info=True)
-                        pw_items = []
-                    if len(pw_items) > bs4_count:
-                        logger.info(
-                            "  → Playwright improved: %d → %d items",
-                            bs4_count,
-                            len(pw_items),
-                        )
-                        menu_items = pw_items
-                        pw_count += 1
-                    else:
-                        logger.debug(
-                            "Playwright did not improve: %d items (BS4 had %d)",
-                            len(pw_items),
-                            bs4_count,
-                        )
                 if menu_items:
                     restaurant["menu_items"] = menu_items
                     menu_count += 1
@@ -716,7 +819,7 @@ async def enrich_restaurants(
 
                 # Per-restaurant outcome line
                 logger.info(
-                    "  ✓ %s: summary=%s, menu_items=%d, menu_url=%s",
+                    "  [OK] %s: summary=%s, menu_items=%d, menu_url=%s",
                     name,
                     "yes" if result.get("summary") else "no",
                     len(menu_items),
@@ -732,8 +835,8 @@ async def enrich_restaurants(
             await pw_context.__aexit__(None, None, None)
 
     extra_parts: list[str] = []
-    if use_playwright:
-        extra_parts.append(f"{pw_count} via Playwright")
+    if use_llm:
+        extra_parts.append(f"{llm_count} via LLM")
     if use_vision:
         extra_parts.append(f"{vision_count} via Vision")
     extra_msg = f" ({', '.join(extra_parts)})" if extra_parts else ""

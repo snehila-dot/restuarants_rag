@@ -95,7 +95,7 @@ def _extract_text_from_pdf(pdf_bytes: bytes) -> str | None:
         return None
 
 
-def _parse_menu_text_with_llm(
+def parse_menu_text_with_llm(
     text: str,
     api_key: str,
     model: str = "gpt-4o-mini",
@@ -516,7 +516,7 @@ def _extract_menu_from_pdf(
     # Strategy 1: text extraction (free)
     text = _extract_text_from_pdf(pdf_bytes)
     if text:
-        items = _parse_menu_text_with_llm(text, api_key, model)
+        items = parse_menu_text_with_llm(text, api_key, model)
         if len(items) >= 3:
             logger.debug("PDF text extraction yielded %d items", len(items))
             return items
@@ -526,7 +526,7 @@ def _extract_menu_from_pdf(
     if not images:
         # If pdfplumber can't render either, try text result if we got any
         if text:
-            return _parse_menu_text_with_llm(text, api_key, model)
+            return parse_menu_text_with_llm(text, api_key, model)
         logger.debug("Cannot extract images from PDF")
         return []
 
