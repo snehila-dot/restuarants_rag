@@ -700,8 +700,9 @@ async def scrape_restaurant_website(
 async def enrich_restaurants(
     restaurants: list[dict[str, Any]],
     *,
-    use_playwright: bool = False,
-    use_vision: bool = False,
+    use_playwright: bool = True,
+    use_vision: bool = True,
+    use_llm: bool = True,
     openai_api_key: str | None = None,
 ) -> list[dict[str, Any]]:
     """Fetch each restaurant's website and merge extracted data in-place.
@@ -710,19 +711,22 @@ async def enrich_restaurants(
     a ``website`` field are skipped.  A 2-second delay is inserted
     between restaurants to respect rate limits.
 
-    When *use_playwright* is ``True``, a headless Chromium browser is
-    launched once and used as a fallback for any restaurant where the
-    static BS4 pass found fewer than 3 menu items but a menu URL exists.
+    Playwright is launched by default for JS-rendered pages. When
+    *use_llm* is ``True`` (default), visible page text is sent to
+    GPT-4o-mini for structured extraction. When ``False``, only
+    the BS4 heuristic is used on Playwright-rendered HTML.
 
-    When *use_vision* is ``True``, PDF and image menu links are
-    downloaded and processed via GPT-4o-mini vision API. Requires
-    an OpenAI API key (via *openai_api_key* or ``OPENAI_API_KEY`` env).
+    When *use_vision* is ``True`` (default), PDF and image menu links
+    are processed via GPT-4o-mini vision API as a final fallback.
+
+    Both LLM and vision require an OpenAI API key.
 
     Args:
         restaurants: List of restaurant dicts (modified in place).
-        use_playwright: Enable Playwright JS-rendering fallback.
+        use_playwright: Launch Playwright for JS-rendered pages.
         use_vision: Enable GPT-4o vision extraction for PDF/image menus.
-        openai_api_key: OpenAI API key for vision extraction.
+        use_llm: Enable LLM text parsing (vs BS4 heuristic only).
+        openai_api_key: OpenAI API key for LLM/vision extraction.
 
     Returns:
         The same list with enriched data where available.
@@ -730,10 +734,10 @@ async def enrich_restaurants(
     total = len(restaurants)
     enriched_count = 0
     menu_count = 0
-    pw_count = 0
+    llm_count = 0
     vision_count = 0
 
-    # Optionally launch Playwright browser
+    # Launch Playwright browser (default: always-on)
     browser: Browser | None = None
     pw_context = None
     if use_playwright:
@@ -785,7 +789,7 @@ async def enrich_restaurants(
                         url,
                         client,
                         browser=browser,
-                        api_key=openai_api_key,
+                        api_key=openai_api_key if use_llm else None,
                         use_vision=use_vision,
                     )
                 except Exception:
@@ -831,8 +835,8 @@ async def enrich_restaurants(
             await pw_context.__aexit__(None, None, None)
 
     extra_parts: list[str] = []
-    if use_playwright:
-        extra_parts.append(f"{pw_count} via Playwright")
+    if use_llm:
+        extra_parts.append(f"{llm_count} via LLM")
     if use_vision:
         extra_parts.append(f"{vision_count} via Vision")
     extra_msg = f" ({', '.join(extra_parts)})" if extra_parts else ""
