@@ -18,6 +18,7 @@ from scraper.websites import (
     _infer_category,
     _probe_menu_paths,
     _scrape_menu_playwright_llm,
+    scrape_restaurant_website,
 )
 
 
@@ -371,3 +372,69 @@ class TestScrapeMenuPlaywrightLlm:
         )
         assert result == []
         mock_page.close.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# Tests: scrape_restaurant_website (integration)
+# ---------------------------------------------------------------------------
+
+
+class TestScrapeRestaurantWebsite:
+    @pytest.mark.asyncio
+    async def test_extracts_jsonld_without_api_key(self) -> None:
+        """JSON-LD fast path works without OpenAI API key."""
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/html"},
+                text=MENU_HTML_JSONLD,
+            )
+
+        transport = httpx.MockTransport(mock_handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            result = await scrape_restaurant_website(
+                "https://example.com", client
+            )
+        assert result is not None
+        assert len(result["menu_items"]) == 2
+
+    @pytest.mark.asyncio
+    async def test_probes_menu_paths_when_no_link(self) -> None:
+        """When no menu link found, probes common paths."""
+        call_methods: list[str] = []
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            call_methods.append(request.method)
+            if request.method == "HEAD" and str(request.url).endswith("/speisekarte"):
+                return httpx.Response(200)
+            if request.method == "HEAD":
+                return httpx.Response(404)
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/html"},
+                text=HOMEPAGE_NO_MENU_LINK,
+            )
+
+        transport = httpx.MockTransport(mock_handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            result = await scrape_restaurant_website(
+                "https://example.com", client
+            )
+        assert result is not None
+        assert result.get("menu_url") == "https://example.com/speisekarte"
+        assert "HEAD" in call_methods
+
+    @pytest.mark.asyncio
+    async def test_returns_none_on_fetch_failure(self) -> None:
+        """Returns None when homepage fetch fails."""
+
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(500)
+
+        transport = httpx.MockTransport(mock_handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            result = await scrape_restaurant_website(
+                "https://example.com", client
+            )
+        assert result is None
