@@ -32,9 +32,15 @@ _REQUEST_TIMEOUT = 15.0
 _DELAY_BETWEEN_REQUESTS = 2.0  # seconds — be polite
 
 # Keywords that hint a link leads to a menu / Speisekarte page
-_MENU_KEYWORDS = frozenset(
-    {"menu", "speisekarte", "karte", "gerichte", "dishes", "speisen"}
-)
+_MENU_KEYWORDS = frozenset({
+    # English
+    "menu", "dishes", "food", "our food", "cuisine",
+    "eat", "dine", "a la carte", "à la carte",
+    # German
+    "speisekarte", "karte", "gerichte", "speisen",
+    "essen", "mittagstisch", "angebot", "wochenkarte",
+    "tagesmenü", "tagesmenu", "küche",
+})
 
 # Regex for prices in European format: €12, € 12.50, 12,90€, EUR 9.50, etc.
 _PRICE_RE = re.compile(
@@ -203,6 +209,34 @@ def _find_menu_file_url(soup: BeautifulSoup, base_url: str) -> str | None:
                 logger.debug("Found menu file link (CMS pattern): %s", resolved)
                 return resolved
     logger.debug("No menu file link found")
+    return None
+
+
+_COMMON_MENU_PATHS = [
+    "/menu", "/speisekarte", "/karte", "/food",
+    "/essen", "/speisen", "/our-menu", "/the-menu",
+]
+
+
+async def _probe_menu_paths(
+    client: httpx.AsyncClient,
+    base_url: str,
+) -> str | None:
+    """Try common menu URL paths when no link was found in page HTML.
+
+    Sends HEAD requests to avoid downloading full pages. Returns the
+    first path that responds with HTTP 200, or ``None``.
+    """
+    for path in _COMMON_MENU_PATHS:
+        probe_url = urljoin(base_url, path)
+        try:
+            resp = await client.head(probe_url)
+            if resp.status_code == 200:
+                logger.debug("Probed menu path found: %s", probe_url)
+                return probe_url
+        except httpx.RequestError:
+            continue
+    logger.debug("No common menu paths responded for %s", base_url)
     return None
 
 

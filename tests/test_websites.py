@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import httpx
+import pytest
 from bs4 import BeautifulSoup
 
 from scraper.websites import (
@@ -11,6 +13,7 @@ from scraper.websites import (
     _find_menu_file_url,
     _find_menu_url,
     _infer_category,
+    _probe_menu_paths,
 )
 
 
@@ -73,6 +76,23 @@ HOMEPAGE_NO_MENU_LINK = """
 <nav>
   <a href="/about">About</a>
   <a href="/contact">Contact</a>
+</nav>
+</body></html>
+"""
+
+HOMEPAGE_WITH_FOOD_LINK = """
+<html><body>
+<nav>
+  <a href="/about">About</a>
+  <a href="/essen">Essen & Trinken</a>
+</nav>
+</body></html>
+"""
+
+HOMEPAGE_WITH_CUISINE_LINK = """
+<html><body>
+<nav>
+  <a href="/our-food">Our Food</a>
 </nav>
 </body></html>
 """
@@ -204,3 +224,49 @@ class TestExtractFromHtmlHeuristic:
         soup = BeautifulSoup(html, "html.parser")
         items = _extract_from_html_heuristic(soup)
         assert items == []
+
+
+# ---------------------------------------------------------------------------
+# Tests: Menu URL discovery (expanded keywords)
+# ---------------------------------------------------------------------------
+
+
+class TestFindMenuUrlExpanded:
+    def test_finds_essen_link(self) -> None:
+        soup = BeautifulSoup(HOMEPAGE_WITH_FOOD_LINK, "html.parser")
+        result = _find_menu_url(soup, "https://example.com")
+        assert result == "https://example.com/essen"
+
+    def test_finds_our_food_link(self) -> None:
+        soup = BeautifulSoup(HOMEPAGE_WITH_CUISINE_LINK, "html.parser")
+        result = _find_menu_url(soup, "https://example.com")
+        assert result == "https://example.com/our-food"
+
+
+# ---------------------------------------------------------------------------
+# Tests: Menu path probing
+# ---------------------------------------------------------------------------
+
+
+class TestProbeMenuPaths:
+    @pytest.mark.asyncio
+    async def test_finds_menu_path(self) -> None:
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            if str(request.url).endswith("/speisekarte"):
+                return httpx.Response(200)
+            return httpx.Response(404)
+
+        transport = httpx.MockTransport(mock_handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            result = await _probe_menu_paths(client, "https://example.com")
+        assert result == "https://example.com/speisekarte"
+
+    @pytest.mark.asyncio
+    async def test_returns_none_when_no_paths_found(self) -> None:
+        async def mock_handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(404)
+
+        transport = httpx.MockTransport(mock_handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            result = await _probe_menu_paths(client, "https://example.com")
+        assert result is None
