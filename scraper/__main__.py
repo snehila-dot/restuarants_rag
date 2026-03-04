@@ -10,7 +10,7 @@ Usage::
     python -m scraper --enrich --limit 20                # + test on first 20 restaurants
     python -m scraper --google-maps                      # + enrich ratings/price from Google Maps (Playwright)
     python -m scraper --google-places                    # + enrich via Google Places API (recommended)
-    python -m scraper --discover-websites --enrich --google-places  # Full pipeline
+    python -m scraper --discover-websites --google-places --enrich  # Full pipeline
     python -m scraper --output-dir data/
 """
 
@@ -78,6 +78,7 @@ async def run(
     3. Parse into restaurant schema dicts.
     4. Deduplicate by name.
     4b. (Optional) Discover missing websites via DuckDuckGo.
+    4c. (Optional) Enrich from Google Places API (ratings, websites, etc.).
     5. (Optional) Enrich from individual restaurant websites.
     5b. (Optional) Enrich ratings/price/reviews from Google Maps.
     6. Save clean data.
@@ -129,6 +130,25 @@ async def run(
                 "use --discover-websites to find them)",
                 missing,
             )
+
+    # --- Step 4c: Google Places API enrichment (optional) ---------------------
+    # Runs BEFORE website enrichment so that websites discovered by Google
+    # Places are available for menu extraction in step 5.
+    if google_places:
+        without_rating = sum(1 for r in restaurants if not r.get("rating"))
+        without_website = sum(1 for r in restaurants if not r.get("website"))
+        logger.info(
+            "Step 4c: Enriching from Google Places API "
+            "(%d without rating, %d without website) …",
+            without_rating,
+            without_website,
+        )
+        restaurants = await enrich_from_google_places(restaurants)
+    else:
+        logger.info(
+            "Step 4c: Skipping Google Places API enrichment "
+            "(use --google-places to enable)"
+        )
 
     # --- Step 5: Enrich (optional) --------------------------------------------
     if enrich:
@@ -197,23 +217,6 @@ async def run(
                 "(%d without rating, use --google-maps to enable)",
                 without_rating,
             )
-
-    # --- Step 5c: Google Places API enrichment (optional) -------------------------
-    if google_places:
-        without_rating = sum(1 for r in restaurants if not r.get("rating"))
-        without_website = sum(1 for r in restaurants if not r.get("website"))
-        logger.info(
-            "Step 5c: Enriching from Google Places API "
-            "(%d without rating, %d without website) …",
-            without_rating,
-            without_website,
-        )
-        restaurants = await enrich_from_google_places(restaurants)
-    else:
-        logger.info(
-            "Step 5c: Skipping Google Places API enrichment "
-            "(use --google-places to enable)"
-        )
 
     # --- Step 6: Save clean data ------------------------------------------------
     logger.info("Step 6/7: Writing clean data …")
