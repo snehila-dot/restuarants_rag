@@ -669,7 +669,7 @@ async def enrich_restaurants(
                     logger.warning("Unexpected error scraping %s", url, exc_info=True)
                     result = None
                 if result is None:
-                    logger.info("  ✗ %s: fetch failed", name)
+                    logger.info("  [FAIL] %s: fetch failed", name)
                     continue
                 # Merge summary
                 if result.get("summary") and not restaurant.get("summary"):
@@ -716,7 +716,7 @@ async def enrich_restaurants(
 
                 # Per-restaurant outcome line
                 logger.info(
-                    "  ✓ %s: summary=%s, menu_items=%d, menu_url=%s",
+                    "  [OK] %s: summary=%s, menu_items=%d, menu_url=%s",
                     name,
                     "yes" if result.get("summary") else "no",
                     len(menu_items),
