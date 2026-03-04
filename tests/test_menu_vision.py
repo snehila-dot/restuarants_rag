@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from scraper.menu_vision import _parse_json_response, is_menu_file_url
+from unittest.mock import MagicMock, patch
+
+from scraper.menu_vision import (
+    _parse_json_response,
+    is_menu_file_url,
+    parse_menu_text_with_llm,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -62,4 +68,36 @@ class TestParseJsonResponse:
         result = _parse_json_response(
             '[{"name": "", "price": "€5", "category": "Other"}]'
         )
+        assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Tests: LLM text parsing (public API)
+# ---------------------------------------------------------------------------
+
+
+class TestParseMenuTextWithLlm:
+    @patch("openai.OpenAI")
+    def test_returns_parsed_items(self, mock_openai_cls: MagicMock) -> None:
+        mock_client = MagicMock()
+        mock_openai_cls.return_value = mock_client
+        mock_client.chat.completions.create.return_value = MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='[{"name": "Schnitzel", "price": "€14,90", "category": "Main"}]'
+                    )
+                )
+            ]
+        )
+        result = parse_menu_text_with_llm("Schnitzel €14,90", api_key="test-key")
+        assert len(result) == 1
+        assert result[0]["name"] == "Schnitzel"
+
+    @patch("openai.OpenAI")
+    def test_returns_empty_on_error(self, mock_openai_cls: MagicMock) -> None:
+        mock_client = MagicMock()
+        mock_openai_cls.return_value = mock_client
+        mock_client.chat.completions.create.side_effect = Exception("API error")
+        result = parse_menu_text_with_llm("some text", api_key="test-key")
         assert result == []
