@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import httpx
 import pytest
 from bs4 import BeautifulSoup
-
-from unittest.mock import AsyncMock, MagicMock, patch
 
 from scraper.websites import (
     _extract_from_html_heuristic,
@@ -20,7 +20,6 @@ from scraper.websites import (
     _scrape_menu_playwright_llm,
     scrape_restaurant_website,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures: Sample HTML snippets
