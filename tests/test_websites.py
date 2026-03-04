@@ -6,14 +6,18 @@ import httpx
 import pytest
 from bs4 import BeautifulSoup
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 from scraper.websites import (
     _extract_from_html_heuristic,
     _extract_from_jsonld,
+    _extract_menu_with_llm,
     _extract_price,
     _find_menu_file_url,
     _find_menu_url,
     _infer_category,
     _probe_menu_paths,
+    _scrape_menu_playwright_llm,
 )
 
 
@@ -270,3 +274,100 @@ class TestProbeMenuPaths:
         async with httpx.AsyncClient(transport=transport) as client:
             result = await _probe_menu_paths(client, "https://example.com")
         assert result is None
+
+
+# ---------------------------------------------------------------------------
+# Tests: LLM text extraction
+# ---------------------------------------------------------------------------
+
+
+class TestExtractMenuWithLlm:
+    @pytest.mark.asyncio
+    @patch("openai.OpenAI")
+    async def test_returns_items_from_llm(self, mock_openai_cls: MagicMock) -> None:
+        mock_client = MagicMock()
+        mock_openai_cls.return_value = mock_client
+        mock_client.chat.completions.create.return_value = MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='[{"name": "Gulasch", "price": "€12,50", "category": "Main"}]'
+                    )
+                )
+            ]
+        )
+        result = await _extract_menu_with_llm(
+            "Hauptgerichte\nGulasch mit Nockerln €12,50\nSchnitzel mit Kartoffelsalat €14,90\nTafelspitz mit Semmelkren €18,50",
+            api_key="test-key",
+        )
+        assert len(result) >= 1
+
+    @pytest.mark.asyncio
+    async def test_returns_empty_for_short_text(self) -> None:
+        result = await _extract_menu_with_llm("hi", api_key="test-key")
+        assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Tests: Playwright + LLM extraction
+# ---------------------------------------------------------------------------
+
+
+class TestScrapeMenuPlaywrightLlm:
+    @pytest.mark.asyncio
+    @patch("openai.OpenAI")
+    async def test_extracts_via_llm_from_rendered_text(
+        self, mock_openai_cls: MagicMock
+    ) -> None:
+        mock_client = MagicMock()
+        mock_openai_cls.return_value = mock_client
+        mock_client.chat.completions.create.return_value = MagicMock(
+            choices=[
+                MagicMock(
+                    message=MagicMock(
+                        content='[{"name": "Pizza Margherita", "price": "€9,50", "category": "Pizza"}]'
+                    )
+                )
+            ]
+        )
+        # Mock Playwright browser and page
+        mock_page = AsyncMock()
+        mock_page.inner_text.return_value = (
+            "Pizza Margherita €9,50\nPizza Salami €10,50\n"
+            "More text to reach minimum length threshold for extraction"
+        )
+        mock_browser = AsyncMock()
+        mock_browser.new_page.return_value = mock_page
+
+        result = await _scrape_menu_playwright_llm(
+            "https://example.com/menu", mock_browser, api_key="test-key"
+        )
+        assert len(result) >= 1
+        mock_page.goto.assert_called_once()
+        mock_page.close.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_returns_empty_on_short_text(self) -> None:
+        mock_page = AsyncMock()
+        mock_page.inner_text.return_value = "hi"
+        mock_browser = AsyncMock()
+        mock_browser.new_page.return_value = mock_page
+
+        result = await _scrape_menu_playwright_llm(
+            "https://example.com/menu", mock_browser, api_key="test-key"
+        )
+        assert result == []
+        mock_page.close.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_closes_page_on_error(self) -> None:
+        mock_page = AsyncMock()
+        mock_page.goto.side_effect = Exception("Navigation failed")
+        mock_browser = AsyncMock()
+        mock_browser.new_page.return_value = mock_page
+
+        result = await _scrape_menu_playwright_llm(
+            "https://example.com/menu", mock_browser, api_key="test-key"
+        )
+        assert result == []
+        mock_page.close.assert_called_once()

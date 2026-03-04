@@ -425,6 +425,35 @@ def _extract_from_html_heuristic(
 
 
 # ---------------------------------------------------------------------------
+# LLM text extraction
+# ---------------------------------------------------------------------------
+
+
+async def _extract_menu_with_llm(
+    visible_text: str,
+    api_key: str,
+    model: str = "gpt-4o-mini",
+) -> list[dict[str, str]]:
+    """Send visible page text to LLM for structured menu extraction.
+
+    Delegates to :func:`scraper.menu_vision.parse_menu_text_with_llm`
+    which handles the OpenAI API call and JSON parsing.
+
+    Returns an empty list if the text is too short (<50 chars) or if
+    the LLM call fails.
+    """
+    if not visible_text or len(visible_text.strip()) < 50:
+        logger.debug("Text too short for LLM extraction (%d chars)", len(visible_text))
+        return []
+    from scraper.menu_vision import parse_menu_text_with_llm
+
+    # Truncate to stay within token budget (~6000 chars ≈ ~2000 tokens)
+    truncated = visible_text[:6000]
+    logger.debug("Sending %d chars to LLM for menu extraction", len(truncated))
+    return parse_menu_text_with_llm(truncated, api_key, model)
+
+
+# ---------------------------------------------------------------------------
 # Playwright fallback
 # ---------------------------------------------------------------------------
 
@@ -473,6 +502,45 @@ async def _scrape_menu_playwright(
     if soup is None:
         return []
     return _extract_menu_items_from_soup(soup)
+
+
+async def _scrape_menu_playwright_llm(
+    url: str,
+    browser: Browser,
+    *,
+    api_key: str,
+    model: str = "gpt-4o-mini",
+) -> list[dict[str, str]]:
+    """Render *url* with Playwright, extract visible text, parse with LLM.
+
+    Opens a new browser page, waits for JS to finish rendering,
+    extracts the visible text content, then sends it to GPT-4o-mini
+    for structured menu item extraction.
+
+    Falls back to empty list on any error. Always closes the page.
+    """
+    page = await browser.new_page()
+    try:
+        await page.goto(
+            url,
+            wait_until="networkidle",
+            timeout=_PW_NAV_TIMEOUT,
+        )
+        await page.wait_for_timeout(1500)
+        visible_text = await page.inner_text("body")
+        if not visible_text or len(visible_text.strip()) < 50:
+            logger.debug(
+                "Playwright page text too short for %s (%d chars)",
+                url,
+                len(visible_text or ""),
+            )
+            return []
+        return await _extract_menu_with_llm(visible_text, api_key, model)
+    except Exception as exc:
+        logger.debug("Playwright+LLM failed for %s: %s", url, exc)
+        return []
+    finally:
+        await page.close()
 
 
 # ---------------------------------------------------------------------------
