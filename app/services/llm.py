@@ -1,6 +1,7 @@
 """LLM service for generating natural language responses."""
 
 import logging
+from collections.abc import AsyncIterator
 
 from openai import AsyncOpenAI
 
@@ -166,10 +167,79 @@ Please answer the user's question using ONLY the information provided above. Be 
         return response.choices[0].message.content or "I couldn't generate a response."
 
     except Exception as e:
-        logger.error(f"LLM generation error: {e}")
+        logger.error("LLM generation error: %s", e)
 
         # Fallback response
         if language == "de":
             return f"Ich habe {len(restaurants)} Restaurant(s) für Sie gefunden. Bitte sehen Sie sich die Details unten an."
         else:
             return f"I found {len(restaurants)} restaurant(s) for you. Please see the details below."
+
+
+async def generate_response_stream(
+    user_message: str,
+    restaurants: list[Restaurant],
+    language: str = "en",
+    location_hint: str = "",
+) -> AsyncIterator[str]:
+    """Stream LLM response tokens.
+
+    Yields individual text chunks as they arrive from the OpenAI API.
+    Falls back to a single-chunk fallback message on error.
+
+    Args:
+        user_message: The user's original question.
+        restaurants: List of relevant restaurants.
+        language: Response language ('en' or 'de').
+        location_hint: Optional location context.
+
+    Yields:
+        Text chunks from the LLM response.
+    """
+    system_prompt = SYSTEM_PROMPT_DE if language == "de" else SYSTEM_PROMPT_EN
+    restaurant_data = format_restaurant_data(restaurants)
+
+    location_ctx = ""
+    if location_hint:
+        location_ctx = (
+            f"\nNote: These restaurants are located{location_hint}. "
+            "Mention their proximity to this area in your response."
+        )
+
+    user_prompt = f"""User question: {user_message}
+
+Available restaurant data:
+{restaurant_data}
+{location_ctx}
+Please answer the user's question using ONLY the information provided above. Be concise and helpful."""
+
+    try:
+        stream = await client.chat.completions.create(
+            model=settings.llm_model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=settings.llm_temperature,
+            max_tokens=500,
+            timeout=30.0,
+            stream=True,
+        )
+
+        async for chunk in stream:
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta and delta.content:
+                yield delta.content
+
+    except Exception as e:
+        logger.error("LLM streaming error: %s", e)
+        if language == "de":
+            yield (
+                f"Ich habe {len(restaurants)} Restaurant(s) für Sie gefunden. "
+                "Bitte sehen Sie sich die Details unten an."
+            )
+        else:
+            yield (
+                f"I found {len(restaurants)} restaurant(s) for you. "
+                "Please see the details below."
+            )
