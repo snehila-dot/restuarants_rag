@@ -4,8 +4,8 @@ import logging
 import re
 from enum import StrEnum
 
-from openai import AsyncOpenAI
-from pydantic import BaseModel
+from openai import AsyncOpenAI, OpenAIError
+from pydantic import BaseModel, ValidationError
 
 from app.config import settings
 
@@ -172,7 +172,7 @@ async def _llm_extract(message: str) -> ParsedQuery:
 
         return parsed
 
-    except Exception:
+    except (OpenAIError, ValidationError, KeyError, IndexError):
         logger.exception("LLM extraction failed")
         raise
 
@@ -445,8 +445,13 @@ async def parse_query(message: str) -> QueryFilters:
     """
     try:
         parsed = await _llm_extract(message)
-    except Exception:
-        logger.warning("LLM extraction failed, using keyword fallback")
+    except Exception as e:
+        # Broad catch is intentional: _llm_extract may fail for any reason
+        # (API errors, validation, unexpected bugs). We always fall back to
+        # keyword parsing rather than crashing the chat endpoint.
+        logger.warning(
+            "LLM extraction failed (%s), using keyword fallback", type(e).__name__
+        )
         parsed = _keyword_fallback(message)
 
     filters = QueryFilters()
