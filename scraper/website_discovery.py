@@ -24,16 +24,19 @@ from typing import Any
 from urllib.parse import urlparse
 
 from duckduckgo_search import DDGS
-from duckduckgo_search.exceptions import RatelimitException
+from duckduckgo_search.exceptions import (
+    DuckDuckGoSearchException,
+    RatelimitException,
+)
 
 logger = logging.getLogger(__name__)
 
 # Delay between searches to avoid rate-limiting
-_DELAY_BETWEEN_SEARCHES = 5.0
+_DELAY_BETWEEN_SEARCHES = 8.0
 
 # Retry configuration for rate-limited requests
-_MAX_RETRIES = 4
-_BASE_BACKOFF = 5.0  # seconds — doubles on each retry (5, 10, 20, 40)
+_MAX_RETRIES = 5
+_BASE_BACKOFF = 10.0  # seconds — doubles on each retry (10, 20, 40, 80, 160)
 
 # Minimum score a candidate must reach to be accepted.
 # Prevents garbage results (zhihu.com, ford-torino.de, etc.).
@@ -412,7 +415,20 @@ def _search_ddg_with_retry(query: str) -> list[dict[str, str]]:
     for attempt in range(_MAX_RETRIES + 1):
         try:
             return DDGS().text(query, region="at-de", max_results=8)
-        except RatelimitException:
+        except (RatelimitException, DuckDuckGoSearchException) as exc:
+            # The library's .text() method tries multiple backends and
+            # wraps the final RatelimitException inside a generic
+            # DuckDuckGoSearchException.  Detect rate limits by checking
+            # both the exception type and the string representation of the
+            # wrapped cause.
+            is_rate_limit = isinstance(exc, RatelimitException) or (
+                "ratelimit" in str(exc).lower()
+                or "202" in str(exc)
+                or isinstance(exc.__cause__, RatelimitException)
+            )
+            if not is_rate_limit:
+                raise  # genuine non-rate-limit error — propagate immediately
+
             if attempt >= _MAX_RETRIES:
                 logger.warning(
                     "DuckDuckGo rate limit persists after %d retries — giving up",
