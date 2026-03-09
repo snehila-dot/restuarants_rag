@@ -17,16 +17,23 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 import re
+import time
 from typing import Any
 from urllib.parse import urlparse
 
 from duckduckgo_search import DDGS
+from duckduckgo_search.exceptions import RatelimitException
 
 logger = logging.getLogger(__name__)
 
 # Delay between searches to avoid rate-limiting
-_DELAY_BETWEEN_SEARCHES = 3.0
+_DELAY_BETWEEN_SEARCHES = 5.0
+
+# Retry configuration for rate-limited requests
+_MAX_RETRIES = 4
+_BASE_BACKOFF = 5.0  # seconds — doubles on each retry (5, 10, 20, 40)
 
 # Minimum score a candidate must reach to be accepted.
 # Prevents garbage results (zhihu.com, ford-torino.de, etc.).
@@ -258,14 +265,40 @@ def _pick_best_url(results: list[dict[str, str]], restaurant_name: str) -> str |
     # matches pfingstl.at because its title also contains "Gasthaus").
     stop_words = {
         # Articles / conjunctions
-        "the", "das", "der", "die", "und", "and", "von", "zum", "zur",
+        "the",
+        "das",
+        "der",
+        "die",
+        "und",
+        "and",
+        "von",
+        "zum",
+        "zur",
         # Generic restaurant / venue words (too common to be distinctive)
-        "bar", "cafe", "café", "restaurant", "gasthaus", "gasthof",
-        "wirtshaus", "pizzeria", "trattoria", "ristorante", "bistro",
-        "brasserie", "lokal", "stüberl", "beisl", "kantine", "mensa",
-        "buschenschank", "heuriger", "konditorei", "bäckerei",
+        "bar",
+        "cafe",
+        "café",
+        "restaurant",
+        "gasthaus",
+        "gasthof",
+        "wirtshaus",
+        "pizzeria",
+        "trattoria",
+        "ristorante",
+        "bistro",
+        "brasserie",
+        "lokal",
+        "stüberl",
+        "beisl",
+        "kantine",
+        "mensa",
+        "buschenschank",
+        "heuriger",
+        "konditorei",
+        "bäckerei",
         # Location
-        "graz", "steiermark",
+        "graz",
+        "steiermark",
     }
     name_tokens = [
         t
@@ -361,8 +394,46 @@ def _pick_best_url(results: list[dict[str, str]], restaurant_name: str) -> str |
     return best_url
 
 
+def _search_ddg_with_retry(query: str) -> list[dict[str, str]]:
+    """Execute a DuckDuckGo search with exponential backoff on rate limits.
+
+    Retries up to ``_MAX_RETRIES`` times with exponential backoff + jitter
+    when DuckDuckGo returns a 202 Ratelimit response.
+
+    Args:
+        query: Search query string.
+
+    Returns:
+        List of search result dicts, or empty list on persistent failure.
+
+    Raises:
+        Exception: Non-rate-limit errors are propagated immediately.
+    """
+    for attempt in range(_MAX_RETRIES + 1):
+        try:
+            return DDGS().text(query, region="at-de", max_results=8)
+        except RatelimitException:
+            if attempt >= _MAX_RETRIES:
+                logger.warning(
+                    "DuckDuckGo rate limit persists after %d retries — giving up",
+                    _MAX_RETRIES,
+                )
+                return []
+            wait = _BASE_BACKOFF * (2**attempt) + random.uniform(0, 2)
+            logger.info(
+                "DuckDuckGo rate limited (attempt %d/%d), waiting %.0fs…",
+                attempt + 1,
+                _MAX_RETRIES,
+                wait,
+            )
+            time.sleep(wait)
+    return []  # unreachable, satisfies type checker
+
+
 def discover_website(restaurant_name: str, address: str = "") -> str | None:
     """Search DuckDuckGo for a restaurant's official website.
+
+    Retries automatically on rate limit errors with exponential backoff.
 
     Args:
         restaurant_name: Name of the restaurant.
@@ -377,7 +448,7 @@ def discover_website(restaurant_name: str, address: str = "") -> str | None:
         query += f" {address}"
 
     try:
-        results = DDGS().text(query, region="at-de", max_results=8)
+        results = _search_ddg_with_retry(query)
     except Exception as exc:
         logger.warning("DuckDuckGo search failed for '%s': %s", restaurant_name, exc)
         return None
@@ -416,6 +487,8 @@ async def discover_missing_websites(
     )
 
     found_count = 0
+    current_delay = _DELAY_BETWEEN_SEARCHES
+
     for idx, restaurant in enumerate(missing, start=1):
         name = restaurant.get("name", "unknown")
         address = restaurant.get("address", "")
@@ -435,11 +508,14 @@ async def discover_missing_websites(
                 restaurant["data_sources"] = sources
             found_count += 1
             logger.info("  → Found: %s", url)
+            # Successful search — ease back toward base delay
+            current_delay = max(_DELAY_BETWEEN_SEARCHES, current_delay * 0.8)
         else:
             logger.debug("  → No website found for %s", name)
 
-        # Polite delay between searches
-        await asyncio.sleep(_DELAY_BETWEEN_SEARCHES)
+        # Polite delay between searches (with jitter)
+        jitter = random.uniform(0, current_delay * 0.3)
+        await asyncio.sleep(current_delay + jitter)
 
     logger.info(
         "Website discovery complete: found %d/%d missing websites",
