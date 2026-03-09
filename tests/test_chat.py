@@ -1,5 +1,7 @@
-"""Tests for chat API endpoint."""
+"""Tests for streaming chat API endpoint (SSE)."""
 
+import json
+from collections.abc import AsyncIterator
 from unittest.mock import AsyncMock, patch
 
 from httpx import AsyncClient
@@ -28,71 +30,162 @@ def _mock_parsed_query(**overrides: object) -> ParsedQuery:
     return ParsedQuery(**defaults)  # type: ignore[arg-type]
 
 
-async def test_chat_endpoint_success(
+def _parse_sse_events(content: str) -> list[dict]:
+    """Parse SSE event stream into list of event dicts."""
+    events: list[dict] = []
+    for line in content.split("\n"):
+        if line.startswith("data: "):
+            try:
+                events.append(json.loads(line[6:]))
+            except json.JSONDecodeError:
+                pass
+    return events
+
+
+async def _mock_llm_stream(*args: object, **kwargs: object) -> AsyncIterator[str]:
+    """Mock streaming generator that yields two tokens."""
+    yield "Hello "
+    yield "world"
+
+
+async def test_chat_streams_restaurants_then_tokens(
     client: AsyncClient,
     sample_restaurants: list[Restaurant],
 ) -> None:
-    """Test successful chat endpoint response."""
+    """SSE stream emits restaurants, then tokens, then done."""
     with (
         patch(
             "app.services.query_parser._llm_extract", new_callable=AsyncMock
         ) as mock_parser,
-        patch("app.services.llm.client.chat.completions.create") as mock_llm,
+        patch(
+            "app.services.llm.generate_response_stream",
+            return_value=_mock_llm_stream(),
+        ),
     ):
         mock_parser.return_value = _mock_parsed_query(cuisine_types=["italian"])
 
-        mock_response = AsyncMock()
-        mock_response.choices = [
-            AsyncMock(
-                message=AsyncMock(content="I found some Italian restaurants for you.")
-            )
-        ]
-        mock_llm.return_value = mock_response
-
         response = await client.post(
-            "/api/chat", json={"message": "Italian restaurant"}
+            "/api/chat", json={"message": "Italian restaurants"}
         )
 
         assert response.status_code == 200
-        data = response.json()
+        assert "text/event-stream" in response.headers["content-type"]
 
-        assert "message" in data
-        assert "restaurants" in data
-        assert "language" in data
-        assert isinstance(data["restaurants"], list)
+        events = _parse_sse_events(response.text)
+        event_types = [e["type"] for e in events]
+
+        # Must have restaurants → status → tokens → done
+        assert "restaurants" in event_types
+        assert "status" in event_types
+        assert "done" in event_types
+
+        # Restaurants event contains a list of restaurant dicts
+        restaurants_event = next(e for e in events if e["type"] == "restaurants")
+        assert isinstance(restaurants_event["data"], list)
+        assert len(restaurants_event["data"]) > 0
+        assert "name" in restaurants_event["data"][0]
+
+        # Token events reconstruct the full LLM text
+        token_events = [e for e in events if e["type"] == "token"]
+        full_text = "".join(e["data"] for e in token_events)
+        assert full_text == "Hello world"
 
 
-async def test_chat_endpoint_validation_error(client: AsyncClient) -> None:
-    """Test chat endpoint with invalid input."""
+async def test_chat_empty_message_returns_error_event(
+    client: AsyncClient,
+) -> None:
+    """Empty message returns SSE error event."""
     response = await client.post(
         "/api/chat",
-        json={"message": ""},  # Empty message should fail validation
+        json={"message": ""},
     )
 
-    assert response.status_code == 422  # Validation error
+    assert response.status_code == 200
+    events = _parse_sse_events(response.text)
+    assert any(e["type"] == "error" for e in events)
+    error_event = next(e for e in events if e["type"] == "error")
+    assert "1-1000" in error_event["data"]
 
 
-async def test_chat_endpoint_language_detection(
+async def test_chat_language_in_done_event(
     client: AsyncClient,
     sample_restaurants: list[Restaurant],
 ) -> None:
-    """Test language detection in chat endpoint."""
+    """Detected language is included in the done event."""
     with (
         patch(
             "app.services.query_parser._llm_extract", new_callable=AsyncMock
         ) as mock_parser,
-        patch("app.services.llm.client.chat.completions.create") as mock_llm,
+        patch(
+            "app.services.llm.generate_response_stream",
+            return_value=_mock_llm_stream(),
+        ),
     ):
         mock_parser.return_value = _mock_parsed_query(language="de")
-
-        mock_response = AsyncMock()
-        mock_response.choices = [AsyncMock(message=AsyncMock(content="Test response"))]
-        mock_llm.return_value = mock_response
 
         response = await client.post(
             "/api/chat", json={"message": "Ich suche ein Restaurant"}
         )
 
-        assert response.status_code == 200
-        data = response.json()
-        assert data["language"] == "de"
+        events = _parse_sse_events(response.text)
+        done_event = next(e for e in events if e["type"] == "done")
+        assert done_event["data"]["language"] == "de"
+
+
+async def test_chat_no_restaurants_emits_error(
+    client: AsyncClient,
+) -> None:
+    """Error event when no restaurants match."""
+    from app.services.retrieval import NoRestaurantsFoundError
+
+    with (
+        patch(
+            "app.services.query_parser._llm_extract", new_callable=AsyncMock
+        ) as mock_parser,
+        patch(
+            "app.services.retrieval.search_restaurants",
+            new_callable=AsyncMock,
+            side_effect=NoRestaurantsFoundError("none"),
+        ),
+        patch(
+            "app.services.retrieval.get_all_restaurants",
+            new_callable=AsyncMock,
+            return_value=[],
+        ),
+    ):
+        mock_parser.return_value = _mock_parsed_query()
+
+        response = await client.post("/api/chat", json={"message": "martian food"})
+
+        events = _parse_sse_events(response.text)
+        assert any(e["type"] == "error" for e in events)
+
+
+async def test_chat_restaurant_data_shape(
+    client: AsyncClient,
+    sample_restaurants: list[Restaurant],
+) -> None:
+    """Restaurant event data contains expected fields."""
+    with (
+        patch(
+            "app.services.query_parser._llm_extract", new_callable=AsyncMock
+        ) as mock_parser,
+        patch(
+            "app.services.llm.generate_response_stream",
+            return_value=_mock_llm_stream(),
+        ),
+    ):
+        mock_parser.return_value = _mock_parsed_query()
+
+        response = await client.post("/api/chat", json={"message": "any restaurant"})
+
+        events = _parse_sse_events(response.text)
+        restaurants_event = next(e for e in events if e["type"] == "restaurants")
+        restaurant = restaurants_event["data"][0]
+
+        # Check required fields are present
+        assert "id" in restaurant
+        assert "name" in restaurant
+        assert "address" in restaurant
+        assert "cuisine" in restaurant
+        assert "price_range" in restaurant

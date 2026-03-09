@@ -1,13 +1,16 @@
-"""Chat API endpoint."""
+"""Chat API endpoint with Server-Sent Events streaming."""
 
+import json
 import logging
+from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
 from app.limiter import limiter
-from app.schemas.restaurant import ChatRequest, ChatResponse, RestaurantResponse
+from app.schemas.restaurant import RestaurantResponse
 from app.services import llm, query_parser, retrieval
 
 logger = logging.getLogger(__name__)
@@ -15,86 +18,131 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["chat"])
 
 
-@router.post("/chat", response_model=ChatResponse)
-@limiter.limit("10/minute")
-async def chat(
-    request: Request,
-    body: ChatRequest,
-    session: AsyncSession = Depends(get_session),  # noqa: B008
-) -> ChatResponse:
-    """
-    Process a chat message and return restaurant recommendations.
+def _sse_event(event_type: str, data: object) -> str:
+    """Format a Server-Sent Event.
 
     Args:
-        request: Starlette request (used by rate limiter)
-        body: ChatRequest with user's message and optional language
-        session: Database session (injected dependency)
+        event_type: Event category (restaurants, token, done, error, status).
+        data: JSON-serialisable payload.
 
     Returns:
-        ChatResponse with generated message and relevant restaurants
+        SSE-formatted string ``"data: {...}\\n\\n"``.
+    """
+    payload = json.dumps({"type": event_type, "data": data}, ensure_ascii=False)
+    return f"data: {payload}\n\n"
 
-    Raises:
-        HTTPException: On errors during processing
+
+async def _chat_stream(
+    message: str,
+    language: str | None,
+    session: AsyncSession,
+) -> AsyncIterator[str]:
+    """Async generator that yields SSE events for the chat response.
+
+    Phase 1: Parse query, fetch restaurants, emit restaurant data.
+    Phase 2: Stream LLM response tokens.
+
+    Args:
+        message: User's chat message.
+        language: Explicit language preference or ``None``.
+        session: Database session.
+
+    Yields:
+        SSE-formatted event strings.
     """
     try:
-        # Parse user query to extract filters (async LLM extraction)
-        filters = await query_parser.parse_query(body.message)
+        # --- Phase 1: Parse + DB lookup ---
+        filters = await query_parser.parse_query(message)
+        detected_language = language or filters.language
 
-        # Detect language — prefer explicit request, then parser result
-        language = body.language or filters.language
-
-        # Retrieve matching restaurants
         try:
             restaurants = await retrieval.search_restaurants(session, filters)
         except retrieval.NoRestaurantsFoundError:
             if filters.has_location:
-                # Widen radius and retry once before giving up
                 filters.location_radius_m = 1500
                 try:
                     restaurants = await retrieval.search_restaurants(session, filters)
                 except retrieval.NoRestaurantsFoundError:
                     restaurants = []
             else:
-                # No location filter — fall back to top-rated
                 restaurants = await retrieval.get_all_restaurants(session, limit=3)
 
-            if not restaurants:
-                raise HTTPException(
-                    status_code=404,
-                    detail="No restaurants found matching your criteria.",
-                ) from None
+        if not restaurants:
+            yield _sse_event("error", "No restaurants found matching your criteria.")
+            return
 
-        # Generate LLM response
+        # Emit restaurant cards immediately
+        restaurant_responses = [
+            RestaurantResponse.model_validate(r).model_dump(mode="json")
+            for r in restaurants
+        ]
+        yield _sse_event("restaurants", restaurant_responses)
+
+        # --- Phase 2: Stream LLM response ---
+        yield _sse_event("status", "generating")
+
         location_hint = (
             f" near {filters.location_name}" if filters.location_name else ""
         )
-        response_message = await llm.generate_response(
-            user_message=body.message,
+
+        async for token in llm.generate_response_stream(
+            user_message=message,
             restaurants=restaurants,
-            language=language,
+            language=detected_language,
             location_hint=location_hint,
-        )
+        ):
+            yield _sse_event("token", token)
 
-        # Convert to response schemas
-        restaurant_responses = [
-            RestaurantResponse.model_validate(r) for r in restaurants
-        ]
-
-        return ChatResponse(
-            message=response_message,
-            restaurants=restaurant_responses,
-            language=language,
-        )
-
-    except retrieval.NoRestaurantsFoundError as e:
-        logger.warning("No restaurants found: %s", e)
-        raise HTTPException(
-            status_code=404, detail=str(e)
-        ) from None
+        yield _sse_event("done", {"language": detected_language})
 
     except Exception as e:
-        logger.error("Error processing chat request: %s", e, exc_info=True)
-        raise HTTPException(
-            status_code=500,
-            detail="An error occurred while processing your request. Please try again.",
-        ) from e
+        logger.error("Error in chat stream: %s", e, exc_info=True)
+        yield _sse_event(
+            "error",
+            "An error occurred while processing your request.",
+        )
+
+
+@router.post("/chat")
+@limiter.limit("10/minute")
+async def chat(
+    request: Request,
+    body: dict,
+    session: AsyncSession = Depends(get_session),  # noqa: B008
+) -> StreamingResponse:
+    """Stream chat response as Server-Sent Events.
+
+    The client receives:
+
+    - ``restaurants`` event with matched restaurant data
+    - ``status`` event when LLM generation starts
+    - ``token`` events with LLM response chunks
+    - ``done`` event when complete
+    - ``error`` event on failure
+
+    Args:
+        request: Starlette request (used by rate limiter).
+        body: JSON body with ``message`` and optional ``language``.
+        session: Database session (injected dependency).
+
+    Returns:
+        ``StreamingResponse`` with ``text/event-stream`` content type.
+    """
+    message = (body.get("message") or "").strip()
+    if not message or len(message) > 1000:
+        return StreamingResponse(
+            iter([_sse_event("error", "Message must be 1-1000 characters.")]),
+            media_type="text/event-stream",
+        )
+
+    language = body.get("language")
+
+    return StreamingResponse(
+        _chat_stream(message, language, session),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
