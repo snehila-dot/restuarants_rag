@@ -24,6 +24,8 @@ python -m app.seed                     # seed sample restaurant data
 
 # Data scraping
 python -m scraper                      # run all scrapers, output to data/
+python -m scraper --google-places      # + enrich via Google Places API
+python -m scraper --google-places --enrich  # full pipeline (Places + website menus)
 python -m scraper.google_maps          # scrape Google Maps only
 python -m scraper.websites             # scrape restaurant websites only
 python -m app.seed --from-scraped      # seed DB from scraped JSON files
@@ -79,6 +81,7 @@ app/
 scraper/                 # One-time data extraction scripts (NOT used at runtime)
 ├── __main__.py          # Entry point — runs all scrapers
 ├── google_maps.py       # Google Maps scraper (Playwright for JS-rendered pages)
+├── google_places.py     # Google Places API enrichment (ratings, websites, reviews)
 ├── websites.py          # Individual restaurant website scraper (BeautifulSoup)
 ├── parsers.py           # HTML → structured data extraction helpers
 └── output.py            # Write scraped data to data/*.json

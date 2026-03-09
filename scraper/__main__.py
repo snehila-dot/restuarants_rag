@@ -3,14 +3,13 @@
 Usage::
 
     python -m scraper                                    # OSM data only
-    python -m scraper --discover-websites                # + find missing websites via DuckDuckGo
     python -m scraper --enrich                           # + scrape websites (Playwright + LLM + Vision)
     python -m scraper --enrich --no-llm                  # + scrape websites (Playwright + BS4 only, free)
     python -m scraper --enrich --no-vision               # + scrape websites (skip PDF/image vision)
     python -m scraper --enrich --limit 20                # + test on first 20 restaurants
     python -m scraper --google-maps                      # + enrich ratings/price from Google Maps (Playwright)
     python -m scraper --google-places                    # + enrich via Google Places API (recommended)
-    python -m scraper --discover-websites --google-places --enrich  # Full pipeline
+    python -m scraper --google-places --enrich           # Full pipeline
     python -m scraper --output-dir data/
 """
 
@@ -29,7 +28,6 @@ from scraper.google_places import enrich_restaurants as enrich_from_google_place
 from scraper.output import write_clean, write_raw
 from scraper.overpass import scrape as scrape_overpass
 from scraper.parsers import raw_to_restaurant
-from scraper.website_discovery import discover_missing_websites
 from scraper.websites import enrich_restaurants
 
 logging.basicConfig(
@@ -65,7 +63,6 @@ async def run(
     enrich_vision: bool = False,
     no_llm: bool = False,
     no_vision: bool = False,
-    discover_websites: bool = False,
     google_maps: bool = False,
     google_places: bool = False,
     output_dir: str = "data",
@@ -77,8 +74,7 @@ async def run(
     2. Save raw data.
     3. Parse into restaurant schema dicts.
     4. Deduplicate by name.
-    4b. (Optional) Discover missing websites via DuckDuckGo.
-    4c. (Optional) Enrich from Google Places API (ratings, websites, etc.).
+    4b. (Optional) Enrich from Google Places API (ratings, websites, etc.).
     5. (Optional) Enrich from individual restaurant websites.
     5b. (Optional) Enrich ratings/price/reviews from Google Maps.
     6. Save clean data.
@@ -114,31 +110,14 @@ async def run(
         )
         restaurants = restaurants[:limit]
 
-    # --- Step 4b: Discover missing websites (optional) -------------------------
-    if discover_websites:
-        missing = sum(1 for r in restaurants if not r.get("website"))
-        logger.info(
-            "Step 4b: Discovering missing websites via DuckDuckGo (%d to find) …",
-            missing,
-        )
-        restaurants = await discover_missing_websites(restaurants)
-    else:
-        missing = sum(1 for r in restaurants if not r.get("website"))
-        if missing:
-            logger.info(
-                "Step 4b: Skipping website discovery (%d without website, "
-                "use --discover-websites to find them)",
-                missing,
-            )
-
-    # --- Step 4c: Google Places API enrichment (optional) ---------------------
+    # --- Step 4b: Google Places API enrichment (optional) ---------------------
     # Runs BEFORE website enrichment so that websites discovered by Google
     # Places are available for menu extraction in step 5.
     if google_places:
         without_rating = sum(1 for r in restaurants if not r.get("rating"))
         without_website = sum(1 for r in restaurants if not r.get("website"))
         logger.info(
-            "Step 4c: Enriching from Google Places API "
+            "Step 4b: Enriching from Google Places API "
             "(%d without rating, %d without website) …",
             without_rating,
             without_website,
@@ -146,7 +125,7 @@ async def run(
         restaurants = await enrich_from_google_places(restaurants)
     else:
         logger.info(
-            "Step 4c: Skipping Google Places API enrichment "
+            "Step 4b: Skipping Google Places API enrichment "
             "(use --google-places to enable)"
         )
 
@@ -308,14 +287,6 @@ def main() -> None:
         description="Scrape Graz restaurant data from OpenStreetMap."
     )
     parser.add_argument(
-        "--discover-websites",
-        action="store_true",
-        help=(
-            "Search DuckDuckGo for missing restaurant websites before"
-            " enrichment (requires 'pip install duckduckgo-search')."
-        ),
-    )
-    parser.add_argument(
         "--enrich",
         action="store_true",
         help=("Also scrape individual restaurant websites for summaries (slower)."),
@@ -331,16 +302,12 @@ def main() -> None:
     parser.add_argument(
         "--enrich-vision",
         action="store_true",
-        help=(
-            "[DEPRECATED] Vision is now on by default. Use --no-vision to disable."
-        ),
+        help=("[DEPRECATED] Vision is now on by default. Use --no-vision to disable."),
     )
     parser.add_argument(
         "--no-llm",
         action="store_true",
-        help=(
-            "Skip LLM text parsing (use BS4 heuristic only, free but lower yield)."
-        ),
+        help=("Skip LLM text parsing (use BS4 heuristic only, free but lower yield)."),
     )
     parser.add_argument(
         "--no-vision",
@@ -389,7 +356,6 @@ def main() -> None:
             enrich_vision=args.enrich_vision,
             no_llm=args.no_llm,
             no_vision=args.no_vision,
-            discover_websites=args.discover_websites,
             google_maps=args.google_maps,
             google_places=args.google_places,
             output_dir=args.output_dir,
