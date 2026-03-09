@@ -199,26 +199,26 @@ async def generate_response_stream(
     system_prompt = SYSTEM_PROMPT_DE if language == "de" else SYSTEM_PROMPT_EN
     restaurant_data = format_restaurant_data(restaurants)
 
-    location_ctx = ""
+    # Build system message with restaurant context.
+    # User input is sent as a separate message to prevent prompt injection.
+    system_content = system_prompt + "\n\n--- RESTAURANT DATA ---\n" + restaurant_data
     if location_hint:
-        location_ctx = (
+        system_content += (
             f"\nNote: These restaurants are located{location_hint}. "
             "Mention their proximity to this area in your response."
         )
-
-    user_prompt = f"""User question: {user_message}
-
-Available restaurant data:
-{restaurant_data}
-{location_ctx}
-Please answer the user's question using ONLY the information provided above. Be concise and helpful."""
+    system_content += (
+        "\n--- END DATA ---\n\n"
+        "Answer the user's question using ONLY the restaurant data above. "
+        "Be concise and helpful."
+    )
 
     try:
         stream = await client.chat.completions.create(
             model=settings.llm_model,
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": user_message},
             ],
             temperature=settings.llm_temperature,
             max_tokens=500,
