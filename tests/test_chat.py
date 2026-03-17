@@ -209,6 +209,38 @@ async def test_chat_accepts_conversation_history(
         assert any(e["type"] in ("restaurants", "error") for e in events)
 
 
+async def test_chat_passes_history_to_llm(
+    client: AsyncClient,
+    sample_restaurants: list[Restaurant],
+) -> None:
+    """Conversation history is forwarded to LLM service."""
+    with (
+        patch(
+            "app.services.query_parser._llm_extract", new_callable=AsyncMock
+        ) as mock_parser,
+        patch(
+            "app.services.llm.generate_response_stream",
+        ) as mock_llm,
+    ):
+        mock_parser.return_value = _mock_parsed_query()
+        mock_llm.return_value = _mock_llm_stream()
+
+        history = [
+            {"role": "user", "content": "Italian food"},
+            {"role": "assistant", "content": "Here are restaurants."},
+        ]
+
+        await client.post(
+            "/api/chat",
+            json={"message": "but cheaper", "conversation_history": history},
+        )
+
+        # Verify LLM was called with conversation_history
+        mock_llm.assert_called_once()
+        call_kwargs = mock_llm.call_args
+        assert "conversation_history" in call_kwargs.kwargs or len(call_kwargs.args) > 4
+
+
 async def test_chat_restaurant_data_shape(
     client: AsyncClient,
     sample_restaurants: list[Restaurant],

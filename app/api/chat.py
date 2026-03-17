@@ -52,8 +52,15 @@ async def _chat_stream(
         SSE-formatted event strings.
     """
     try:
+        # Convert Pydantic models to dicts for service layer
+        history_dicts = [
+            msg.model_dump(mode="json") for msg in conversation_history
+        ]
+
         # --- Phase 1: Parse + DB lookup ---
-        filters = await query_parser.parse_query(message)
+        filters = await query_parser.parse_query(
+            message, conversation_history=history_dicts
+        )
         detected_language = language or filters.language
 
         try:
@@ -91,6 +98,7 @@ async def _chat_stream(
             restaurants=restaurants,
             language=detected_language,
             location_hint=location_hint,
+            conversation_history=history_dicts,
         ):
             yield _sse_event("token", token)
 
