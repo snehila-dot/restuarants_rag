@@ -6,6 +6,10 @@ const sendButton = document.getElementById('send-button');
 const chatMessages = document.getElementById('chat-messages');
 const loadingIndicator = document.getElementById('loading');
 
+// Conversation history — last 5 pairs (10 messages), client-side only
+let conversationHistory = [];
+const MAX_HISTORY_PAIRS = 5;
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -100,12 +104,19 @@ chatForm.addEventListener('submit', async function (e) {
     var assistantContent = null;
     var textContainer = null;
     var accumulatedText = '';
+    var streamedRestaurants = [];
+
+    // Push user message to history before sending
+    conversationHistory.push({ role: 'user', content: message });
 
     try {
         var response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message }),
+            body: JSON.stringify({
+                message: message,
+                conversation_history: conversationHistory.slice(-(MAX_HISTORY_PAIRS * 2)),
+            }),
         });
 
         if (!response.ok) {
@@ -138,6 +149,7 @@ chatForm.addEventListener('submit', async function (e) {
                             loadingIndicator.style.display = 'none';
                             assistantContent = addMessage('', 'assistant');
                             assistantContent.innerHTML = formatRestaurants(event.data);
+                            streamedRestaurants = event.data;
                             // Create container for the LLM narrative text
                             textContainer = document.createElement('div');
                             textContainer.className = 'response-text';
@@ -162,6 +174,16 @@ chatForm.addEventListener('submit', async function (e) {
                             break;
 
                         case 'done':
+                            // Push assistant response to history
+                            conversationHistory.push({
+                                role: 'assistant',
+                                content: accumulatedText,
+                                restaurants: streamedRestaurants,
+                            });
+                            // Trim to max pairs
+                            if (conversationHistory.length > MAX_HISTORY_PAIRS * 2) {
+                                conversationHistory = conversationHistory.slice(-(MAX_HISTORY_PAIRS * 2));
+                            }
                             break;
 
                         case 'error':
