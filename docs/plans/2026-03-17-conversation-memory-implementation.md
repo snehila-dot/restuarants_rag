@@ -12,6 +12,26 @@
 
 ---
 
+## Task 0: Create Feature Branch
+
+**Step 1: Create and switch to feature branch**
+
+```bash
+git checkout -b feature/conversation-memory
+```
+
+**Step 2: Verify branch**
+
+```bash
+git branch --show-current
+```
+
+Expected: `feature/conversation-memory`
+
+All subsequent tasks commit to this branch. After Task 8, the branch is ready for review and merge into `master`.
+
+---
+
 ## Task 1: Add ConversationMessage Schema and Update ChatRequest
 
 **Files:**
@@ -981,10 +1001,45 @@ git commit -m "add integration test for multi-turn conversation flow"
 
 ---
 
+## Task 9: Final Review and Merge Readiness
+
+**Step 1: Run full test suite one last time**
+
+```bash
+pytest tests/ -v --tb=short
+```
+
+Expected: All PASS
+
+**Step 2: Run linter and formatter**
+
+```bash
+ruff check app/ tests/ && ruff format --check app/ tests/
+```
+
+Expected: Clean
+
+**Step 3: Review branch diff**
+
+```bash
+git log --oneline master..feature/conversation-memory
+```
+
+Verify all commits are present and atomic.
+
+**Step 4: Branch is ready for merge**
+
+The branch `feature/conversation-memory` can now be merged into `master` via:
+- `git checkout master && git merge feature/conversation-memory` (direct merge), or
+- Create a pull request if using a remote workflow
+
+---
+
 ## Summary
 
 | Task | What | Files Changed |
 |------|------|---------------|
+| 0 | Create `feature/conversation-memory` branch | — |
 | 1 | ConversationMessage schema + ChatRequest update | schemas, test_chat |
 | 2 | Switch endpoint from raw dict to ChatRequest | chat.py, test_chat |
 | 3 | Query parser accepts history context | query_parser, test_query_parser |
@@ -993,5 +1048,6 @@ git commit -m "add integration test for multi-turn conversation flow"
 | 6 | Frontend tracks and sends history | chat.js |
 | 7 | "New conversation" button | index.html, style.css, chat.js |
 | 8 | Integration test + lint/type check | test_chat |
+| 9 | Final review + merge readiness | — |
 
-**Total**: 8 tasks, ~8 commits. Backend is fully TDD. Frontend is manually verified.
+**Total**: 10 tasks (0–9), ~8 commits on `feature/conversation-memory` branch. Backend is fully TDD. Frontend is manually verified. Branch merges into `master` when ready.
