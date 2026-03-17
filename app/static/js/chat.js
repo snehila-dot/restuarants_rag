@@ -120,8 +120,11 @@ chatForm.addEventListener('submit', async function (e) {
     var accumulatedText = '';
     var streamedRestaurants = [];
 
-    // Push user message to history before sending
+    // Push user message to history and trim immediately
     conversationHistory.push({ role: 'user', content: message });
+    if (conversationHistory.length > MAX_HISTORY_PAIRS * 2) {
+        conversationHistory = conversationHistory.slice(-(MAX_HISTORY_PAIRS * 2));
+    }
 
     try {
         var response = await fetch('/api/chat', {
@@ -207,7 +210,7 @@ chatForm.addEventListener('submit', async function (e) {
                         case 'error':
                             loadingIndicator.style.display = 'none';
                             if (!assistantContent) {
-                                addMessage('<p>' + escapeHtml(event.data) + '</p>', 'assistant');
+                                assistantContent = addMessage('<p>' + escapeHtml(event.data) + '</p>', 'assistant');
                             } else if (textContainer) {
                                 textContainer.innerHTML = '<p>' + escapeHtml(event.data) + '</p>';
                             }
