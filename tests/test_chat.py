@@ -161,6 +161,42 @@ async def test_chat_no_restaurants_emits_error(
         assert any(e["type"] == "error" for e in events)
 
 
+async def test_chat_accepts_conversation_history(
+    client: AsyncClient,
+    sample_restaurants: list[Restaurant],
+) -> None:
+    """Chat endpoint accepts conversation_history in request body."""
+    with (
+        patch(
+            "app.services.query_parser._llm_extract", new_callable=AsyncMock
+        ) as mock_parser,
+        patch(
+            "app.services.llm.generate_response_stream",
+            return_value=_mock_llm_stream(),
+        ),
+    ):
+        mock_parser.return_value = _mock_parsed_query()
+
+        response = await client.post(
+            "/api/chat",
+            json={
+                "message": "but cheaper",
+                "conversation_history": [
+                    {"role": "user", "content": "Italian restaurants"},
+                    {
+                        "role": "assistant",
+                        "content": "Here are some Italian restaurants.",
+                        "restaurants": [],
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 200
+        events = _parse_sse_events(response.text)
+        assert any(e["type"] in ("restaurants", "error") for e in events)
+
+
 async def test_chat_restaurant_data_shape(
     client: AsyncClient,
     sample_restaurants: list[Restaurant],

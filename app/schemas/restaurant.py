@@ -53,6 +53,17 @@ class RestaurantResponse(BaseModel):
     longitude: float | None = None
 
 
+class ConversationMessage(BaseModel):
+    """A single message in conversation history."""
+
+    role: str = Field(..., pattern="^(user|assistant)$")
+    content: str = Field(..., max_length=2000)
+    restaurants: list[RestaurantResponse] | None = Field(
+        default=None,
+        description="Restaurants shown in this assistant message (if any)",
+    )
+
+
 class ChatRequest(BaseModel):
     """Request schema for chat endpoint."""
 
@@ -63,6 +74,11 @@ class ChatRequest(BaseModel):
         default=None,
         pattern="^(de|en)$",
         description="Response language (de=German, en=English)",
+    )
+    conversation_history: list[ConversationMessage] = Field(
+        default_factory=list,
+        max_length=10,
+        description="Previous messages for conversation context (max 5 pairs)",
     )
 
 
