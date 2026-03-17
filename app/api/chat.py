@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
 from app.limiter import limiter
-from app.schemas.restaurant import RestaurantResponse
+from app.schemas.restaurant import ChatRequest, ConversationMessage, RestaurantResponse
 from app.services import llm, query_parser, retrieval
 
 logger = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ def _sse_event(event_type: str, data: object) -> str:
 async def _chat_stream(
     message: str,
     language: str | None,
+    conversation_history: list[ConversationMessage],
     session: AsyncSession,
 ) -> AsyncIterator[str]:
     """Async generator that yields SSE events for the chat response.
@@ -107,7 +108,7 @@ async def _chat_stream(
 @limiter.limit("10/minute")
 async def chat(
     request: Request,
-    body: dict,
+    body: ChatRequest,
     session: AsyncSession = Depends(get_session),  # noqa: B008
 ) -> StreamingResponse:
     """Stream chat response as Server-Sent Events.
@@ -122,23 +123,14 @@ async def chat(
 
     Args:
         request: Starlette request (used by rate limiter).
-        body: JSON body with ``message`` and optional ``language``.
+        body: Validated chat request with message and optional history.
         session: Database session (injected dependency).
 
     Returns:
         ``StreamingResponse`` with ``text/event-stream`` content type.
     """
-    message = (body.get("message") or "").strip()
-    if not message or len(message) > 1000:
-        return StreamingResponse(
-            iter([_sse_event("error", "Message must be 1-1000 characters.")]),
-            media_type="text/event-stream",
-        )
-
-    language = body.get("language")
-
     return StreamingResponse(
-        _chat_stream(message, language, session),
+        _chat_stream(body.message, body.language, body.conversation_history, session),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

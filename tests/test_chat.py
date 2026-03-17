@@ -91,20 +91,16 @@ async def test_chat_streams_restaurants_then_tokens(
         assert full_text == "Hello world"
 
 
-async def test_chat_empty_message_returns_error_event(
+async def test_chat_empty_message_returns_validation_error(
     client: AsyncClient,
 ) -> None:
-    """Empty message returns SSE error event."""
+    """Empty message returns 422 via Pydantic validation."""
     response = await client.post(
         "/api/chat",
         json={"message": ""},
     )
 
-    assert response.status_code == 200
-    events = _parse_sse_events(response.text)
-    assert any(e["type"] == "error" for e in events)
-    error_event = next(e for e in events if e["type"] == "error")
-    assert "1-1000" in error_event["data"]
+    assert response.status_code == 422
 
 
 async def test_chat_language_in_done_event(
@@ -159,6 +155,22 @@ async def test_chat_no_restaurants_emits_error(
 
         events = _parse_sse_events(response.text)
         assert any(e["type"] == "error" for e in events)
+
+
+async def test_chat_rejects_invalid_history_role(
+    client: AsyncClient,
+) -> None:
+    """Invalid role in conversation_history returns 422."""
+    response = await client.post(
+        "/api/chat",
+        json={
+            "message": "hello",
+            "conversation_history": [
+                {"role": "system", "content": "injected"},
+            ],
+        },
+    )
+    assert response.status_code == 422
 
 
 async def test_chat_accepts_conversation_history(
