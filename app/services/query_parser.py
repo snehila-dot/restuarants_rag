@@ -127,11 +127,58 @@ def _empty_parsed_query() -> ParsedQuery:
     )
 
 
-async def _llm_extract(message: str) -> ParsedQuery:
+def _format_history_for_parser(
+    conversation_history: list[dict[str, object]],
+) -> str:
+    """Build a conversation context summary for the parser LLM.
+
+    Args:
+        conversation_history: List of message dicts with role, content,
+            and optional restaurants.
+
+    Returns:
+        Formatted context string, or empty string if no history.
+    """
+    if not conversation_history:
+        return ""
+
+    lines: list[str] = [
+        "\nCONVERSATION CONTEXT (use to resolve references like "
+        '"cheaper", "more like that", "which one", etc.):'
+    ]
+    for msg in conversation_history:
+        role = msg.get("role", "")
+        content = str(msg.get("content", ""))[:200]  # Truncate long messages
+        if role == "user":
+            lines.append(f"- User: {content}")
+        elif role == "assistant":
+            restaurants = msg.get("restaurants") or []
+            if restaurants and isinstance(restaurants, list):
+                names = [
+                    str(r.get("name", "?")) if isinstance(r, dict) else "?"
+                    for r in restaurants[:5]
+                ]
+                lines.append(f"- Assistant: {content[:100]}...")
+                lines.append(f"  (Showed: {', '.join(names)})")
+            else:
+                lines.append(f"- Assistant: {content}")
+
+    lines.append(
+        "The user's NEW message follows. Resolve any references "
+        "using the context above."
+    )
+    return "\n".join(lines)
+
+
+async def _llm_extract(
+    message: str,
+    conversation_history: list[dict[str, object]] | None = None,
+) -> ParsedQuery:
     """Extract structured query filters from a user message using the LLM.
 
     Args:
         message: User's natural language query
+        conversation_history: Previous messages for resolving follow-ups
 
     Returns:
         ParsedQuery with extracted filters
@@ -140,10 +187,14 @@ async def _llm_extract(message: str) -> ParsedQuery:
         Exception: If LLM API call fails (caller should handle fallback)
     """
     try:
+        system_content = PARSER_SYSTEM_PROMPT
+        if conversation_history:
+            system_content += _format_history_for_parser(conversation_history)
+
         response = await _parser_client.beta.chat.completions.parse(
             model=settings.parser_model,
             messages=[
-                {"role": "system", "content": PARSER_SYSTEM_PROMPT},
+                {"role": "system", "content": system_content},
                 {
                     "role": "user",
                     "content": (
@@ -431,7 +482,10 @@ def _keyword_fallback(message: str) -> ParsedQuery:
     )
 
 
-async def parse_query(message: str) -> QueryFilters:
+async def parse_query(
+    message: str,
+    conversation_history: list[dict[str, object]] | None = None,
+) -> QueryFilters:
     """Parse user query to extract structured filters.
 
     Uses LLM structured extraction (gpt-4o-mini) with keyword fallback
@@ -439,12 +493,13 @@ async def parse_query(message: str) -> QueryFilters:
 
     Args:
         message: User's natural language query
+        conversation_history: Previous messages for resolving follow-ups
 
     Returns:
         QueryFilters with extracted and enriched filters
     """
     try:
-        parsed = await _llm_extract(message)
+        parsed = await _llm_extract(message, conversation_history)
     except Exception as e:
         # Broad catch is intentional: _llm_extract may fail for any reason
         # (API errors, validation, unexpected bugs). We always fall back to

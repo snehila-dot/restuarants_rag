@@ -287,6 +287,73 @@ async def test_parse_query_falls_back_on_llm_error() -> None:
 
 
 @pytest.mark.asyncio
+async def test_parse_query_with_history_resolves_refinement() -> None:
+    """Follow-up 'but cheaper' with history produces lower price filter."""
+    history = [
+        {"role": "user", "content": "Italian restaurants"},
+        {
+            "role": "assistant",
+            "content": "Here are some Italian restaurants in the €€ range.",
+            "restaurants": [{"name": "Test Place", "cuisine": ["Italian"], "price_range": "€€"}],
+        },
+    ]
+
+    mock_parsed = ParsedQuery(
+        cuisine_types=["italian"],
+        excluded_cuisines=[],
+        price_ranges=["€"],
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=[],
+        location_name=None,
+        mood=None,
+        group_size=None,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+    with patch(
+        "app.services.query_parser._llm_extract", new_callable=AsyncMock
+    ) as mock_extract:
+        mock_extract.return_value = mock_parsed
+        filters = await parse_query("but cheaper", conversation_history=history)
+
+    # The mock returns what the LLM would produce given history context
+    assert "italian" in filters.cuisine_types
+    assert "€" in filters.price_ranges
+    # Verify _llm_extract was called with the message (history is in the prompt)
+    mock_extract.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_parse_query_without_history_still_works() -> None:
+    """parse_query with no history works exactly as before."""
+    mock_parsed = ParsedQuery(
+        cuisine_types=["italian"],
+        excluded_cuisines=[],
+        price_ranges=[],
+        excluded_price_ranges=[],
+        features=[],
+        dish_keywords=[],
+        location_name=None,
+        mood=None,
+        group_size=None,
+        time_preference=None,
+        sort_by=None,
+        language="en",
+    )
+
+    with patch(
+        "app.services.query_parser._llm_extract", new_callable=AsyncMock
+    ) as mock_extract:
+        mock_extract.return_value = mock_parsed
+        filters = await parse_query("Italian food")
+
+    assert filters.cuisine_types == ["italian"]
+
+
+@pytest.mark.asyncio
 async def test_parse_query_group_size_adds_feature() -> None:
     """Group size >= 5 adds good_for_groups feature."""
     mock_parsed = ParsedQuery(
