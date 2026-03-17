@@ -164,8 +164,11 @@ def _format_history_for_parser(
                 lines.append(f"- Assistant: {content}")
 
     lines.append(
-        "The user's NEW message follows. Resolve any references "
-        "using the context above."
+        "The user's NEW message follows. This is a REFINEMENT of the "
+        "previous search. CARRY FORWARD all constraints from the conversation "
+        "(cuisine, location, features, etc.) and ONLY change the specific "
+        "aspect the user mentions. For example, 'but cheaper' means keep the "
+        "same cuisine and features, just lower the price range."
     )
     return "\n".join(lines)
 
