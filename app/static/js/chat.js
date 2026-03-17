@@ -10,6 +10,20 @@ const loadingIndicator = document.getElementById('loading');
 let conversationHistory = [];
 const MAX_HISTORY_PAIRS = 5;
 
+const newChatButton = document.getElementById('new-chat-button');
+
+function startNewConversation() {
+    conversationHistory = [];
+    newChatButton.style.display = 'none';
+    // Clear chat messages except the welcome message
+    while (chatMessages.children.length > 1) {
+        chatMessages.removeChild(chatMessages.lastChild);
+    }
+    userInput.focus();
+}
+
+newChatButton.addEventListener('click', startNewConversation);
+
 // Escape HTML to prevent XSS
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -183,6 +197,10 @@ chatForm.addEventListener('submit', async function (e) {
                             // Trim to max pairs
                             if (conversationHistory.length > MAX_HISTORY_PAIRS * 2) {
                                 conversationHistory = conversationHistory.slice(-(MAX_HISTORY_PAIRS * 2));
+                            }
+                            // Show "New conversation" button after first exchange
+                            if (conversationHistory.length >= 2) {
+                                newChatButton.style.display = 'inline-block';
                             }
                             break;
 
