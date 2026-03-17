@@ -122,6 +122,7 @@ async def generate_response(
     restaurants: list[Restaurant],
     language: str = "en",
     location_hint: str = "",
+    conversation_history: list[dict[str, object]] | None = None,
 ) -> str:
     """
     Generate a natural language response using the LLM.
@@ -131,6 +132,7 @@ async def generate_response(
         restaurants: List of relevant restaurants
         language: Response language ('en' or 'de')
         location_hint: Optional location context (e.g. " near jakominiplatz")
+        conversation_history: Previous messages for multi-turn conversation.
 
     Returns:
         Generated response text
@@ -152,13 +154,22 @@ async def generate_response(
         "Be concise and helpful."
     )
 
+    # Build messages: system + history + current user message
+    messages: list[dict[str, str]] = [{"role": "system", "content": system_content}]
+
+    if conversation_history:
+        for msg in conversation_history:
+            role = str(msg.get("role", ""))
+            content = str(msg.get("content", ""))
+            if role in ("user", "assistant"):
+                messages.append({"role": role, "content": content})
+
+    messages.append({"role": "user", "content": user_message})
+
     try:
         response = await client.chat.completions.create(
             model=settings.llm_model,
-            messages=[
-                {"role": "system", "content": system_content},
-                {"role": "user", "content": user_message},
-            ],
+            messages=messages,
             temperature=settings.llm_temperature,
             max_tokens=500,
             timeout=30.0,
@@ -181,6 +192,7 @@ async def generate_response_stream(
     restaurants: list[Restaurant],
     language: str = "en",
     location_hint: str = "",
+    conversation_history: list[dict[str, object]] | None = None,
 ) -> AsyncIterator[str]:
     """Stream LLM response tokens.
 
@@ -192,6 +204,7 @@ async def generate_response_stream(
         restaurants: List of relevant restaurants.
         language: Response language ('en' or 'de').
         location_hint: Optional location context.
+        conversation_history: Previous messages for multi-turn conversation.
 
     Yields:
         Text chunks from the LLM response.
@@ -199,8 +212,6 @@ async def generate_response_stream(
     system_prompt = SYSTEM_PROMPT_DE if language == "de" else SYSTEM_PROMPT_EN
     restaurant_data = format_restaurant_data(restaurants)
 
-    # Build system message with restaurant context.
-    # User input is sent as a separate message to prevent prompt injection.
     system_content = system_prompt + "\n\n--- RESTAURANT DATA ---\n" + restaurant_data
     if location_hint:
         system_content += (
@@ -213,13 +224,22 @@ async def generate_response_stream(
         "Be concise and helpful."
     )
 
+    # Build messages: system + history + current user message
+    messages: list[dict[str, str]] = [{"role": "system", "content": system_content}]
+
+    if conversation_history:
+        for msg in conversation_history:
+            role = str(msg.get("role", ""))
+            content = str(msg.get("content", ""))
+            if role in ("user", "assistant"):
+                messages.append({"role": role, "content": content})
+
+    messages.append({"role": "user", "content": user_message})
+
     try:
         stream = await client.chat.completions.create(
             model=settings.llm_model,
-            messages=[
-                {"role": "system", "content": system_content},
-                {"role": "user", "content": user_message},
-            ],
+            messages=messages,
             temperature=settings.llm_temperature,
             max_tokens=500,
             timeout=30.0,
