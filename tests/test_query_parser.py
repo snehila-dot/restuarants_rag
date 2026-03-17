@@ -294,7 +294,9 @@ async def test_parse_query_with_history_resolves_refinement() -> None:
         {
             "role": "assistant",
             "content": "Here are some Italian restaurants in the €€ range.",
-            "restaurants": [{"name": "Test Place", "cuisine": ["Italian"], "price_range": "€€"}],
+            "restaurants": [
+                {"name": "Test Place", "cuisine": ["Italian"], "price_range": "€€"}
+            ],
         },
     ]
 

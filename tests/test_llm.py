@@ -48,6 +48,7 @@ async def test_generate_response_stream_includes_history() -> None:
 
 async def test_generate_response_stream_works_without_history() -> None:
     """Stream works with empty history (backward compat)."""
+
     async def mock_create(**kwargs: object) -> MagicMock:
         messages = kwargs.get("messages", [])
         assert len(messages) == 2  # system + user only

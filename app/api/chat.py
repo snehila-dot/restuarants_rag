@@ -53,9 +53,7 @@ async def _chat_stream(
     """
     try:
         # Convert Pydantic models to dicts for service layer
-        history_dicts = [
-            msg.model_dump(mode="json") for msg in conversation_history
-        ]
+        history_dicts = [msg.model_dump(mode="json") for msg in conversation_history]
 
         # --- Phase 1: Parse + DB lookup ---
         filters = await query_parser.parse_query(

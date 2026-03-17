@@ -269,3 +269,45 @@ async def test_chat_restaurant_data_shape(
         assert "address" in restaurant
         assert "cuisine" in restaurant
         assert "price_range" in restaurant
+
+
+async def test_chat_full_conversation_flow(
+    client: AsyncClient,
+    sample_restaurants: list[Restaurant],
+) -> None:
+    """Full multi-turn conversation produces valid SSE events at each step."""
+    with (
+        patch(
+            "app.services.query_parser._llm_extract", new_callable=AsyncMock
+        ) as mock_parser,
+        patch(
+            "app.services.llm.generate_response_stream",
+        ) as mock_llm,
+    ):
+        # Turn 1: Initial query
+        mock_parser.return_value = _mock_parsed_query(cuisine_types=["italian"])
+        mock_llm.return_value = _mock_llm_stream()
+
+        r1 = await client.post("/api/chat", json={"message": "Italian food"})
+        events1 = _parse_sse_events(r1.text)
+        assert any(e["type"] == "restaurants" for e in events1)
+
+        # Turn 2: Follow-up with history
+        mock_parser.return_value = _mock_parsed_query(
+            cuisine_types=["italian"], price_ranges=["€"]
+        )
+        mock_llm.return_value = _mock_llm_stream()
+
+        r2 = await client.post(
+            "/api/chat",
+            json={
+                "message": "but cheaper",
+                "conversation_history": [
+                    {"role": "user", "content": "Italian food"},
+                    {"role": "assistant", "content": "Here are Italian restaurants."},
+                ],
+            },
+        )
+        events2 = _parse_sse_events(r2.text)
+        assert any(e["type"] == "restaurants" for e in events2)
+        assert any(e["type"] == "done" for e in events2)
